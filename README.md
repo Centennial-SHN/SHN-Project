@@ -13,3 +13,4 @@ To get started, follow these steps:
 3. Navigate to the root folder of the project and run the following commands to set up and start the server:
 - python manage.py migrate
 - python manage.py runserver
+- localhost:8000
