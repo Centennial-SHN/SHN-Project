@@ -1,0 +1,13 @@
+.App {
+  font-family: Arial, sans-serif;
+  text-align: center;
+  padding: 20px;
+}
+
+.error {
+  color: red;
+}
+
+.transcription {
+  margin-top: 20px;
+}
