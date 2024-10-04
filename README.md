@@ -1,6 +1,7 @@
 SHN Project Setup
 To get started, follow these steps
 
+backend
 1. Install the necessary packages
 - pip install django
 - pip install openai
@@ -15,3 +16,12 @@ To get started, follow these steps
 - python manage.py runserver
 
 4. Open your browser and go to localhost:8000 to view the running application
+
+frontend
+1. Install the necessary packages
+- npm install
+
+2. Navigate to the root folder of the project and run the following commands to set up and start the server
+- npm run dev
+
+3. Open your browser and go to localhost:5173 to view the running application
