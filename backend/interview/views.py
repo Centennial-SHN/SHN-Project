@@ -34,7 +34,7 @@ def process_audio(request):
             logging.info(f"Generated speech file path: {speech_file_path}")
 
             if os.path.exists(speech_file_path):
-                return FileResponse(open(speech_file_path, 'rb'), content_type='audio/mpeg', as_attachment=False, filename='response.mp3')
+                return FileResponse(open(speech_file_path, 'rb'), content_type='audio/mp4', as_attachment=False, filename='response.mp4')
             else:
                 logging.error(f"File not found: {speech_file_path}")
                 return JsonResponse({"error": "Audio file not found"}, status=500)

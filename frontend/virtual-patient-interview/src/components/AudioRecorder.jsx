@@ -1,4 +1,4 @@
-import React, { useState, useRef } from "react";
+import { useState, useRef } from "react";
 
 const AudioRecorder = () => {
   const [isRecording, setIsRecording] = useState(false);
@@ -25,7 +25,7 @@ const AudioRecorder = () => {
 
       mediaRecorderRef.current.onstop = () => {
         const audioBlob = new Blob(audioChunksRef.current, {
-          type: "audio/wav",
+          type: "audio/mp4",
         });
         handleUpload(audioBlob); 
         audioChunksRef.current = [];
@@ -48,7 +48,7 @@ const AudioRecorder = () => {
 
   const handleUpload = async (audioBlob) => {
     const formData = new FormData();
-    formData.append("audio", audioBlob, "user_audio.wav");
+    formData.append("audio", audioBlob, "user_audio.mp4");
 
     try {
       const response = await fetch("http://localhost:8000/api/process_audio/", {
