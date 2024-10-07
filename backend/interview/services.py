@@ -1,57 +1,15 @@
 import os
 import openai
 import logging
-from pathlib import Path
 import uuid
 from azure.storage.blob import BlobServiceClient
 from dotenv import load_dotenv
 import io
-import mimetypes
 
 load_dotenv()
-USE_AZURE_BLOB_STORAGE = os.getenv('USE_AZURE_BLOB_STORAGE')
+USE_AZURE_BLOB_STORAGE = os.getenv('USE_AZURE_BLOB_STORAGE', 'False') == 'True'
 AZURE_STORAGE_CONNECTION_STRING = os.getenv('AZURE_STORAGE_CONNECTION_STRING')
 AZURE_BLOB_CONTAINER_NAME = os.getenv('AZURE_BLOB_CONTAINER_NAME')
-'''
-def process_audio_file(audio_file):
-    project_root = os.path.dirname(os.path.abspath(__file__))
-
-    temp_audio_dir = os.path.join(project_root, "temp_audio")
-
-    os.makedirs(temp_audio_dir, exist_ok=True)
-
-    extension = os.path.splitext(audio_file.name)[1]
-    if not extension:
-        extension = '.mp4'
-
-    audio_file_name = 'stt' + str(uuid.uuid4()) + extension
-
-    try:
-        audio_file_path = os.path.join(temp_audio_dir, audio_file_name)
-
-        with open(audio_file_path, 'wb') as temp_file:
-            for chunk in audio_file.chunks():
-                temp_file.write(chunk)
-
-        with open(audio_file_path, 'rb') as file_to_transcribe:
-            response = openai.audio.transcriptions.create(
-                model='whisper-1',
-                file=file_to_transcribe,
-                response_format='text',
-                prompt='ZyntriQix, Digique Plus, CynapseFive, VortiQore V8, EchoNix Array, OrbitalLink Seven, DigiFractal Matrix, PULSE, RAPT, B.R.I.C.K., Q.U.A.R.T.Z., F.L.I.N.T.'
-            )
-
-        os.remove(audio_file_path)
-
-        if isinstance(response, dict):
-            return response.get('text', '')
-        else:
-            return response
-
-    except Exception as e:
-        logging.error(f'Exception occurred in process_audio_file: {str(e)}')
-        raise e
-'''
 
 def process_audio_file(audio_file):
     extension = os.path.splitext(audio_file.name)[1] or '.mp3'
@@ -82,32 +40,6 @@ def generate_text_from_prompt(prompt_text):
     except Exception as e:
         logging.eror(f'Exception occurred in generate_text_from_prompt: {str(e)}')
         raise e
-'''
-def convert_text_to_speech(text):
-    logging.info(f'text: {text}')
-
-    project_root = os.path.dirname(os.path.abspath(__file__))
-
-    temp_audio_dir = os.path.join(project_root, 'temp_audio')
-    os.makedirs(temp_audio_dir, exist_ok=True)
-
-    audio_file_name = 'tts' + str(uuid.uuid4()) + '.mp3'
-
-    try:
-        speech_file_path = Path(os.path.join(temp_audio_dir, audio_file_name))
-
-        response = openai.audio.speech.create(
-            model = 'tts-1',
-            voice = 'alloy',
-            input = text
-        )
-
-        response.stream_to_file(speech_file_path)
-        return speech_file_path
-    except Exception as e:
-        logging.error(f'Exception occurred in covert_text_to_speech: {str(e)}')
-        raise e
-'''
 
 def convert_text_to_speech(text):
     audio_file_name = 'tts' + str(uuid.uuid4()) + '.mp3'

@@ -74,6 +74,8 @@ const AudioRecorder = () => {
     }
   };
 
+
+  // Azure Case
   // const handleUpload = async (audioBlob) => {
   //   const formData = new FormData();
   //   formData.append("audio", audioBlob, "user_audio.mp3");
@@ -91,14 +93,8 @@ const AudioRecorder = () => {
   //     const data = await response.json();
 
   //     if (data.speech_file_url) {
-  //       // Azure case: Play from Azure Blob Storage
   //       playAudio(data.speech_file_url);
-  //     } else {
-  //       // Local case: Play audio blob returned from backend
-  //       const audioBlobResponse = await response.blob();
-  //       const audioUrl = URL.createObjectURL(audioBlobResponse);
-  //       playAudio(audioUrl);
-  //     }
+  //     } 
   //   } catch (error) {
   //     console.error("Error uploading the audio:", error);
   //   }
