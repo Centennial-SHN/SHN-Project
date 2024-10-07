@@ -3,7 +3,16 @@ import openai
 import logging
 from pathlib import Path
 import uuid
+from azure.storage.blob import BlobServiceClient
+from dotenv import load_dotenv
+import io
+import mimetypes
 
+load_dotenv()
+USE_AZURE_BLOB_STORAGE = False
+AZURE_STORAGE_CONNECTION_STRING = os.getenv('AZURE_STORAGE_CONNECTION_STRING')
+AZURE_BLOB_CONTAINER_NAME = os.getenv('AZURE_BLOB_CONTAINER_NAME')
+'''
 def process_audio_file(audio_file):
     project_root = os.path.dirname(os.path.abspath(__file__))
 
@@ -42,6 +51,18 @@ def process_audio_file(audio_file):
     except Exception as e:
         logging.error(f'Exception occurred in process_audio_file: {str(e)}')
         raise e
+'''
+
+def process_audio_file(audio_file):
+    extension = os.path.splitext(audio_file.name)[1] or '.mp3'
+    audio_file_name = 'stt' + str(uuid.uuid4()) + extension
+
+    if USE_AZURE_BLOB_STORAGE:
+        audio_file_path = _upload_stt_to_blob_storage(audio_file, audio_file_name)
+    else:
+        audio_file_path = _save_stt_to_local_storage(audio_file, audio_file_name)
+
+    return _process_stt_audio(audio_file_path)
 
 def generate_text_from_prompt(prompt_text):
     logging.info(f"Transcribed text: {prompt_text}")
@@ -61,7 +82,7 @@ def generate_text_from_prompt(prompt_text):
     except Exception as e:
         logging.eror(f'Exception occurred in generate_text_from_prompt: {str(e)}')
         raise e
-
+'''
 def convert_text_to_speech(text):
     logging.info(f'text: {text}')
 
@@ -70,7 +91,7 @@ def convert_text_to_speech(text):
     temp_audio_dir = os.path.join(project_root, 'temp_audio')
     os.makedirs(temp_audio_dir, exist_ok=True)
 
-    audio_file_name = 'tts' + str(uuid.uuid4()) + '.mp4'
+    audio_file_name = 'tts' + str(uuid.uuid4()) + '.mp3'
 
     try:
         speech_file_path = Path(os.path.join(temp_audio_dir, audio_file_name))
@@ -85,6 +106,139 @@ def convert_text_to_speech(text):
         return speech_file_path
     except Exception as e:
         logging.error(f'Exception occurred in covert_text_to_speech: {str(e)}')
+        raise e
+'''
+
+def convert_text_to_speech(text):
+    audio_file_name = 'tts' + str(uuid.uuid4()) + '.mp3'
+
+    if USE_AZURE_BLOB_STORAGE:
+        audio_file_url = _upload_tts_to_blob_storage(text, audio_file_name)
+    else:
+        audio_file_url = _save_tts_to_local_storage(text, audio_file_name)
+
+    return audio_file_url
+
+def _upload_stt_to_blob_storage(audio_file, audio_file_name):
+    try:
+        blob_service_client = BlobServiceClient.from_connection_string(AZURE_STORAGE_CONNECTION_STRING)
+        blob_client = blob_service_client.get_blob_client(container=AZURE_BLOB_CONTAINER_NAME, blob=audio_file_name)
+
+        blob_client.upload_blob(audio_file, overwrite= True)
+
+        blob_url = blob_client.url
+
+        return blob_url
+    except Exception as e:
+        logging.error(f'Exception occurred while uploading to Blob Storage: {str(e)}')
+        raise e
+
+def _save_stt_to_local_storage(audio_file, audio_file_name):
+    try:
+        project_root = os.path.dirname(os.path.abspath(__file__))
+        temp_audio_dir = os.path.join(project_root, 'temp_audio')
+        os.makedirs(temp_audio_dir, exist_ok=True)
+        audio_file_path = os.path.join(temp_audio_dir, audio_file_name)
+
+        with open(audio_file_path, 'wb') as temp_file:
+            for chunk in audio_file.chunks():
+                temp_file.write(chunk)
+
+        return audio_file_path
+    except Exception as e:
+        logging.error(f'Exception occurred while saving to local storage: {str(e)}')
+        raise e
+
+def _process_stt_audio(file_path_or_url):
+    try:
+        if USE_AZURE_BLOB_STORAGE:
+            blob_service_client = BlobServiceClient.from_connection_string(AZURE_STORAGE_CONNECTION_STRING)
+            blob_client = blob_service_client.get_blob_client(container=AZURE_BLOB_CONTAINER_NAME, blob=file_path_or_url.split('/')[-1])
+
+
+            # Create a BytesIO object to hold the blob contents
+            buffer = io.BytesIO()
+
+            # Download the blob into the BytesIO stream
+            blob_client.download_blob().readinto(buffer)
+
+            # Extract the blob name and extension
+            blob_name = file_path_or_url.split("/")[-1]
+            logging.info(f"Blob name: {blob_name}")
+
+            buffer.name = blob_name
+
+            response = openai.audio.transcriptions.create(
+                model='whisper-1',
+                file=buffer,
+                response_format='text',
+                prompt='ZyntriQix, Digique Plus, CynapseFive, VortiQore V8, EchoNix Array, OrbitalLink Seven, DigiFractal Matrix, PULSE, RAPT, B.R.I.C.K., Q.U.A.R.T.Z., F.L.I.N.T.'
+            )
+
+            blob_client.delete_blob()
+
+        else:
+            with open(file_path_or_url, 'rb') as file_to_transcribe:
+                response = openai.audio.transcriptions.create(
+                    model='whisper-1',
+                    file=file_to_transcribe,
+                    response_format='text',
+                    prompt='ZyntriQix, Digique Plus, CynapseFive, VortiQore V8, EchoNix Array, OrbitalLink Seven, DigiFractal Matrix, PULSE, RAPT, B.R.I.C.K., Q.U.A.R.T.Z., F.L.I.N.T.'
+                )
+
+            os.remove(file_path_or_url)
+
+        return response.get('text', '') if isinstance(response, dict) else response
+
+    except Exception as e:
+        logging.error(f'Exception occurred in process_audio_logic: {str(e)}')
+        raise e
+
+def _upload_tts_to_blob_storage(text, audio_file_name):
+    try:
+        # Generate TTS audio using OpenAI
+        response = openai.audio.speech.create(
+            model='tts-1',
+            voice='alloy',
+            input=text
+        )
+
+        audio_content = response.content
+
+        blob_service_client = BlobServiceClient.from_connection_string(AZURE_STORAGE_CONNECTION_STRING)
+        blob_client = blob_service_client.get_blob_client(container=AZURE_BLOB_CONTAINER_NAME, blob=audio_file_name)
+
+        blob_client.upload_blob(audio_content, overwrite=True)
+
+        logging.info(f"Uploaded TTS audio to Azure Blob Storage: {audio_file_name}")
+
+        blob_url = blob_client.url
+        return blob_url
+
+    except Exception as e:
+        logging.error(f"Exception occurred while uploading TTS to Blob Storage: {str(e)}")
+        raise e
+
+
+def _save_tts_to_local_storage(text, audio_file_name):
+    try:
+        project_root = os.path.dirname(os.path.abspath(__file__))
+        temp_audio_dir = os.path.join(project_root, 'temp_audio')
+        os.makedirs(temp_audio_dir, exist_ok=True)
+        audio_file_path = os.path.join(temp_audio_dir, audio_file_name)
+
+        response = openai.audio.speech.create(
+            model='tts-1',
+            voice='alloy',
+            input=text
+        )
+
+        response.stream_to_file(audio_file_path)
+
+        return audio_file_path
+
+    except Exception as e:
+        logging.error(f"Exception occurred while saving TTS to local storage: {str(e)}")
         raise e
 
 # TODO

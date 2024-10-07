@@ -25,7 +25,7 @@ const AudioRecorder = () => {
 
       mediaRecorderRef.current.onstop = () => {
         const audioBlob = new Blob(audioChunksRef.current, {
-          type: "audio/mp4",
+          type: "audio/mp3",
         });
         handleUpload(audioBlob); 
         audioChunksRef.current = [];
@@ -48,7 +48,7 @@ const AudioRecorder = () => {
 
   const handleUpload = async (audioBlob) => {
     const formData = new FormData();
-    formData.append("audio", audioBlob, "user_audio.mp4");
+    formData.append("audio", audioBlob, "user_audio.mp3");
 
     try {
       const response = await fetch("http://localhost:8000/api/process_audio/", {
@@ -73,6 +73,45 @@ const AudioRecorder = () => {
       console.error("Error uploading the audio:", error);
     }
   };
+
+  // const handleUpload = async (audioBlob) => {
+  //   const formData = new FormData();
+  //   formData.append("audio", audioBlob, "user_audio.mp3");
+
+  //   try {
+  //     const response = await fetch("http://localhost:8000/api/process_audio/", {
+  //       method: "POST",
+  //       body: formData,
+  //     });
+
+  //     if (!response.ok) {
+  //       throw new Error("Failed to upload audio");
+  //     }
+
+  //     const data = await response.json();
+
+  //     if (data.speech_file_url) {
+  //       // Azure case: Play from Azure Blob Storage
+  //       playAudio(data.speech_file_url);
+  //     } else {
+  //       // Local case: Play audio blob returned from backend
+  //       const audioBlobResponse = await response.blob();
+  //       const audioUrl = URL.createObjectURL(audioBlobResponse);
+  //       playAudio(audioUrl);
+  //     }
+  //   } catch (error) {
+  //     console.error("Error uploading the audio:", error);
+  //   }
+  // };
+
+  // const playAudio = (audioUrl) => {
+  //   const audio = new Audio(audioUrl);
+  //   try {
+  //     audio.play();
+  //   } catch (playError) {
+  //     console.error("Audio playback failed:", playError);
+  //   }
+  // };
 
   return (
     <div className="audio-recorder">
