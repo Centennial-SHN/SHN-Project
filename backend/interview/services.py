@@ -9,7 +9,7 @@ import io
 import mimetypes
 
 load_dotenv()
-USE_AZURE_BLOB_STORAGE = False
+USE_AZURE_BLOB_STORAGE = os.getenv('USE_AZURE_BLOB_STORAGE')
 AZURE_STORAGE_CONNECTION_STRING = os.getenv('AZURE_STORAGE_CONNECTION_STRING')
 AZURE_BLOB_CONTAINER_NAME = os.getenv('AZURE_BLOB_CONTAINER_NAME')
 '''
@@ -155,14 +155,10 @@ def _process_stt_audio(file_path_or_url):
             blob_service_client = BlobServiceClient.from_connection_string(AZURE_STORAGE_CONNECTION_STRING)
             blob_client = blob_service_client.get_blob_client(container=AZURE_BLOB_CONTAINER_NAME, blob=file_path_or_url.split('/')[-1])
 
-
-            # Create a BytesIO object to hold the blob contents
             buffer = io.BytesIO()
 
-            # Download the blob into the BytesIO stream
             blob_client.download_blob().readinto(buffer)
 
-            # Extract the blob name and extension
             blob_name = file_path_or_url.split("/")[-1]
             logging.info(f"Blob name: {blob_name}")
 
@@ -196,7 +192,6 @@ def _process_stt_audio(file_path_or_url):
 
 def _upload_tts_to_blob_storage(text, audio_file_name):
     try:
-        # Generate TTS audio using OpenAI
         response = openai.audio.speech.create(
             model='tts-1',
             voice='alloy',
