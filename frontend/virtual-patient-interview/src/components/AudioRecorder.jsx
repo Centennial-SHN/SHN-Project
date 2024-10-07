@@ -75,9 +75,9 @@ const AudioRecorder = () => {
   };
 
   return (
-    <div>
-      <h1>Voice Recording</h1>
-      <button onClick={toggleRecording}>
+    <div className="audio-recorder">
+      <h1>SHN Virtual Interview</h1>
+      <button className="record-button" onClick={toggleRecording}>
         {isRecording ? "Stop Recording" : "Start Recording"}
       </button>
     </div>
