@@ -46,36 +46,9 @@ const AudioRecorder = () => {
     setIsRecording(false);
   };
 
-  const handleUpload = async (audioBlob) => {
-    const formData = new FormData();
-    formData.append("audio", audioBlob, "user_audio.mp3");
-
-    try {
-      const response = await fetch("http://localhost:8000/api/process_audio/", {
-        method: "POST",
-        body: formData,
-      });
-
-      if (!response.ok) {
-        throw new Error("Failed to upload audio");
-      }
-
-      const audioBlobResponse = await response.blob();
-      const audioUrl = URL.createObjectURL(audioBlobResponse);
-      const audio = new Audio(audioUrl);
-
-      try {
-        audio.play(); 
-      } catch (playError) {
-        console.error("Audio playback failed:", playError);
-      }
-    } catch (error) {
-      console.error("Error uploading the audio:", error);
-    }
-  };
-
-
-  // Azure Case
+  /**
+   * Local Case
+   */
   // const handleUpload = async (audioBlob) => {
   //   const formData = new FormData();
   //   formData.append("audio", audioBlob, "user_audio.mp3");
@@ -90,24 +63,56 @@ const AudioRecorder = () => {
   //       throw new Error("Failed to upload audio");
   //     }
 
-  //     const data = await response.json();
+  //     const audioBlobResponse = await response.blob();
+  //     const audioUrl = URL.createObjectURL(audioBlobResponse);
+  //     const audio = new Audio(audioUrl);
 
-  //     if (data.speech_file_url) {
-  //       playAudio(data.speech_file_url);
-  //     } 
+  //     try {
+  //       audio.play(); 
+  //     } catch (playError) {
+  //       console.error("Audio playback failed:", playError);
+  //     }
   //   } catch (error) {
   //     console.error("Error uploading the audio:", error);
   //   }
   // };
 
-  // const playAudio = (audioUrl) => {
-  //   const audio = new Audio(audioUrl);
-  //   try {
-  //     audio.play();
-  //   } catch (playError) {
-  //     console.error("Audio playback failed:", playError);
-  //   }
-  // };
+
+  /**
+   * Azure Case
+   */
+  const handleUpload = async (audioBlob) => {
+    const formData = new FormData();
+    formData.append("audio", audioBlob, "user_audio.mp3");
+
+    try {
+      const response = await fetch("http://localhost:8000/api/process_audio/", {
+        method: "POST",
+        body: formData,
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to upload audio");
+      }
+
+      const data = await response.json();
+
+      if (data.speech_file_url) {
+        playAudio(data.speech_file_url);
+      } 
+    } catch (error) {
+      console.error("Error uploading the audio:", error);
+    }
+  };
+
+  const playAudio = (audioUrl) => {
+    const audio = new Audio(audioUrl);
+    try {
+      audio.play();
+    } catch (playError) {
+      console.error("Audio playback failed:", playError);
+    }
+  };
 
   return (
     <div className="audio-recorder">
