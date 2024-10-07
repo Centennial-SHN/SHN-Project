@@ -1,7 +1,7 @@
 SHN Project Setup
 To get started, follow these steps
 
-backend
+backend (Python 3.12)
 1. Install the necessary packages
 - pip install django
 - pip install openai
