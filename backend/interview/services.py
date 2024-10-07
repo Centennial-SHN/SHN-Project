@@ -1,5 +1,4 @@
 import os
-import tempfile
 import openai
 import logging
 from pathlib import Path
@@ -15,8 +14,6 @@ def process_audio_file(audio_file):
     extension = os.path.splitext(audio_file.name)[1]
     if not extension:
         extension = '.mp4'
-
-
 
     audio_file_name = 'stt' + str(uuid.uuid4()) + extension
 
@@ -45,9 +42,6 @@ def process_audio_file(audio_file):
     except Exception as e:
         logging.error(f'Exception occurred in process_audio_file: {str(e)}')
         raise e
-
-
-
 
 def generate_text_from_prompt(prompt_text):
     logging.info(f"Transcribed text: {prompt_text}")
