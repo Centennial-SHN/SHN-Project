@@ -17,6 +17,7 @@ backend (Python 3.12)
 - AZURE_BLOB_CONTAINER_NAME=container_name
 
 3. Navigate to the root folder of the project and run the following commands to set up and start the server
+- python manage.py makemigrations
 - python manage.py migrate
 - python manage.py runserver
 
