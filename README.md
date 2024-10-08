@@ -10,7 +10,7 @@ backend (Python 3.12)
 - pip install azure-storage-blob
 - pip install psycopg2-binary
 
-2. Add the .env file to the backend directory (at the same level as the manage.py file). In the .env file, include your OpenAI API key
+2. Add the .env file to the backend directory (at the same level as the manage.py file). In the .env file, include the followings
 - OPENAI_API_KEY=your_openai_api_key
 - USE_AZURE_BLOB_STORAGE=False  # Set this to True when using Azure Blob Storage, False when working in a local environment 
 - AZURE_STORAGE_CONNECTION_STRING=azure_storage_connection_string
