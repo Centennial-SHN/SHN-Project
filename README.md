@@ -31,7 +31,7 @@ backend (Python 3.12)
 4. Open your browser and go to localhost:8000 to view the running application
 
 frontend
-1. Install the necessary packages
+1. Install the necessary packages (make sure your under frontend/virtual-patient-interview directory)
 - npm install
 - npm install react-router-dom
 
