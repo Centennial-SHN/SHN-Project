@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from "react";
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 
 const Interview = () => {
   const { moduleId } = useParams();  
@@ -9,9 +9,11 @@ const Interview = () => {
   const [prompt, setPrompt] = useState("");
   const [isRecording, setIsRecording] = useState(false);
   const [isLoading, setIsLoading] = useState(false);  
+  const [isPlaying, setIsPlaying] = useState(false); 
   const mediaRecorderRef = useRef(null);
   const audioChunksRef = useRef([]);
   const streamRef = useRef(null);
+  const navigate = useNavigate();  
 
   useEffect(() => {
     const fetchModuleName = async () => {
@@ -110,17 +112,36 @@ const Interview = () => {
       }
     } catch (error) {
       console.error("Error uploading the audio:", error);
-    } finally {
-      setIsLoading(false);  
     }
   };
 
   const playAudio = (audioUrl) => {
     const audio = new Audio(audioUrl);
+    setIsPlaying(true);  
     try {
       audio.play();
+      audio.onended = () => {
+        setIsPlaying(false);  
+        setIsLoading(false);  
+      };
     } catch (playError) {
       console.error("Audio playback failed:", playError);
+      setIsPlaying(false); 
+      setIsLoading(false);
+    }
+  };
+
+  const handleExit = async () => {
+    try {
+      await fetch("http://localhost:8000/api/exit_interview/", {  
+        method: "POST",
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ moduleId }),
+      });
+      
+      navigate("/");
+    } catch (error) {
+      console.error("Error during exit:", error);
     }
   };
 
@@ -130,15 +151,18 @@ const Interview = () => {
       <h1>{moduleName}</h1>
       <p>{caseAbstract}</p>
       <button 
-        className="record-button" 
+        className={`record-button ${isLoading || isPlaying ? 'processing' : ''}`} 
         onClick={toggleRecording}
-        disabled={isLoading}  
+        disabled={isLoading || isPlaying}  
       >
         {isRecording 
           ? "Stop Speaking" 
-          : isLoading 
-            ? "Waiting for the response..."  
+          : isLoading || isPlaying 
+            ? "Processing..."  
             : "Speak Now"}
+      </button>
+      <button className='exit-button' onClick={handleExit}>
+        Exit
       </button>
     </div>
   );
