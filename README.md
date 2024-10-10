@@ -12,10 +12,19 @@ backend (Python 3.12)
 - pip install djangorestframework
 
 2. Add the .env file to the backend directory (at the same level as the manage.py file). In the .env file, include the followings
-- OPENAI_API_KEY=your_openai_api_key
-- USE_AZURE_BLOB_STORAGE=False  # Set this to True when using Azure Blob Storage, False when working in a local environment 
-- AZURE_STORAGE_CONNECTION_STRING=azure_storage_connection_string
-- AZURE_BLOB_CONTAINER_NAME=container_name
+- OPENAI_API_KEY=''
+- USE_AZURE_BLOB_STORAGE=True 
+- AZURE_STORAGE_CONNECTION_STRING=''
+- AZURE_BLOB_CONTAINER_NAME=''
+
+- DB_ENGINE=''
+- DB_NAME=''
+- DB_USER=''
+- DB_PASSWORD=''
+- DB_HOST=''
+- DB_PORT=''
+- DB_OPTIONS=''
+
 
 3. Navigate to the root folder of the project and run the following commands to set up and start the server
 - python manage.py makemigrations
