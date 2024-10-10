@@ -27,6 +27,7 @@ backend (Python 3.12)
 frontend
 1. Install the necessary packages
 - npm install
+- npm install react-router-dom
 
 2. Navigate to the root folder of the project and run the following commands to set up and start the server
 - npm run dev
