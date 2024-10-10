@@ -16,7 +16,6 @@ backend (Python 3.12)
 - USE_AZURE_BLOB_STORAGE=True 
 - AZURE_STORAGE_CONNECTION_STRING=''
 - AZURE_BLOB_CONTAINER_NAME=''
-
 - DB_ENGINE=''
 - DB_NAME=''
 - DB_USER=''
@@ -25,9 +24,7 @@ backend (Python 3.12)
 - DB_PORT=''
 - DB_OPTIONS=''
 
-
 3. Navigate to the root folder of the project and run the following commands to set up and start the server
-- python manage.py makemigrations
 - python manage.py migrate
 - python manage.py runserver
 
