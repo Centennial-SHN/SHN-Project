@@ -5,6 +5,7 @@ import uuid
 from azure.storage.blob import BlobServiceClient
 from dotenv import load_dotenv
 import io
+from .models import Module
 
 load_dotenv()
 USE_AZURE_BLOB_STORAGE = os.getenv('USE_AZURE_BLOB_STORAGE', 'False') == 'True'
@@ -17,18 +18,19 @@ def process_audio_file(audio_file):
 
     if USE_AZURE_BLOB_STORAGE:
         audio_file_path = _upload_stt_to_blob_storage(audio_file, audio_file_name)
-    else:
-        audio_file_path = _save_stt_to_local_storage(audio_file, audio_file_name)
 
     return _process_stt_audio(audio_file_path)
 
-def generate_text_from_prompt(prompt_text):
+def generate_text_from_prompt(prompt_text, system_prompt, user_prompt):
     logging.info(f"Transcribed text: {prompt_text}")
     try:
         response = openai.chat.completions.create(
             model = "gpt-4o-mini",
             messages=[
-                {'role': 'system', 'content': 'I am a doctor, and you are a patient. Please speak like a patient'},
+                {'role': 'system',
+                 'content':
+                     f'This is the system prompt: {system_prompt}'
+                     f'This is the specific patient information: {user_prompt}'},
                 {'role': 'user', 'content': prompt_text},
             ],
             max_completion_tokens=20,
@@ -41,13 +43,14 @@ def generate_text_from_prompt(prompt_text):
         logging.eror(f'Exception occurred in generate_text_from_prompt: {str(e)}')
         raise e
 
-def convert_text_to_speech(text):
+def convert_text_to_speech(text, module_id):
+    module = Module.objects.get(moduleid=module_id)
+    voice = module.voice
+
     audio_file_name = 'tts' + str(uuid.uuid4()) + '.mp3'
 
     if USE_AZURE_BLOB_STORAGE:
-        audio_file_url = _upload_tts_to_blob_storage(text, audio_file_name)
-    else:
-        audio_file_url = _save_tts_to_local_storage(text, audio_file_name)
+        audio_file_url = _upload_tts_to_blob_storage(text, audio_file_name, voice)
 
     return audio_file_url
 
@@ -65,21 +68,6 @@ def _upload_stt_to_blob_storage(audio_file, audio_file_name):
         logging.error(f'Exception occurred while uploading to Blob Storage: {str(e)}')
         raise e
 
-def _save_stt_to_local_storage(audio_file, audio_file_name):
-    try:
-        project_root = os.path.dirname(os.path.abspath(__file__))
-        temp_audio_dir = os.path.join(project_root, 'temp_audio')
-        os.makedirs(temp_audio_dir, exist_ok=True)
-        audio_file_path = os.path.join(temp_audio_dir, audio_file_name)
-
-        with open(audio_file_path, 'wb') as temp_file:
-            for chunk in audio_file.chunks():
-                temp_file.write(chunk)
-
-        return audio_file_path
-    except Exception as e:
-        logging.error(f'Exception occurred while saving to local storage: {str(e)}')
-        raise e
 
 def _process_stt_audio(file_path_or_url):
     try:
@@ -122,11 +110,11 @@ def _process_stt_audio(file_path_or_url):
         logging.error(f'Exception occurred in process_audio_logic: {str(e)}')
         raise e
 
-def _upload_tts_to_blob_storage(text, audio_file_name):
+def _upload_tts_to_blob_storage(text, audio_file_name, voice):
     try:
         response = openai.audio.speech.create(
             model='tts-1',
-            voice='alloy',
+            voice=voice,
             input=text
         )
 
@@ -146,27 +134,6 @@ def _upload_tts_to_blob_storage(text, audio_file_name):
         logging.error(f"Exception occurred while uploading TTS to Blob Storage: {str(e)}")
         raise e
 
-
-def _save_tts_to_local_storage(text, audio_file_name):
-    try:
-        project_root = os.path.dirname(os.path.abspath(__file__))
-        temp_audio_dir = os.path.join(project_root, 'temp_audio')
-        os.makedirs(temp_audio_dir, exist_ok=True)
-        audio_file_path = os.path.join(temp_audio_dir, audio_file_name)
-
-        response = openai.audio.speech.create(
-            model='tts-1',
-            voice='alloy',
-            input=text
-        )
-
-        response.stream_to_file(audio_file_path)
-
-        return audio_file_path
-
-    except Exception as e:
-        logging.error(f"Exception occurred while saving TTS to local storage: {str(e)}")
-        raise e
 
 # TODO
 '''
