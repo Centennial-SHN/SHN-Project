@@ -11,28 +11,6 @@ body {
   line-height: 1.6;
 }
 
-h1 {
-  font-family: Arial, sans-serif;
-  color: #333;
-  margin-bottom: 15px;
-  font-size: 2rem;
-}
-
-h3 {
-  margin-bottom: 10px;
-  color: #555;
-}
-
-p {
-  font-size: 1.2rem;
-  color: #666;
-  max-width: 600px;
-  margin: 0 auto 20px auto;
-  line-height: 1.5;
-}
-
-/* Interview */
-
 .audio-recorder {
   display: flex;
   flex-direction: column;
@@ -69,80 +47,4 @@ h1 {
 
 .record-button:active {
   background-color: #3e8e41;
-}
-
-.play-button {
-  background-color: #007BFF; 
-  color: white;
-  padding: 10px 24px;
-  font-size: 16px;
-  border: none;
-  border-radius: 5px;
-  cursor: pointer;
-  transition: background-color 0.3s ease;
-  margin-top: 20px;
-}
-
-.play-button:hover {
-  background-color: #0069d9;
-}
-
-.play-button:focus {
-  outline: none;
-}
-
-.play-button:active {
-  background-color: #0056b3;
-}
-
-
-/* Module Selection */
-.module-selection {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  min-height: 100vh;
-  background-color: #f5f5f5; /* Same background to match overall */
-}
-
-h1 {
-  font-family: Arial, sans-serif;
-  color: #333;
-  margin-bottom: 20px;
-  font-size: 2rem;
-}
-
-#module-select {
-  width: 250px;
-  padding: 10px;
-  margin-bottom: 20px;
-  border: 1px solid #ccc;
-  border-radius: 5px;
-  font-size: 1rem;
-  background-color: #fff;
-  box-shadow: 0px 3px 6px rgba(0, 0, 0, 0.1);
-}
-
-button {
-  background-color: #007BFF;  /* Matches play button style */
-  color: white;
-  padding: 10px 24px;
-  font-size: 16px;
-  border: none;
-  border-radius: 5px;
-  cursor: pointer;
-  transition: background-color 0.3s ease;
-}
-
-button:hover {
-  background-color: #0069d9;
-}
-
-button:focus {
-  outline: none;
-}
-
-button:active {
-  background-color: #0056b3;
 }

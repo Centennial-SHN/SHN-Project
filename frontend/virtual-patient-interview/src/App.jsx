@@ -1,17 +1,11 @@
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
-import ModuleSelection from './components/ModuleSelection';
-import Interview from './components/Interview';
+import React from 'react';
+import AudioRecorder from './components/AudioRecorder';
 
 function App() {
   return (
-    <Router>
-      <div className="App">
-        <Routes>
-          <Route path="/" element={<ModuleSelection />} />
-          <Route path="/interview/:moduleId" element={<Interview />} />
-        </Routes>
-      </div>
-    </Router>
+    <div className="App">
+      <AudioRecorder />
+    </div>
   );
 }
 
