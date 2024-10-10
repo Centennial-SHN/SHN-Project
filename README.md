@@ -1,3 +1,5 @@
+This is a SHN Project repository.
+=======
 SHN Project Setup
 To get started, follow these steps
 
