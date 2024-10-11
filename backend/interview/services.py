@@ -21,27 +21,32 @@ def process_audio_file(audio_file):
 
     return _process_stt_audio(audio_file_path)
 
-def generate_text_from_prompt(prompt_text, system_prompt, user_prompt):
-    logging.info(f"Transcribed text: {prompt_text}")
+def generate_text_from_prompt(conversation_history, system_prompt, prompt):
+    logging.info(f"Generating text with conversation history: {conversation_history}")
+
+    conversation = [
+        {'role': 'system', 'content': system_prompt},
+        {'role': 'user', 'content': prompt},
+    ]
+
+    conversation.extend(conversation_history)
+
+    logging.debug(f"Messages for OpenAI API: {conversation}")
+
     try:
         response = openai.chat.completions.create(
-            model = "gpt-4o-mini",
-            messages=[
-                {'role': 'system',
-                 'content':
-                     f'This is the system prompt: {system_prompt}'
-                     f'This is the specific patient information: {user_prompt}'},
-                {'role': 'user', 'content': prompt_text},
-            ],
-            max_completion_tokens=20,
+            model="gpt-4o-mini",
+            messages=conversation,
+            max_tokens=20,
             temperature=0.7
         )
 
         return response.choices[0].message.content.strip()
 
     except Exception as e:
-        logging.eror(f'Exception occurred in generate_text_from_prompt: {str(e)}')
+        logging.error(f"Exception occurred in generate_text_from_prompt: {str(e)}")
         raise e
+
 
 def convert_text_to_speech(text, module_id):
     module = Module.objects.get(moduleid=module_id)
@@ -136,14 +141,4 @@ def _upload_tts_to_blob_storage(text, audio_file_name, voice):
 
 
 # TODO
-'''
-conversation_history = [
-    {"role": "system", "content": "I am a doctor, and you are a patient. Please speak like a patient"},
-]
-
-def add_user_message(message):
-    conversation_history.append({"role": "user", "content": message})
-
-def add_assistant_message(message):
-    conversation_history.append({"role": "assistant", "content": message})
-'''
+# Clear Logic for audio files

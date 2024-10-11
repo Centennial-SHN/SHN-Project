@@ -6,5 +6,7 @@ urlpatterns = [
     path('process_audio/', views.process_audio, name='process_audio'),
     path('modules/', views.get_modules, name='get_modules'),
     path('modules/<str:module_id>/', views.get_module_by_id, name='get_module_by_id'),
-
+    path('create_interview/', views.create_interview, name='create_interview'),
+    path('download_transcript/<int:interview_id>/', views.download_transcript, name='download_transcript'),
+    # path('clear_audio_files/', views.clear_audio_files, name='clear_audio_files'),
 ]

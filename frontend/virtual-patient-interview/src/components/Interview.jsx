@@ -1,8 +1,9 @@
 import { useState, useEffect, useRef } from "react";
-import { useParams, useNavigate } from "react-router-dom";
+import { useParams, useNavigate, useLocation  } from "react-router-dom";
 
 const Interview = () => {
-  const { moduleId } = useParams();  
+  const { moduleId } = useParams();
+  const location = useLocation();  
   const [moduleName, setModuleName] = useState("");  
   const [caseAbstract, setCaseAbstract] = useState("");
   const [systemPrompt, setSystemPrompt] = useState(""); 
@@ -13,7 +14,9 @@ const Interview = () => {
   const mediaRecorderRef = useRef(null);
   const audioChunksRef = useRef([]);
   const streamRef = useRef(null);
-  const navigate = useNavigate();  
+  const navigate = useNavigate();
+  const interviewId = location.state?.interviewId;
+  const userId = location.state?.userId;
 
   useEffect(() => {
     const fetchModuleName = async () => {
@@ -23,7 +26,7 @@ const Interview = () => {
         setModuleName(data.modulename); 
         setCaseAbstract(data.case_abstract);
         setSystemPrompt(data.system_prompt);  
-        setPrompt(data.prompt);  
+        setPrompt(data.prompt);
       } catch (error) {
         console.error("Error fetching module name:", error);
       }
@@ -93,6 +96,8 @@ const Interview = () => {
     formData.append("module_id", moduleId);  
     formData.append("system_prompt", systemPrompt);  
     formData.append("prompt", prompt);
+    formData.append("interview_id", interviewId); 
+    formData.append("user_id", userId);
 
     try {
       setIsLoading(true);  
@@ -131,19 +136,45 @@ const Interview = () => {
     }
   };
 
-  const handleExit = async () => {
+  const handleDownload = async () => {
     try {
-      await fetch("http://localhost:8000/api/exit_interview/", {  
-        method: "POST",
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ moduleId }),
+      const response = await fetch(`http://localhost:8000/api/download_transcript/${interviewId}/`, {
+        method: "GET",
       });
-      
-      navigate("/");
+
+      if (!response.ok) {
+        throw new Error("Failed to download transcript");
+      }
+
+      const blob = await response.blob();
+      const url = window.URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.setAttribute('download', `transcript_${interviewId}.txt`);
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
     } catch (error) {
-      console.error("Error during exit:", error);
+      console.error("Error downloading transcript:", error);
     }
   };
+
+  // const handleExit = async () => {
+  //   try {
+  //     const response = await fetch("http://localhost:8000/api/clear_audio_files/", {  
+  //       method: "POST",
+  //     });
+  
+  //     if (!response.ok) {
+  //       throw new Error("Failed to clear audio files");
+  //     }
+  
+  //     navigate("/");
+  //   } catch (error) {
+  //     console.error("Error during exit:", error);
+  //   }
+  // };
+  
 
   return (
     <div className="audio-recorder">
@@ -161,9 +192,12 @@ const Interview = () => {
             ? "Processing..."  
             : "Speak Now"}
       </button>
-      <button className='exit-button' onClick={handleExit}>
-        Exit
+      <button className='exit-button' onClick={handleDownload}>
+        Download Transcript
       </button>
+      {/* <button className='exit-button' onClick={handleExit}>
+        Exit
+      </button> */}
     </div>
   );
 };
