@@ -9,7 +9,7 @@ class UserManager(BaseUserManager):
             raise ValueError("Users must have a user ID")
 
         email = self.normalize_email(email)
-        user = self.model(user_id=userid, email=email)
+        user = self.model(userid=userid, email=email)
         user.set_password(password)  # Hash the password
         user.save(using=self._db)
         return user
@@ -24,7 +24,7 @@ class UserManager(BaseUserManager):
 class Users(AbstractBaseUser):
     userid = models.CharField(max_length=30, primary_key=True)
     email = models.EmailField(max_length=50,unique=True)
-    password = models.CharField(max_length=50)
+    password = models.CharField(max_length=128)
 
     USERID_FIELD = 'userid'
     REQUIRED_FIELDS = ['email','password']
@@ -56,8 +56,6 @@ class Admin(models.Model):
 
     def __str__(self):
         return f"Admin: {self.user.adminid}"
-
-
 
 class Interview(models.Model):
     interviewid = models.AutoField(primary_key=True)
