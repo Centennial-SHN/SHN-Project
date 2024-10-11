@@ -25,7 +25,8 @@ def generate_text_from_prompt(conversation_history, system_prompt, prompt):
     logging.info(f"Generating text with conversation history: {conversation_history}")
 
     conversation = [
-        {'role': 'system', 'content': system_prompt},
+        {'role': 'system', 'content': 'You are in a simulated interview with a doctor. Please engage in a conversation and provide brief responses.'
+                                      'Keep your answers short and interactive. Do not provide overly long responses. {system_prompt}'},
         {'role': 'user', 'content': prompt},
     ]
 
@@ -37,7 +38,7 @@ def generate_text_from_prompt(conversation_history, system_prompt, prompt):
         response = openai.chat.completions.create(
             model="gpt-4o-mini",
             messages=conversation,
-            max_tokens=20,
+            max_tokens=50,
             temperature=0.7
         )
 
