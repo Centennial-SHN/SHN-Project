@@ -24,9 +24,35 @@ const ModuleSelection = () => {
     setSelectedModule(event.target.value);
   };
 
-  const handleProceed = () => {
+  const handleProceed = async () => {
     if (selectedModule) {
-      navigate(`/interview/${selectedModule}`); 
+      try {
+        // Create interview record when user clicks Start
+        const response = await fetch("http://localhost:8000/api/create_interview/", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            module_id: selectedModule,
+            user_id: "won12054"  
+          }),
+        });
+
+        if (!response.ok) {
+          throw new Error("Failed to create interview");
+        }
+
+        const data = await response.json();
+        const interviewId = data.interviewid;
+
+        // Navigate to interview page with interviewId and selectedModule
+        navigate(`/interview/${selectedModule}`, { state: { interviewId, userId: "won12054" } });
+
+
+      } catch (error) {
+        console.error("Error creating interview:", error);
+      }
     } else {
       alert("Please select a module to proceed.");
     }
