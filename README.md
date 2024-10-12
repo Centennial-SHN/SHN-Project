@@ -10,7 +10,8 @@ backend (Python 3.12)
 - pip install django-cors-headers
 - pip install python-dotenv
 - pip install azure-storage-blob
-- pip install psycopg2-binary
+- pip install django-mssql-backend
+- pip install pyodbc
 - pip install djangorestframework
 
 2. Add the .env file to the backend directory (at the same level as the manage.py file). In the .env file, include the followings
@@ -18,13 +19,11 @@ backend (Python 3.12)
 - USE_AZURE_BLOB_STORAGE=True 
 - AZURE_STORAGE_CONNECTION_STRING=''
 - AZURE_BLOB_CONTAINER_NAME=''
-- DB_ENGINE=''
 - DB_NAME=''
 - DB_USER=''
 - DB_PASSWORD=''
 - DB_HOST=''
 - DB_PORT=''
-- DB_OPTIONS=''
 
 3. Navigate to the root folder of the project and run the following commands to set up and start the server
 - python manage.py migrate
@@ -41,10 +40,3 @@ frontend
 - npm run dev
 
 3. Open your browser and go to localhost:5173 to view the running application
-
-database
-1. Check connection via Django shell
-- python manage.py dbshell
-2. See table lists
-- \dt
-3. Check data via sql query
