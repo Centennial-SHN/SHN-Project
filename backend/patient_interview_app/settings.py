@@ -76,13 +76,16 @@ WSGI_APPLICATION = "patient_interview_app.wsgi.application"
 load_dotenv()
 DATABASES = {
     "default": {
-        "ENGINE": os.getenv("DB_ENGINE"),
+        "ENGINE": "mssql",
         "NAME": os.getenv("DB_NAME"),
         "USER": os.getenv("DB_USER"),
         "PASSWORD": os.getenv("DB_PASSWORD"),
         "HOST": os.getenv("DB_HOST"),
-        "PORT": os.getenv("DB_PORT"),
-        "OPTIONS": eval(os.getenv("DB_OPTIONS")),
+        "PORT": os.getenv("DB_PORT",1433),
+        'OPTIONS': {
+            'driver': 'ODBC Driver 18 for SQL Server',
+            'extra_params': 'TrustServerCertificate=yes;',
+        },
     }
 }
 

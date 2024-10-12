@@ -26,6 +26,8 @@ class Users(AbstractBaseUser):
     email = models.EmailField(max_length=50,unique=True)
     password = models.CharField(max_length=128)
 
+    last_login=None
+
     USERID_FIELD = 'userid'
     REQUIRED_FIELDS = ['email','password']
 
