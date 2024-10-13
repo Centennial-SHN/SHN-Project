@@ -18,10 +18,12 @@ const Interview = () => {
   const interviewId = location.state?.interviewId;
   const userId = location.state?.userId;
 
+  const backendUrl = import.meta.env.REACT_APP_BACKEND_URL || "http://localhost:8000";
+
   useEffect(() => {
     const fetchModuleName = async () => {
       try {
-        const response = await fetch(`http://localhost:8000/api/modules/${moduleId}/`);
+        const response = await fetch(`${backendUrl}/api/modules/${moduleId}/`);
         const data = await response.json();
         setModuleName(data.modulename); 
         setCaseAbstract(data.case_abstract);
@@ -101,7 +103,7 @@ const Interview = () => {
 
     try {
       setIsLoading(true);  
-      const response = await fetch("http://localhost:8000/api/process_audio/", {
+      const response = await fetch(`${backendUrl}/api/process_audio/`, {
         method: "POST",
         body: formData,
       });
@@ -138,7 +140,7 @@ const Interview = () => {
 
   const handleDownload = async () => {
     try {
-      const response = await fetch(`http://localhost:8000/api/download_transcript/${interviewId}/`, {
+      const response = await fetch(`${backendUrl}/api/download_transcript/${interviewId}/`, {
         method: "GET",
       });
 
@@ -161,7 +163,7 @@ const Interview = () => {
 
   // const handleExit = async () => {
   //   try {
-  //     const response = await fetch("http://localhost:8000/api/clear_audio_files/", {  
+  //     const response = await fetch(`{backendUrl}/api/clear_audio_files/`, {  
   //       method: "POST",
   //     });
   

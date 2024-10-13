@@ -44,9 +44,8 @@ MIDDLEWARE = [
 ]
 
 CORS_ALLOWED_ORIGINS = [
-    "http://localhost:5173",
-    "http://localhost:3000",
-
+    os.getenv("FRONTEND_URL"),
+    "http://localhost:5173"
 ]
 
 ROOT_URLCONF = "patient_interview_app.urls"
