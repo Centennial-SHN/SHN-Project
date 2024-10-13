@@ -170,6 +170,7 @@ from rest_framework.views import APIView
 from django.contrib.auth.hashers import make_password
 from rest_framework.permissions import AllowAny
 
+
 class RegisterView(APIView):
     permission_classes = [AllowAny]
 
@@ -196,3 +197,23 @@ class RegisterView(APIView):
                 moduleid=module_instance)
 
         return Response({'message': 'User registered successfully.'}, status=status.HTTP_201_CREATED)
+from .serializers import LoginSerializer
+@api_view(['POST'])
+def login(request):
+    serializer=LoginSerializer(data=request.data)
+    logging.debug(f"admin: {serializer}")
+    if serializer.is_valid():
+        user = serializer.validated_data['user']
+        is_admin = serializer.validated_data.get('is_admin',False)
+        
+        
+        logging.debug(f"admin: {is_admin}")
+        logging.debug(f"user: {user}")
+
+        if is_admin:
+            print(Response({"message": "Admin login successful"}, status=status.HTTP_200_OK))
+            return Response({"message": "Admin login successful"}, status=status.HTTP_200_OK)
+        else:
+            print(Response({"message": "User login successful"}, status=status.HTTP_200_OK))
+            return Response({"message": "User login successful"}, status=status.HTTP_200_OK)
+    return Response(serializer.errors, status=status.HTTP_401_UNAUTHORIZED)
