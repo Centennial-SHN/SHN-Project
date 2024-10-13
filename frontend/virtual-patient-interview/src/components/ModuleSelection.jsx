@@ -6,10 +6,12 @@ const ModuleSelection = () => {
   const [selectedModule, setSelectedModule] = useState("");
   const navigate = useNavigate();  
 
+  const backendUrl = import.meta.env.REACT_APP_BACKEND_URL || "http://localhost:8000";
+
   useEffect(() => {
     const fetchModules = async () => {
       try {
-        const response = await fetch("http://localhost:8000/api/modules/");
+        const response = await fetch(`${backendUrl}/api/modules/`);
         const data = await response.json();
         setModules(data);
       } catch (error) {
@@ -28,7 +30,7 @@ const ModuleSelection = () => {
     if (selectedModule) {
       try {
         // Create interview record when user clicks Start
-        const response = await fetch("http://localhost:8000/api/create_interview/", {
+        const response = await fetch(`${backendUrl}/api/create_interview/`, {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
