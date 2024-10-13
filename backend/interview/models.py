@@ -1,35 +1,48 @@
+import uuid
 from django.db import models
 from django.contrib.auth.models import AbstractBaseUser, BaseUserManager
+from django.contrib.auth.hashers import make_password
+
+def generate_userid(length=30):
+    return str(uuid.uuid4())[:30]
+
 
 class UserManager(BaseUserManager):
-    def create_user(self, userid, email, password=None):
+    def create_user(self,email, password=None,**extra_fields):
         if not email:
-            raise ValueError("Users must have an email address")
-        if not userid:
-            raise ValueError("Users must have a user ID")
+            raise ValueError("The Email field must be set")
+        if not password:
+            raise ValueError("The password field must be set")
 
         email = self.normalize_email(email)
-        user = self.model(userid=userid, email=email)
-        user.set_password(password)  # Hash the password
+
+        userid = generate_userid()
+        user = self.model(email=email,userid=userid,**extra_fields)
+        user.set_password(password)
         user.save(using=self._db)
         return user
 
-    def create_superuser(self, userid, email, password):
-        user = self.create_user(userid, email, password)
-        user.is_staff = True
-        user.is_superuser = True
-        user.save(using=self._db)
-        return user
+    def create_admin(self, email, password=None,module_id=None,**extra_fields):
+        user = self.create_user(email=email, password=password)
+        admin = Admin.objects.create(
+            userid=user,
+            email=email,
+            password=make_password(password),
+            module_id=module_id,
+            **extra_fields
+        )
+
+        return user, admin
 
 class Users(AbstractBaseUser):
-    userid = models.CharField(max_length=30, primary_key=True)
+    userid = models.CharField(max_length=30, primary_key=True, editable=False)
     email = models.EmailField(max_length=50,unique=True)
     password = models.CharField(max_length=128)
 
     last_login=None
 
     USERID_FIELD = 'userid'
-    REQUIRED_FIELDS = ['email','password']
+    REQUIRED_FIELDS = []
 
     objects = UserManager()
 
@@ -50,14 +63,14 @@ class Module(models.Model):
         return self.moduleid
 
 class Admin(models.Model):
-    adminid=models.CharField(max_length=30, primary_key=True)
-    userid = models.ForeignKey(Users, on_delete=models.CASCADE)
-    moduleid = models.ForeignKey(Module, on_delete=models.CASCADE)
+    adminid=models.CharField(max_length=30, primary_key=True, editable=False, default=generate_userid)
+    userid = models.ForeignKey(Users, on_delete=models.CASCADE, null=True,blank=True)
+    moduleid = models.ForeignKey(Module, on_delete=models.CASCADE, null=True, blank=True)
     email = models.EmailField(max_length=50)
-    password = models.CharField(max_length=50)
+    password = models.CharField(max_length=128)
 
     def __str__(self):
-        return f"Admin: {self.user.adminid}"
+        return f"Admin: {self.adminid}"
 
 class Interview(models.Model):
     interviewid = models.AutoField(primary_key=True)
