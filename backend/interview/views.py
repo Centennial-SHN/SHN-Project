@@ -162,3 +162,37 @@ def download_transcript(request, interview_id):
 #
 #     except Exception as e:
 #         return JsonResponse({"status": "error", "message": str(e)}, status=500)
+
+from .models import Users,Admin
+from rest_framework import status
+from rest_framework.response import Response
+from rest_framework.views import APIView
+from django.contrib.auth.hashers import make_password
+from rest_framework.permissions import AllowAny
+
+class RegisterView(APIView):
+    permission_classes = [AllowAny]
+
+    def post(self, request):
+        email = request.data.get('email')
+        password = request.data.get('password')
+        is_admin = request.data.get('is_admin', False)
+        module_id = request.data.get('module_id', None)
+
+        if Users.objects.filter(email=email).exists():
+            return Response({'error': 'Email already registered.'}, status=status.HTTP_400_BAD_REQUEST)
+
+        user = Users(email=email, password=make_password(password))
+        user.save()
+
+        if is_admin:
+            module_instance = None
+            if module_id:
+                try:
+                    module_instance = Module.objects.get(moduleid=module_id)
+                except Module.DoesNotExist:
+                    return Response({'error': 'Module with this ID does not exist.'}, status=status.HTTP_404_NOT_FOUND)
+            Admin.objects.create(userid=user, email=email,password=make_password(password),
+                moduleid=module_instance)
+
+        return Response({'message': 'User registered successfully.'}, status=status.HTTP_201_CREATED)
