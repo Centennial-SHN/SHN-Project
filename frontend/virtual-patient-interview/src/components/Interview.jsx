@@ -189,11 +189,12 @@ const Interview = () => {
         disabled={isLoading || isPlaying}  
       >
         {isRecording 
-          ? "Stop Speaking" 
+          ? "Click to Stop Speaking"
           : isLoading || isPlaying 
             ? "Processing..."  
-            : "Speak Now"}
+            : "Click to Speak"}
       </button>
+      <p>The button can be controlled with a mouse click or by pressing the space bar.</p>
       <button className='exit-button' onClick={handleDownload}>
         Download Transcript
       </button>
