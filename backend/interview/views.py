@@ -167,53 +167,43 @@ from .models import Users,Admin
 from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.views import APIView
-from django.contrib.auth.hashers import make_password
-from rest_framework.permissions import AllowAny
+from .serializers import UserSerializer
 
-
-class RegisterView(APIView):
-    permission_classes = [AllowAny]
-
-    def post(self, request):
-        email = request.data.get('email')
-        password = request.data.get('password')
-        is_admin = request.data.get('is_admin', False)
-        module_id = request.data.get('module_id', None)
-
-        if Users.objects.filter(email=email).exists():
-            return Response({'error': 'Email already registered.'}, status=status.HTTP_400_BAD_REQUEST)
-
-        user = Users(email=email, password=make_password(password))
-        user.save()
-
-        if is_admin:
-            module_instance = None
-            if module_id:
-                try:
-                    module_instance = Module.objects.get(moduleid=module_id)
-                except Module.DoesNotExist:
-                    return Response({'error': 'Module with this ID does not exist.'}, status=status.HTTP_404_NOT_FOUND)
-            Admin.objects.create(userid=user, email=email,password=make_password(password),
-                moduleid=module_instance)
-
-        return Response({'message': 'User registered successfully.'}, status=status.HTTP_201_CREATED)
-from .serializers import LoginSerializer
 @api_view(['POST'])
-def login(request):
-    serializer=LoginSerializer(data=request.data)
-    logging.debug(f"admin: {serializer}")
-    if serializer.is_valid():
-        user = serializer.validated_data['user']
-        is_admin = serializer.validated_data.get('is_admin',False)
+def register(request):
+    if request.method == 'POST':
+        serializer = UserSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response({'message': 'User registered successfully'}, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
         
-        
-        logging.debug(f"admin: {is_admin}")
-        logging.debug(f"user: {user}")
+from django.contrib.auth import authenticate, login
+from django.http import JsonResponse
+import logging
 
-        if is_admin:
-            print(Response({"message": "Admin login successful"}, status=status.HTTP_200_OK))
-            return Response({"message": "Admin login successful"}, status=status.HTTP_200_OK)
+@api_view(['POST'])
+def user_login(request):
+    email = request.data.get('email')
+    password = request.data.get('password')
+    user = authenticate(request, email=email, password=password)
+    
+    if user is not None:
+        login(request, user)
+        return Response({'message': 'Login successful', 'userid': user.userid,'email': user.email,
+            'is_superuser': user.is_superuser}, status=status.HTTP_200_OK)
+    return Response({'error': 'Invalid email or password'}, status=status.HTTP_401_UNAUTHORIZED)
+
+
+logger = logging.getLogger(__name__)
+@api_view(['POST'])
+def add_module(request):
+    if request.method == 'POST':
+        serializer = ModuleSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
         else:
-            print(Response({"message": "User login successful"}, status=status.HTTP_200_OK))
-            return Response({"message": "User login successful"}, status=status.HTTP_200_OK)
-    return Response(serializer.errors, status=status.HTTP_401_UNAUTHORIZED)
+            print(serializer.errors)
+            logger.error(f"Validation errors: {serializer.errors}")
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)

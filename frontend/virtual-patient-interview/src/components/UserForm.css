@@ -1,0 +1,63 @@
+/* Login, Registration */
+.forms{
+    font-family: Arial, sans-serif;
+    display: flex;
+    flex-direction:column;
+    justify-content: center;
+    align-items: center;
+    /*background-color: #f4f4f4; /* Light gray background */
+    min-height: 100vh;
+    /* padding: 20px; */
+  }
+  
+  
+  form {
+    /*max-width: 400px; /* Set a max width for the form */
+    /*margin: auto;*/ /* Center the form horizontally */
+    width:500px;
+    height:500px;
+    padding: 20px;
+    background: white; /* White background for the form */
+    border-radius: 8px; /* Rounded corners */
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1); /* Subtle shadow */
+    display: flex;
+    flex-direction:column;
+    justify-content: center;
+    align-items: center;
+  }
+  
+  h2 {
+    font-size: 30px;
+    text-align: center; /* Center align the heading */
+    color: #333; /* Dark gray color for the text */
+  }
+  
+  .container{
+    width:500px;
+    margin-left:40px;
+  }
+  
+  span{
+    font-weight: bold;
+    margin-right:20px;
+  }
+  
+  input {
+    width: 90%; /* Full width inputs */
+    padding: 12px; /* Padding for input */
+    margin: 10px 0; /* Margin around input */
+    border: 1px solid #ccc; /* Light gray border */
+    border-radius: 5px; /* Rounded corners for inputs */
+    box-sizing: border-box; /* Include padding in width calculation */
+  }
+  
+  input:focus {
+    border-color: #28a745; /* Green border on focus */
+    outline: none; /* Remove default outline */
+  }
+  
+  @media (max-width: 600px) {
+    form {
+        width: 90%; /* Responsive form width on smaller screens */
+    }
+  }
