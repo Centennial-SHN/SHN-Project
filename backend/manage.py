@@ -6,7 +6,9 @@ import sys
 
 def main():
     """Run administrative tasks."""
-    os.environ.setdefault("DJANGO_SETTINGS_MODULE", "patient_interview_app.settings")
+    settings_module = 'patient_interview_app.deployment' if 'WEBSITE_HOSTNAME' in os.environ else 'patient_interview_app.settings'
+    os.environ.setdefault("DJANGO_SETTINGS_MODULE", settings_module)
+
     try:
         from django.core.management import execute_from_command_line
     except ImportError as exc:

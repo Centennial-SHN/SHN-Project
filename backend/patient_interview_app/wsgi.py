@@ -11,6 +11,7 @@ import os
 
 from django.core.wsgi import get_wsgi_application
 
-os.environ.setdefault("DJANGO_SETTINGS_MODULE", "patient_interview_app.settings")
+settings_module = 'patient_interview_app.deployment' if 'WEBSITE_HOSTNAME' in os.environ else 'patient_interview_app.settings'
+os.environ.setdefault("DJANGO_SETTINGS_MODULE", settings_module)
 
 application = get_wsgi_application()
