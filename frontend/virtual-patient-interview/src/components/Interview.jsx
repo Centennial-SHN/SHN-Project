@@ -194,7 +194,7 @@ const Interview = () => {
             ? "Processing..."  
             : "Click to Speak"}
       </button>
-      <p>The button can be controlled with a mouse click or by pressing the space bar.</p>
+      <h6>The button can be controlled with a mouse click or by pressing the space bar.</h6>
       <button className='exit-button' onClick={handleDownload}>
         Download Transcript
       </button>
