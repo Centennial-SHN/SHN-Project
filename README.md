@@ -15,7 +15,7 @@ backend (Python 3.12)
 - pip install djangorestframework
 - pip install mssql-django
 
-2. Add the .env file to the backend directory (at the same level as the manage.py file). In the .env file, include the followings
+2. Add the .env file to the 'backend' directory (at the same level as the manage.py file). In the .env file, include the followings
 - OPENAI_API_KEY=''
 - USE_AZURE_BLOB_STORAGE=True 
 - AZURE_STORAGE_CONNECTION_STRING=''
@@ -37,7 +37,7 @@ frontend
 - npm install
 - npm install react-router-dom
 
-2. Add the .env file in the root directory under the virtual-patient-interview directory
+2. Add the .env file in the root directory under the 'frontend' directory
 - VITE_API_BASE_URL_LOCAL = 'http://localhost:8000/'
 - VITE_API_BASE_URL_PROD = 'standarizedpatientai-bygdfaf7epfwbafn.canadacentral-01.azurewebsites.net/'.
   
