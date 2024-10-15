@@ -7,10 +7,14 @@ const Register = () => {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const navigate = useNavigate();
+    const isDevelopment = import.meta.env.MODE === "development";
+    const baseUrl = isDevelopment ? import.meta.env.VITE_API_BASE_URL_LOCAL : import.meta.env.VITE_API_BASE_URL_PROD;
+
+    const backendUrl = baseUrl;
 
     const handleRegister = async (e) => {
         e.preventDefault();
-        const response = await fetch('http://localhost:8000/api/register/', {
+        const response = await fetch(`${backendUrl}/api/register/`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',

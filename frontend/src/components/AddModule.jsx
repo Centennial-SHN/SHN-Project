@@ -12,6 +12,10 @@ const AddModule = () => {
     const [file, setFile] = useState(null);
     const [model, setModel] = useState('GPT-4-turbo');
     const navigate = useNavigate();
+    const isDevelopment = import.meta.env.MODE === "development";
+    const baseUrl = isDevelopment ? import.meta.env.VITE_API_BASE_URL_LOCAL : import.meta.env.VITE_API_BASE_URL_PROD;
+
+    const backendUrl = baseUrl;
 
     const handleFileChange = (e) => {
         setFile(e.target.files[0]);
@@ -29,7 +33,7 @@ const AddModule = () => {
         formData.append('file', file);
         formData.append('model', model);
 
-        const response = await fetch('http://localhost:8000/api/modules/add/', {
+        const response = await fetch(`${backendUrl}/api/modules/add/`, {
             method: 'POST',
             body: formData,
         });
