@@ -38,10 +38,10 @@ frontend
 - npm install react-router-dom
 
 2. Add the .env file in the root directory under the virtual-patient-interview directory
-- REACT_APP_BACKEND_URL=''
-
-4. Navigate to the root folder of the project and run the following commands to set up and start the server
+- VITE_API_BASE_URL_LOCAL = 'http://localhost:8000/'
+- VITE_API_BASE_URL_PROD = 'standarizedpatientai-bygdfaf7epfwbafn.canadacentral-01.azurewebsites.net/'.
+  
+3. Navigate to the root folder of the project and run the following commands to set up and start the server
 - npm run dev
 
-
-3. Open your browser and go to localhost:5173 to view the running application
+4. Open your browser and go to localhost:5173 to view the running application
