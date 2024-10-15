@@ -60,7 +60,6 @@ DATABASES = {
         'OPTIONS': {
             'driver': 'ODBC Driver 18 for SQL Server',
             'extra_params': 'TrustServerCertificate=yes;',
-            'timeout': 30
         },
     }
 }
