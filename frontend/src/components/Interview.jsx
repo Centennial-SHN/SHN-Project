@@ -17,8 +17,10 @@ const Interview = () => {
   const navigate = useNavigate();
   const interviewId = location.state?.interviewId;
   const userId = location.state?.userId;
+  const isDevelopment = import.meta.env.MODE === "development";
+  const baseUrl = isDevelopment ? import.meta.env.VITE_API_BASE_URL_LOCAL : import.meta.env.VITE_API_BASE_URL_PROD;
 
-  const backendUrl = import.meta.env.REACT_APP_BACKEND_URL || "http://localhost:8000";
+  const backendUrl = baseUrl;
 
   useEffect(() => {
     const fetchModuleName = async () => {
