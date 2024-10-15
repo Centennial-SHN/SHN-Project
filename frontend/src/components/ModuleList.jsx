@@ -4,11 +4,15 @@ import { useNavigate } from 'react-router-dom';
 const AdminModuleList = () => {
     const [modules, setModules] = useState([]);
     const navigate = useNavigate();
+    const isDevelopment = import.meta.env.MODE === "development";
+    const baseUrl = isDevelopment ? import.meta.env.VITE_API_BASE_URL_LOCAL : import.meta.env.VITE_API_BASE_URL_PROD;
+
+    const backendUrl = baseUrl;
 
     // Fetch modules from the API when the component mounts
     useEffect(() => {
         const fetchModules = async () => {
-            const response = await fetch('http://localhost:8000/api/modules/');
+            const response = await fetch(`${backendUrl}/api/modules/`);
             const data = await response.json();
             console.log(data)
             setModules(data);

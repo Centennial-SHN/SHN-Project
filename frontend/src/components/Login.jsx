@@ -7,10 +7,14 @@ const Login = () => {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const navigate = useNavigate();
+    const isDevelopment = import.meta.env.MODE === "development";
+    const baseUrl = isDevelopment ? import.meta.env.VITE_API_BASE_URL_LOCAL : import.meta.env.VITE_API_BASE_URL_PROD;
+
+    const backendUrl = baseUrl;
 
     const handleLogin = async (e) => {
         e.preventDefault();
-        const response = await fetch('http://localhost:8000/api/login/', {
+        const response = await fetch(`${backendUrl}/api/login/`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
