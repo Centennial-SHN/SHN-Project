@@ -10,7 +10,7 @@ SECRET_KEY=os.environ['MY_SECRET_KEY']
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
-    "whitenoise.middleware.WhiteNoiseMiddleware",
+    # "whitenoise.middleware.WhiteNoiseMiddleware",
     "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
     "django.contrib.auth.middleware.AuthenticationMiddleware",
@@ -64,4 +64,4 @@ DATABASES = {
     }
 }
 
-STATIC_ROOT = BASE_DIR/'staticfiles'
+# STATIC_ROOT = BASE_DIR/'staticfiles'
