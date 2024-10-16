@@ -5,6 +5,7 @@ import Register from './components/Register';
 import Login from './components/Login';
 import ModuleList from './components/ModuleList';
 import AddModule from './components/AddModule';
+import EditModule from './components/EditModule';
 
 function App() {
   return (
@@ -17,6 +18,7 @@ function App() {
           <Route path="/interview/:moduleId" element={<Interview />} />
           <Route path="/admin/module-list" element={<ModuleList />} />
           <Route path="/admin/modules/add" element={<AddModule />} />
+          <Route path="/admin/modules/edit/:moduleid" element={<EditModule />} />
         </Routes>
       </div>
     </Router>

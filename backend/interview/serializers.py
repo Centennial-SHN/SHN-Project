@@ -5,6 +5,9 @@ class ModuleSerializer(serializers.ModelSerializer):
     class Meta:
         model = Module
         fields = "__all__"
+        extra_kwargs = {
+            'moduleid': {'required': False}  # Make moduleid not required in the serializer
+        }
 
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
