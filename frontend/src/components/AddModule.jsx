@@ -1,7 +1,7 @@
 // AddModule.jsx
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import './AddModule.css';
+import './ModuleAdmin.css';
 
 const AddModule = () => {
     const [moduleName, setModuleName] = useState('');
@@ -25,12 +25,16 @@ const AddModule = () => {
         e.preventDefault();
         
         const formData = new FormData();
-        formData.append('module_name', moduleName);
+        formData.append('modulename', moduleName);
         formData.append('prompt', prompt);
         formData.append('voice', voice);
         formData.append('system_prompt', systemPrompt);
         formData.append('case_abstract', caseAbstract);
-        formData.append('file', file);
+        
+        if (file) {
+            formData.append('file', file);
+        }
+
         formData.append('model', model);
 
         const response = await fetch(`${backendUrl}/api/modules/add/`, {
@@ -48,8 +52,7 @@ const AddModule = () => {
     };
 
     return (
-        // <div className="add-module">
-            <form className="add-module" onSubmit={handleSave}>
+        <form className="add-module" onSubmit={handleSave}>
             <h2>Add New Module</h2>
                 <div className="form-group">
                     <label>Module name:</label>
@@ -71,16 +74,15 @@ const AddModule = () => {
                 </div>
 
                 <div className="form-group">
-                    <label>Voice:</label>
-                    <select value={voice} onChange={(e) => setVoice(e.target.value)}>
-                        <option value="Alloy">Alloy</option>
-                        <option value="Nova">Nova</option>
-                        <option value="Shimmer">Shimmer</option>
-                        <option value="Onyx">Onyx</option>
-                        <option value="Fable">Fable</option>
-                        <option value="Echo">Echo</option>
-                        <option value="Alloy">Alloy</option>
-                    </select>
+                <label>Voice:</label>
+                <select value={voice} onChange={(e) => setVoice(e.target.value)}>
+                    <option value="alloy">alloy</option>
+                    <option value="nova">nova</option>
+                    <option value="shimmer">shimmer</option>
+                    <option value="onyx">onyx</option>
+                    <option value="fable">fable</option>
+                    <option value="echo">echo</option>
+                </select>
                 </div>
 
                 <div className="form-group">
@@ -109,10 +111,10 @@ const AddModule = () => {
                 <div className="form-group">
                     <label>Model:</label>
                     <select value={model} onChange={(e) => setModel(e.target.value)}>
-                        <option value="GPT-4-turbo">gpt-4-turbo</option>
-                        <option value="GPT-4-turbo">gpt-4o</option>
-                        <option value="GPT-4-turbo">gpt-4</option>
-                        <option value="GPT-4-turbo">gpt-4o Realtime</option>
+                        <option value="gpt-4-turbo">gpt-4-turbo</option>
+                        <option value="gpt-4o">gpt-4o</option>
+                        <option value="gpt-4">gpt-4</option>
+                        <option value="gpt-4o Realtime">gpt-4o Realtime</option>
                     </select>
                 </div>
                 <br/>
@@ -121,8 +123,7 @@ const AddModule = () => {
                     &nbsp;&nbsp;
                     <button type="submit">SAVE</button>
                 </div>
-            </form>
-        // </div>
+        </form>
     );
 };
 
