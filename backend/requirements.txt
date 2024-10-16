@@ -21,6 +21,7 @@ isodate==0.7.2
 jiter==0.6.1
 mssql-django==1.5
 openai==1.51.2
+psycopg2==2.9.9
 pycparser==2.22
 pydantic==2.9.2
 pydantic_core==2.23.4
