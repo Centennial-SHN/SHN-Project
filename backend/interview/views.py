@@ -207,3 +207,20 @@ def add_module(request):
             print(serializer.errors)
             logger.error(f"Validation errors: {serializer.errors}")
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        
+@api_view(['GET','PUT'])
+def edit_module(request, moduleid):
+    try:
+        module = Module.objects.get(moduleid=moduleid)
+        if request.method == 'GET':
+            serializer = ModuleSerializer(module)
+            return Response(serializer.data)
+        elif request.method == 'PUT':
+            serializer = ModuleSerializer(module, data=request.data)
+            if serializer.is_valid():
+                serializer.save()
+                return Response(serializer.data)
+            logger.error(f"Validation errors: {serializer.errors}")
+            return Response(serializer.errors, status=400)
+    except Module.DoesNotExist:
+        return Response({'error': 'Module not found.'}, status=status.HTTP_404_NOT_FOUND)

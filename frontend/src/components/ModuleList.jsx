@@ -55,7 +55,7 @@ const AdminModuleList = () => {
                                 <td>{module.moduleid}</td>
                                 <td>{module.modulename}</td>
                                 <td>
-                                    <button onClick={() => handleEdit(module.module_id)}>Edit</button>
+                                    <button onClick={() => handleEdit(module.moduleid)}>Edit</button>
                                 </td>
                             </tr>
                         ))}

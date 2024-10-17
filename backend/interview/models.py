@@ -69,7 +69,6 @@ class Users(AbstractBaseUser):
         return self.is_admin or self.is_superuser
 
 class Module(models.Model):
-    # moduleid = models.AutoField(primary_key=True)
     moduleid=models.CharField(max_length=30, primary_key=True)
     modulename = models.CharField(max_length=30)
     prompt = models.TextField(max_length=1000)
@@ -81,15 +80,16 @@ class Module(models.Model):
 
     def save(self, *args, **kwargs):
         if not self.moduleid:  # If module_id is not already set
-            last_module = Module.objects.order_by('id').last()  # Get the last module
+            last_module = Module.objects.order_by('moduleid').last()  # Get the last module
             if last_module:
                 last_id = last_module.moduleid  # Get the last module's ID
                 number_part = int(last_id[1:]) + 1  # Increment the number part
             else:
-                number_part = 1  # Start from 1 if no modules exist
+                number_part = 1000
             
             # Format the new module_id
             self.moduleid = f'M{number_part:03}'
+        super().save(*args,**kwargs)
 
     def __str__(self):
         return self.moduleid
