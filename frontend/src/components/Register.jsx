@@ -6,6 +6,8 @@ import './UserForm.css';
 const Register = () => {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
+    const [passwordConfirm, setPasswordConfirm] = useState('');
+    const [errorMessage, setErrorMessage] = useState('');
     const navigate = useNavigate();
     const isDevelopment = import.meta.env.MODE === "development";
     const baseUrl = isDevelopment ? import.meta.env.VITE_API_BASE_URL_LOCAL : import.meta.env.VITE_API_BASE_URL_PROD;
@@ -14,6 +16,16 @@ const Register = () => {
 
     const handleRegister = async (e) => {
         e.preventDefault();
+
+        if (password !== passwordConfirm) {
+            setErrorMessage("Passwords do not match!");
+            setPassword('');
+            setPasswordConfirm('');
+            return;
+        }
+        setErrorMessage('');
+
+
         const response = await fetch(`${backendUrl}/api/register/`, {
             method: 'POST',
             headers: {
@@ -58,6 +70,18 @@ const Register = () => {
             />
             </div>
             <br/>
+            <div className='container'>
+                    <span>Confirm Password</span>  {/* New field for password confirmation */}
+                    <input
+                        type="password"
+                        placeholder="Confirm Password"
+                        value={passwordConfirm}
+                        onChange={(e) => setPasswordConfirm(e.target.value)}
+                        required
+                    />
+                </div>
+                <br/>
+                {errorMessage && <p style={{ color: 'red' }}>{errorMessage}</p>}
             <button type="submit">Register</button>
             <br />
             <p>

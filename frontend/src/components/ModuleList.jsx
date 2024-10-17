@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import Sidebar from './Sidebar';
+import './ModuleAdmin.css';
 
 const AdminModuleList = () => {
     const [modules, setModules] = useState([]);
@@ -27,13 +29,7 @@ const AdminModuleList = () => {
 
     return (
         <div className="admin-container">
-            <nav className="sidebar">
-                <h3>Admin Menu</h3>
-                <ul>
-                    <li onClick={() => navigate('/admin/module-list')}>Modules</li>
-                    <li onClick={() => navigate('/admin/user-logs')}>User Logs</li>
-                </ul>
-            </nav>
+            <Sidebar />
             <div className="module-list">
                 <h2 className='title'>Module List</h2>
                 <br/>
