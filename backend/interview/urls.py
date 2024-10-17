@@ -14,3 +14,19 @@ urlpatterns = [
     path('download_transcript/<int:interview_id>/', views.download_transcript, name='download_transcript'),
     # path('clear_audio_files/', views.clear_audio_files, name='clear_audio_files'),
 ]
+# interview/urls.py
+from django.urls import path
+from . import views
+
+urlpatterns = [
+    path('register/', views.register_view, name='register'),
+    path('process_audio/', views.process_audio_view, name='process_audio'),
+    # Add this if you expect a root view for /api/
+    path('', views.api_root, name='api-root'),
+]
+
+# interview/views.py
+from django.http import JsonResponse
+
+def api_root(request):
+    return JsonResponse({"message": "API Root"})
