@@ -18,7 +18,13 @@ from django.contrib import admin
 from django.urls import path, include
 from . import views
 
+from django.contrib import admin
+from django.urls import path, include
+from . import views  # Import your views
+
 urlpatterns = [
     path("admin/", admin.site.urls),
-    path("api/", include('interview.urls'))
+    path("api/", include('interview.urls')),  # If interview.urls exists, keep it
+    path("test/", views.test_view, name="test"),  # Add your test_view path here
 ]
+
