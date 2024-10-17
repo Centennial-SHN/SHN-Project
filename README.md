@@ -38,8 +38,8 @@ frontend
 - npm install react-router-dom
 
 2. Add the .env file in the root directory under the 'frontend' directory
-- VITE_API_BASE_URL_LOCAL = 'http://localhost:8000/'
-- VITE_API_BASE_URL_PROD = 'standarizedpatientai-bygdfaf7epfwbafn.canadacentral-01.azurewebsites.net/'.
+- VITE_API_BASE_URL_LOCAL = 'http://localhost:8000'
+- VITE_API_BASE_URL_PROD = 'standarizedpatientai-bygdfaf7epfwbafn.canadacentral-01.azurewebsites.net'.
   
 3. Navigate to the root folder of the project and run the following commands to set up and start the server
 - npm run dev
