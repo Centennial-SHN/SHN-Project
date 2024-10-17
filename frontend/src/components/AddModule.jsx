@@ -2,6 +2,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import './ModuleAdmin.css';
+import Sidebar from './Sidebar.jsx';
 
 const AddModule = () => {
     const [moduleName, setModuleName] = useState('');
@@ -52,6 +53,9 @@ const AddModule = () => {
     };
 
     return (
+        <div className="admin-container">
+        <Sidebar />
+        <div className='form-content'>
         <form className="add-module" onSubmit={handleSave}>
             <h2>Add New Module</h2>
                 <div className="form-group">
@@ -124,6 +128,8 @@ const AddModule = () => {
                     <button type="submit">SAVE</button>
                 </div>
         </form>
+        </div>
+        </div>
     );
 };
 

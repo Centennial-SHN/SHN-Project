@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import './ModuleAdmin.css';
+import Sidebar from './Sidebar.jsx';
 
 const EditModule = () => {
     const { moduleid } = useParams(); // Get moduleid from URL parameters
@@ -70,6 +71,8 @@ const EditModule = () => {
     };
 
     return (
+        <div className="admin-container">
+        <Sidebar />
         <form className="add-module" onSubmit={handleSave} encType="multipart/form-data">
             <h2>Edit Module</h2>
             <div className="form-group">
@@ -143,6 +146,7 @@ const EditModule = () => {
                 <button type="submit">SAVE</button>
             </div>
         </form>
+        </div>
     );
 };
 

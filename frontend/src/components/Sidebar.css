@@ -1,0 +1,117 @@
+/* .sidebar {
+    width: 200px;
+    height:90vh;
+    background-color: #f9f9f9;
+    color: black;
+    padding: 20px;
+    box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
+    margin-left:50px;
+  }
+  
+  .sidebar h3 {
+    margin-bottom: 20px;
+  } */
+  .admin-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  
+  /* .sidebar {
+    width: 200px;
+    height:90vh;
+    background-color: #f9f9f9;
+    color: black;
+    padding: 20px;
+    box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
+    margin-left:50px;
+  }
+  
+  .sidebar h3 {
+    margin-bottom: 20px;
+  }
+  
+  .sidebar ul {
+    list-style-type: none; /* Remove bullet points */
+  /*  padding: 0;
+  }
+  
+  .sidebar li {
+    margin: 15px 0;
+    cursor: pointer;
+    transition: background-color 0.2s;
+  }
+  
+  .sidebar li:hover {
+    background-color: #007BFF; /* Highlight on hover */
+  /*  color:white;
+  } */
+  
+
+  /* Sidebar.css */
+
+/* The main admin page wrapper */
+.admin-container {
+    background-color: #f9f9f9;
+    display: flex;
+    height: 100vh;  /* Full viewport height */
+}
+
+/* Sidebar styling */
+.sidebar {
+    /* width: 20%;  /* Adjust based on preference */
+    /*background-color: #f4f4f4;
+    padding: 20px;
+    box-shadow: 2px 0px 5px rgba(0, 0, 0, 0.1); */
+    width: 200px;
+    height:100vh;
+    background-color: #f9f9f9;
+    color: black;
+    padding: 20px;
+    box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
+    /* margin-left:50px; */
+}
+
+.sidebar h3 {
+    margin-bottom: 20px;
+}
+
+.sidebar ul {
+    list-style-type: none;
+    padding: 0;
+}
+
+.sidebar li {
+    text-align: center;
+    margin: 15px 0;
+    cursor: pointer;
+    transition: background-color 0.2s;
+  }
+  
+.sidebar li:hover {
+background-color: #007BFF; /* Highlight on hover */
+color:white;
+}
+
+/* Content area next to the sidebar */
+.module-list,
+.form-content {
+    flex-grow: 1;  /* Take up remaining space */
+    padding: 20px;
+    background-color: #f9f9f9;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.form-content h1 {
+    margin-bottom: 20px;
+}
+
+/* Adjust form widths based on page content */
+.form-content form {
+    width: 100%;  /* Adjust width based on form size */
+    /* max-width: 800px;  Max width to control form size */
+    /* min-width: 300px;  Min width for smaller screens */
+}
