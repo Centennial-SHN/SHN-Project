@@ -1,21 +1,18 @@
 import openai
-from django.http import JsonResponse, HttpResponse
+from django.http import HttpResponse
 from dotenv import load_dotenv
 import logging
 from .services import process_audio_file, generate_text_from_prompt, convert_text_to_speech
 from rest_framework.response import Response
-from rest_framework.decorators import api_view
 from .serializers import ModuleSerializer
-from datetime import timedelta
+from datetime import timedelta, datetime
 from azure.storage.blob import BlobServiceClient
 from rest_framework.decorators import api_view
 from django.utils import timezone
 from .models import Interview, Module, Users
 import os
-from .models import Users,Admin
+from .models import Users, Admin
 from rest_framework import status
-from rest_framework.response import Response
-from rest_framework.views import APIView
 from .serializers import UserSerializer
 
 logging.basicConfig(level=logging.DEBUG)
@@ -172,6 +169,48 @@ def delete_tts_file(request):
         logging.error(f"Error deleting TTS file: {str(e)}")
         return JsonResponse({"error": str(e)}, status=500)
 
+@api_view(['POST'])
+def store_interview_length(request):
+    try:
+        interview_id = request.data.get('interview_id')
+
+        if not interview_id:
+            return JsonResponse({"error": "interview_id is required"}, status=400)
+
+        interview = Interview.objects.get(pk=interview_id)
+        timestamps = interview.timestamps
+
+        if not timestamps:
+            return JsonResponse({"error": "Timestamps are empty or missing"}, status=200)
+
+        first_user_timestamp = None
+        last_assistant_timestamp = None
+
+        for event in timestamps:
+            if event["event"] == "audio_upload_start" and not first_user_timestamp:
+                first_user_timestamp = event["timestamp"]
+            if event["event"] == "audio_playback_end":
+                last_assistant_timestamp = event["timestamp"]
+
+        if not first_user_timestamp or not last_assistant_timestamp:
+            return JsonResponse({"error": "Missing required timestamps"}, status=400)
+
+        fmt = "%Y-%m-%d %H:%M:%S"
+        first_user_dt = datetime.strptime(first_user_timestamp, fmt)
+        last_assistant_dt = datetime.strptime(last_assistant_timestamp, fmt)
+
+        interview_duration = last_assistant_dt - first_user_dt
+
+        interview.interviewlength = interview_duration
+        interview.save()
+
+        return JsonResponse({"message": "Interview length stored successfully"}, status=200)
+
+    except Interview.DoesNotExist:
+        return JsonResponse({"error": "Interview not found"}, status=404)
+    except Exception as e:
+        logging.error(f"Error storing interview length: {str(e)}")
+        return JsonResponse({"error": str(e)}, status=500)
 
 @api_view(['GET'])
 def download_transcript(request, interview_id):
@@ -230,29 +269,6 @@ def download_transcript(request, interview_id):
     except Exception as e:
         logging.error(f"Error while processing transcript: {str(e)}")
         return JsonResponse({"error": str(e)}, status=500)
-
-
-
-
-# def clear_audio_files(request):
-#     try:
-#
-#         blob_service_client = BlobServiceClient.from_connection_string(AZURE_STORAGE_CONNECTION_STRING)
-#         container_client = blob_service_client.get_container_client(AZURE_BLOB_CONTAINER_NAME)
-#
-#         blobs = container_client.list_blobs()
-#
-#         for blob in blobs:
-#             if blob.name.endswith('.mp3'):
-#                 container_client.delete_blob(blob.name)
-#                 print(f"Deleted {blob.name}")
-#
-#         return JsonResponse({"status": "success", "message": "All .mp3 files cleared."}, status=200)
-#
-#     except Exception as e:
-#         return JsonResponse({"status": "error", "message": str(e)}, status=500)
-
-
 
 @api_view(['POST'])
 def register(request):

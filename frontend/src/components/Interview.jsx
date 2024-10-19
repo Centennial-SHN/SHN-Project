@@ -1,24 +1,27 @@
 import { useState, useEffect, useRef } from "react";
-import { useParams, useNavigate, useLocation  } from "react-router-dom";
+import { useParams, useNavigate, useLocation } from "react-router-dom";
 
 const Interview = () => {
   const { moduleId } = useParams();
-  const location = useLocation();  
-  const [moduleName, setModuleName] = useState("");  
+  const location = useLocation();
+  const [moduleName, setModuleName] = useState("");
   const [caseAbstract, setCaseAbstract] = useState("");
-  const [systemPrompt, setSystemPrompt] = useState(""); 
+  const [systemPrompt, setSystemPrompt] = useState("");
   const [prompt, setPrompt] = useState("");
   const [isRecording, setIsRecording] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);  
-  const [isPlaying, setIsPlaying] = useState(false); 
+  const [isLoading, setIsLoading] = useState(false);
+  const [isPlaying, setIsPlaying] = useState(false);
   const mediaRecorderRef = useRef(null);
   const audioChunksRef = useRef([]);
   const streamRef = useRef(null);
   const navigate = useNavigate();
   const interviewId = location.state?.interviewId;
   const userId = location.state?.userId;
+  const recordingTimeoutRef = useRef(null);
   const isDevelopment = import.meta.env.MODE === "development";
-  const baseUrl = isDevelopment ? import.meta.env.VITE_API_BASE_URL_LOCAL : import.meta.env.VITE_API_BASE_URL_PROD;
+  const baseUrl = isDevelopment
+    ? import.meta.env.VITE_API_BASE_URL_LOCAL
+    : import.meta.env.VITE_API_BASE_URL_PROD;
 
   const backendUrl = baseUrl;
 
@@ -27,9 +30,9 @@ const Interview = () => {
       try {
         const response = await fetch(`${backendUrl}/api/modules/${moduleId}/`);
         const data = await response.json();
-        setModuleName(data.modulename); 
+        setModuleName(data.modulename);
         setCaseAbstract(data.case_abstract);
-        setSystemPrompt(data.system_prompt);  
+        setSystemPrompt(data.system_prompt);
         setPrompt(data.prompt);
       } catch (error) {
         console.error("Error fetching module name:", error);
@@ -41,8 +44,8 @@ const Interview = () => {
 
   useEffect(() => {
     const handleKeyDown = (event) => {
-      if (event.key === " ") {  
-        event.preventDefault();  
+      if (event.key === " ") {
+        event.preventDefault();
         toggleRecording();
       }
     };
@@ -52,7 +55,7 @@ const Interview = () => {
     return () => {
       window.removeEventListener("keydown", handleKeyDown);
     };
-  }, [isRecording]);  
+  }, [isRecording]);
 
   const toggleRecording = async () => {
     if (isRecording) {
@@ -82,6 +85,10 @@ const Interview = () => {
 
       mediaRecorderRef.current.start();
       setIsRecording(true);
+
+      recordingTimeoutRef.current = setTimeout(() => {
+        stopRecording();
+      }, 20000);
     } catch (error) {
       console.error("Error accessing microphone:", error);
     }
@@ -91,33 +98,36 @@ const Interview = () => {
     if (mediaRecorderRef.current) {
       mediaRecorderRef.current.stop();
     }
+    clearTimeout(recordingTimeoutRef.current);
     setIsRecording(false);
   };
 
   function getLocalTimeInIsoFormat() {
     const now = new Date();
-    const timezoneOffsetInMinutes = now.getTimezoneOffset(); 
-    const localTime = new Date(now.getTime() - timezoneOffsetInMinutes * 60 * 1000); 
-    
-    return localTime.toISOString().slice(0, 19).replace("T", " "); 
+    const timezoneOffsetInMinutes = now.getTimezoneOffset();
+    const localTime = new Date(
+      now.getTime() - timezoneOffsetInMinutes * 60 * 1000
+    );
+
+    return localTime.toISOString().slice(0, 19).replace("T", " ");
   }
 
   const handleUpload = async (audioBlob) => {
     const formData = new FormData();
     formData.append("audio", audioBlob, "user_audio.mp3");
-    formData.append("module_id", moduleId);  
-    formData.append("system_prompt", systemPrompt);  
+    formData.append("module_id", moduleId);
+    formData.append("system_prompt", systemPrompt);
     formData.append("prompt", prompt);
-    formData.append("interview_id", interviewId); 
+    formData.append("interview_id", interviewId);
     formData.append("user_id", userId);
-  
+
     const uploadStartTime = getLocalTimeInIsoFormat();
     console.log(uploadStartTime);
     try {
       await fetch(`${backendUrl}/api/add_timestamp/`, {
         method: "POST",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
         body: JSON.stringify({
           interview_id: interviewId,
@@ -125,20 +135,20 @@ const Interview = () => {
           timestamp: uploadStartTime,
         }),
       });
-  
+
       setIsLoading(true);
-  
+
       const response = await fetch(`${backendUrl}/api/process_audio/`, {
         method: "POST",
         body: formData,
       });
-  
+
       if (!response.ok) {
         throw new Error("Failed to upload audio");
       }
-  
+
       const data = await response.json();
- 
+
       if (data.speech_file_url) {
         playAudio(data.speech_file_url);
       }
@@ -146,7 +156,7 @@ const Interview = () => {
       console.error("Error uploading the audio:", error);
     }
   };
-  
+
   const playAudio = async (audioUrl) => {
     const audio = new Audio(audioUrl);
     setIsPlaying(true);
@@ -160,7 +170,7 @@ const Interview = () => {
       await fetch(`${backendUrl}/api/add_timestamp/`, {
         method: "POST",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
         body: JSON.stringify({
           interview_id: interviewId,
@@ -176,10 +186,10 @@ const Interview = () => {
         await fetch(`${backendUrl}/api/delete_tts_file/`, {
           method: "POST",
           headers: {
-            'Content-Type': 'application/json',
+            "Content-Type": "application/json",
           },
           body: JSON.stringify({
-            audio_url: audioUrl  
+            audio_url: audioUrl,
           }),
         });
       };
@@ -188,14 +198,16 @@ const Interview = () => {
       setIsPlaying(false);
       setIsLoading(false);
     }
-};
+  };
 
-  
   const handleDownload = async () => {
     try {
-      const response = await fetch(`${backendUrl}/api/download_transcript/${interviewId}/`, {
-        method: "GET",
-      });
+      const response = await fetch(
+        `${backendUrl}/api/download_transcript/${interviewId}/`,
+        {
+          method: "GET",
+        }
+      );
 
       if (!response.ok) {
         throw new Error("Failed to download transcript");
@@ -203,9 +215,9 @@ const Interview = () => {
 
       const blob = await response.blob();
       const url = window.URL.createObjectURL(blob);
-      const link = document.createElement('a');
+      const link = document.createElement("a");
       link.href = url;
-      link.setAttribute('download', `transcript_${interviewId}.txt`);
+      link.setAttribute("download", `transcript_${interviewId}.txt`);
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
@@ -214,46 +226,56 @@ const Interview = () => {
     }
   };
 
-  // const handleExit = async () => {
-  //   try {
-  //     const response = await fetch(`{backendUrl}/api/clear_audio_files/`, {  
-  //       method: "POST",
-  //     });
-  
-  //     if (!response.ok) {
-  //       throw new Error("Failed to clear audio files");
-  //     }
-  
-  //     navigate("/");
-  //   } catch (error) {
-  //     console.error("Error during exit:", error);
-  //   }
-  // };
-  
+  const handleExit = async () => {
+    try {
+      await fetch(`${backendUrl}/api/store_interview_length/`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          interview_id: interviewId,
+        }),
+      });
+
+      navigate("/module");
+    } catch (error) {
+      console.error("Error during exit:", error);
+    }
+  };
 
   return (
     <div className="audio-recorder">
       <p>Please ensure your microphone is enabled</p>
       <h1>{moduleName}</h1>
       <p>{caseAbstract}</p>
-      <button 
-        className={`record-button ${isLoading || isPlaying ? 'processing' : ''}`} 
+      <button
+        className={`record-button ${
+          isLoading || isPlaying ? "processing" : ""
+        }`}
         onClick={toggleRecording}
-        disabled={isLoading || isPlaying}  
+        disabled={isLoading || isPlaying}
       >
-        {isRecording 
+        {isRecording
           ? "Click to Stop Speaking"
-          : isLoading || isPlaying 
-            ? "Processing..."  
-            : "Click to Speak"}
+          : isLoading || isPlaying
+          ? "Processing..."
+          : "Click to Speak"}
       </button>
-      <h6>The button can be controlled with a mouse click or by pressing the space bar.</h6>
-      <button className='exit-button' onClick={handleDownload}>
+      <h6>
+        The button can be controlled with a mouse click or by pressing the space
+        bar.
+      </h6>
+      <button className="exit-button" onClick={handleDownload}>
         Download Transcript
       </button>
-      {/* <button className='exit-button' onClick={handleExit}>
-        Exit
-      </button> */}
+      <button
+        className="exit-button"
+        onClick={handleExit}
+        disabled={isLoading || isPlaying} 
+      >
+        End Interview
+      </button>
     </div>
   );
 };
