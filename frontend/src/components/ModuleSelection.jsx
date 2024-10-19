@@ -5,7 +5,7 @@ const ModuleSelection = () => {
   const [modules, setModules] = useState([]);
   const [selectedModule, setSelectedModule] = useState("");
   const navigate = useNavigate();  
-
+  const userId = sessionStorage.getItem('userId');
   const isDevelopment = import.meta.env.MODE === "development";
   const baseUrl = isDevelopment ? import.meta.env.VITE_API_BASE_URL_LOCAL : import.meta.env.VITE_API_BASE_URL_PROD;
 
@@ -32,7 +32,13 @@ const ModuleSelection = () => {
   const handleProceed = async () => {
     if (selectedModule) {
       try {
-        // Create interview record when user clicks Start
+        
+
+
+        if (!userId) {
+          alert("User is not logged in. Please log in first.");
+          return;
+        }
         const response = await fetch(`${backendUrl}/api/create_interview/`, {
           method: "POST",
           headers: {
@@ -40,7 +46,7 @@ const ModuleSelection = () => {
           },
           body: JSON.stringify({
             module_id: selectedModule,
-            user_id: "won12054"  
+            user_id: userId 
           }),
         });
 
@@ -52,7 +58,7 @@ const ModuleSelection = () => {
         const interviewId = data.interviewid;
 
         // Navigate to interview page with interviewId and selectedModule
-        navigate(`/interview/${selectedModule}`, { state: { interviewId, userId: "won12054" } });
+        navigate(`/interview/${selectedModule}`, { state: { interviewId, userId: userId } });
 
 
       } catch (error) {
@@ -61,6 +67,10 @@ const ModuleSelection = () => {
     } else {
       alert("Please select a module to proceed.");
     }
+  }; 
+
+  const handleViewHistory = () => {
+    navigate(`/interview-history/${userId}`);
   };
 
   return (
@@ -82,6 +92,8 @@ const ModuleSelection = () => {
         </select>
       </div>
       <button onClick={handleProceed}>Start</button>
+      <br />
+      <button onClick={handleViewHistory}>View Interview History</button>
     </div>
   );
 };

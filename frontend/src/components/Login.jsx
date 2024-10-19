@@ -27,6 +27,8 @@ const Login = () => {
             console.log(data)
             alert('Login successful! User: ' + data.email);
             // Redirect or store user data here
+            sessionStorage.setItem('userId', data.userid);
+
             if (data.is_superuser) {
                 navigate('/admin/module-list');  // Redirect to the module list page for superusers
             } else {

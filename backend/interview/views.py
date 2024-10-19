@@ -14,6 +14,11 @@ import os
 from .models import Users, Admin
 from rest_framework import status
 from .serializers import UserSerializer
+from django.contrib.auth.decorators import login_required
+from django.contrib.auth import authenticate, login
+from django.http import JsonResponse
+import logging
+
 
 logging.basicConfig(level=logging.DEBUG)
 
@@ -270,6 +275,28 @@ def download_transcript(request, interview_id):
         logging.error(f"Error while processing transcript: {str(e)}")
         return JsonResponse({"error": str(e)}, status=500)
 
+
+@api_view(['GET'])
+def interview_history(request, user_id):
+    try:
+        interviews = Interview.objects.filter(userid__userid=user_id).values('interviewid', 'moduleid__modulename', 'interviewlength')
+
+        interview_data = [
+            {
+                'interviewid': interview['interviewid'],
+                'modulename': interview['moduleid__modulename'],
+                'interviewlength': str(interview['interviewlength']),
+            }
+            for interview in interviews
+        ]
+
+        return JsonResponse(interview_data, safe=False)
+    except Exception as e:
+        logger.error(f"Error fetching interview history: {str(e)}")
+        return JsonResponse({'error': 'Internal server error'}, status=500)
+
+
+
 @api_view(['POST'])
 def register(request):
     if request.method == 'POST':
@@ -279,9 +306,6 @@ def register(request):
             return Response({'message': 'User registered successfully'}, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
         
-from django.contrib.auth import authenticate, login
-from django.http import JsonResponse
-import logging
 
 @api_view(['POST'])
 def user_login(request):
