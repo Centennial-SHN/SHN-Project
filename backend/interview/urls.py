@@ -14,7 +14,7 @@ urlpatterns = [
     path('download_transcript/<int:interview_id>/', views.download_transcript, name='download_transcript'),
     path('add_timestamp/', views.add_timestamp, name='add_timestamp'),
     path('delete_tts_file/', views.delete_tts_file, name='delete_tts_file'),
-    # path('clear_audio_files/', views.clear_audio_files, name='clear_audio_files'),
+    path('store_interview_length/', views.store_interview_length, name='store_interview_length'),
 ]
 
 
