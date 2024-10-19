@@ -43,6 +43,7 @@ def process_audio(request):
         interview = Interview.objects.get(pk=interview_id)
         user = Users.objects.get(userid=user_id)
         module = Module.objects.get(moduleid=module_id)
+        module_model = module.model
 
         modulename_part = module.modulename.split(':', 1)[1].strip() if ':' in module.modulename else module.modulename
 
@@ -62,7 +63,7 @@ def process_audio(request):
 
         conversation_history.append({'role': 'user', 'content': transcribed_text})
 
-        generated_text = generate_text_from_prompt(conversation_history, system_prompt, prompt)
+        generated_text = generate_text_from_prompt(conversation_history, system_prompt, prompt, module_model)
 
         conversation_history.append({'role': 'assistant', 'content': generated_text})
 
@@ -149,7 +150,28 @@ def add_timestamp(request):
         logging.error(f"Exception occurred while adding timestamp: {str(e)}", exc_info=True)
         return JsonResponse({"error": str(e)}, status=500)
 
-import logging
+@api_view(['POST'])
+def delete_tts_file(request):
+    audio_url = request.data.get('audio_url')
+
+    if not audio_url:
+        return JsonResponse({"error": "audio_url is required"}, status=400)
+
+    try:
+        blob_name = audio_url.split("/")[-1]
+
+        blob_service_client = BlobServiceClient.from_connection_string(AZURE_STORAGE_CONNECTION_STRING)
+        blob_client = blob_service_client.get_blob_client(container=AZURE_BLOB_CONTAINER_NAME, blob=blob_name)
+
+        blob_client.delete_blob()
+        logging.info(f"TTS file {blob_name} deleted successfully from Azure Blob Storage")
+
+        return JsonResponse({"message": "TTS file deleted successfully"}, status=200)
+
+    except Exception as e:
+        logging.error(f"Error deleting TTS file: {str(e)}")
+        return JsonResponse({"error": str(e)}, status=500)
+
 
 @api_view(['GET'])
 def download_transcript(request, interview_id):

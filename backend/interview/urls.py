@@ -13,6 +13,7 @@ urlpatterns = [
     path('create_interview/', views.create_interview, name='create_interview'),
     path('download_transcript/<int:interview_id>/', views.download_transcript, name='download_transcript'),
     path('add_timestamp/', views.add_timestamp, name='add_timestamp'),
+    path('delete_tts_file/', views.delete_tts_file, name='delete_tts_file'),
     # path('clear_audio_files/', views.clear_audio_files, name='clear_audio_files'),
 ]
 
