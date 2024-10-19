@@ -15,6 +15,7 @@ urlpatterns = [
     path('add_timestamp/', views.add_timestamp, name='add_timestamp'),
     path('delete_tts_file/', views.delete_tts_file, name='delete_tts_file'),
     path('store_interview_length/', views.store_interview_length, name='store_interview_length'),
+    path('interview_history/<str:user_id>/', views.interview_history, name='interview_history'),
 ]
 
 

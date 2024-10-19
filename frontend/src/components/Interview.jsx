@@ -200,31 +200,31 @@ const Interview = () => {
     }
   };
 
-  const handleDownload = async () => {
-    try {
-      const response = await fetch(
-        `${backendUrl}/api/download_transcript/${interviewId}/`,
-        {
-          method: "GET",
-        }
-      );
+  // const handleDownload = async () => {
+  //   try {
+  //     const response = await fetch(
+  //       `${backendUrl}/api/download_transcript/${interviewId}/`,
+  //       {
+  //         method: "GET",
+  //       }
+  //     );
 
-      if (!response.ok) {
-        throw new Error("Failed to download transcript");
-      }
+  //     if (!response.ok) {
+  //       throw new Error("Failed to download transcript");
+  //     }
 
-      const blob = await response.blob();
-      const url = window.URL.createObjectURL(blob);
-      const link = document.createElement("a");
-      link.href = url;
-      link.setAttribute("download", `transcript_${interviewId}.txt`);
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
-    } catch (error) {
-      console.error("Error downloading transcript:", error);
-    }
-  };
+  //     const blob = await response.blob();
+  //     const url = window.URL.createObjectURL(blob);
+  //     const link = document.createElement("a");
+  //     link.href = url;
+  //     link.setAttribute("download", `transcript_${interviewId}.txt`);
+  //     document.body.appendChild(link);
+  //     link.click();
+  //     document.body.removeChild(link);
+  //   } catch (error) {
+  //     console.error("Error downloading transcript:", error);
+  //   }
+  // };
 
   const handleExit = async () => {
     try {
@@ -266,9 +266,9 @@ const Interview = () => {
         The button can be controlled with a mouse click or by pressing the space
         bar.
       </h6>
-      <button className="exit-button" onClick={handleDownload}>
+      {/* <button className="exit-button" onClick={handleDownload}>
         Download Transcript
-      </button>
+      </button> */}
       <button
         className="exit-button"
         onClick={handleExit}
