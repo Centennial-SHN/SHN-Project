@@ -111,5 +111,6 @@ class Interview(models.Model):
     dateactive = models.DateTimeField()
     interviewlength = models.DurationField()
     transcript = models.TextField()
+    timestamps = models.JSONField(default=list)
     def __str__(self):
         return f"Interview {self.interviewid}"

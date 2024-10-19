@@ -94,6 +94,14 @@ const Interview = () => {
     setIsRecording(false);
   };
 
+  function getLocalTimeInIsoFormat() {
+    const now = new Date();
+    const timezoneOffsetInMinutes = now.getTimezoneOffset(); 
+    const localTime = new Date(now.getTime() - timezoneOffsetInMinutes * 60 * 1000); 
+    
+    return localTime.toISOString().slice(0, 19).replace("T", " "); 
+  }
+
   const handleUpload = async (audioBlob) => {
     const formData = new FormData();
     formData.append("audio", audioBlob, "user_audio.mp3");
@@ -102,20 +110,35 @@ const Interview = () => {
     formData.append("prompt", prompt);
     formData.append("interview_id", interviewId); 
     formData.append("user_id", userId);
-
+  
+    const uploadStartTime = getLocalTimeInIsoFormat();
+    console.log(uploadStartTime);
     try {
-      setIsLoading(true);  
+      await fetch(`${backendUrl}/api/add_timestamp/`, {
+        method: "POST",
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          interview_id: interviewId,
+          event: "audio_upload_start",
+          timestamp: uploadStartTime,
+        }),
+      });
+  
+      setIsLoading(true);
+  
       const response = await fetch(`${backendUrl}/api/process_audio/`, {
         method: "POST",
         body: formData,
       });
-
+  
       if (!response.ok) {
         throw new Error("Failed to upload audio");
       }
-
+  
       const data = await response.json();
-
+ 
       if (data.speech_file_url) {
         playAudio(data.speech_file_url);
       }
@@ -123,23 +146,40 @@ const Interview = () => {
       console.error("Error uploading the audio:", error);
     }
   };
-
-  const playAudio = (audioUrl) => {
+  
+  const playAudio = async (audioUrl) => {
     const audio = new Audio(audioUrl);
-    setIsPlaying(true);  
+    setIsPlaying(true);
+  
     try {
       audio.play();
-      audio.onended = () => {
-        setIsPlaying(false);  
-        setIsLoading(false);  
+      const playbackEndTime = getLocalTimeInIsoFormat();
+      console.log(playbackEndTime);
+      await fetch(`${backendUrl}/api/add_timestamp/`, {
+        method: "POST",
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          interview_id: interviewId,
+          event: "audio_playback_end",
+          timestamp: playbackEndTime,
+        }),
+      });
+  
+      audio.onended = async () => {
+        setIsPlaying(false);
+        setIsLoading(false);
+
+
       };
     } catch (playError) {
       console.error("Audio playback failed:", playError);
-      setIsPlaying(false); 
+      setIsPlaying(false);
       setIsLoading(false);
     }
   };
-
+  
   const handleDownload = async () => {
     try {
       const response = await fetch(`${backendUrl}/api/download_transcript/${interviewId}/`, {
