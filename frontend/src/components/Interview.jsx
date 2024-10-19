@@ -150,11 +150,13 @@ const Interview = () => {
   const playAudio = async (audioUrl) => {
     const audio = new Audio(audioUrl);
     setIsPlaying(true);
-  
+
     try {
       audio.play();
       const playbackEndTime = getLocalTimeInIsoFormat();
       console.log(playbackEndTime);
+
+      // Add a timestamp when the audio starts playing
       await fetch(`${backendUrl}/api/add_timestamp/`, {
         method: "POST",
         headers: {
@@ -166,19 +168,28 @@ const Interview = () => {
           timestamp: playbackEndTime,
         }),
       });
-  
+
       audio.onended = async () => {
         setIsPlaying(false);
         setIsLoading(false);
 
-
+        await fetch(`${backendUrl}/api/delete_tts_file/`, {
+          method: "POST",
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            audio_url: audioUrl  
+          }),
+        });
       };
     } catch (playError) {
       console.error("Audio playback failed:", playError);
       setIsPlaying(false);
       setIsLoading(false);
     }
-  };
+};
+
   
   const handleDownload = async () => {
     try {

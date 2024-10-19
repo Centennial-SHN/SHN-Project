@@ -21,18 +21,18 @@ def process_audio_file(audio_file):
 
     return _process_stt_audio(audio_file_path)
 
-def generate_text_from_prompt(conversation_history, system_prompt, prompt):
+def generate_text_from_prompt(conversation_history, system_prompt, prompt, model):
     logging.info(f"Generating text with conversation history: {conversation_history}")
 
     conversation = [
         {'role': 'system', 'content': 'You are a patient in a simulated interview with a doctor. '
-                                      'Please engage in a conversation and provide brief responses.'
+                                      'Please engage in a conversation and provide brief responses. '
                                       'Keep your answers short and interactive. '
                                       'Do not provide overly long responses. '
-                                      'Speak naturally, using fillers like "um," "uh," and "like."'
+                                      'Speak naturally, using fillers like "um," "uh," and "like." '
                                       'Make sure your tone is friendly and human-like, '
                                       'with pauses where appropriate, and avoid sounding too formal or robotic. '
-                                      '{system_prompt}'},
+                                      + system_prompt},
         {'role': 'user', 'content': prompt},
     ]
 
@@ -42,7 +42,8 @@ def generate_text_from_prompt(conversation_history, system_prompt, prompt):
 
     try:
         response = openai.chat.completions.create(
-            model="gpt-4o-mini",
+            # model=model,
+            model='gpt-4o-mini',
             messages=conversation,
             max_tokens=50,
             temperature=0.7
@@ -53,6 +54,7 @@ def generate_text_from_prompt(conversation_history, system_prompt, prompt):
     except Exception as e:
         logging.error(f"Exception occurred in generate_text_from_prompt: {str(e)}")
         raise e
+
 
 
 def convert_text_to_speech(text, module_id):
