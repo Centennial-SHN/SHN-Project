@@ -8,9 +8,15 @@ from rest_framework.decorators import api_view
 from .serializers import ModuleSerializer
 from datetime import timedelta
 from azure.storage.blob import BlobServiceClient
-
+from rest_framework.decorators import api_view
+from django.utils import timezone
+from .models import Interview, Module, Users
 import os
-
+from .models import Users,Admin
+from rest_framework import status
+from rest_framework.response import Response
+from rest_framework.views import APIView
+from .serializers import UserSerializer
 
 logging.basicConfig(level=logging.DEBUG)
 
@@ -90,12 +96,6 @@ def get_module_by_id(request, module_id):
     except Module.DoesNotExist:
         return Response(status=404)
 
-
-from rest_framework.decorators import api_view
-from django.utils import timezone
-from .models import Interview, Module, Users
-
-
 @api_view(['POST'])
 def create_interview(request):
     try:
@@ -108,30 +108,92 @@ def create_interview(request):
             userid=user,
             moduleid=module,
             dateactive=timezone.now(),
-            interviewlength=timedelta(),  # Initially 0
-            transcript="",  # Empty transcript initially
+            interviewlength=timedelta(),
+            transcript="",
+            timestamps=[],
         )
 
         return JsonResponse({"interviewid": interview.interviewid}, status=201)
     except Exception as e:
         return JsonResponse({"error": str(e)}, status=400)
 
+@api_view(['POST'])
+def add_timestamp(request):
+    try:
+        interview_id = request.data.get('interview_id')
+        event = request.data.get('event')
+        timestamp = request.data.get('timestamp')
+
+        if not interview_id or not event or not timestamp:
+            logging.error("Missing required parameters: interview_id, event, or timestamp")
+            return JsonResponse({"error": "Missing required parameters"}, status=400)
+
+        logging.info(f"Received data: interview_id={interview_id}, event={event}, timestamp={timestamp}")
+
+        interview = Interview.objects.get(interviewid=interview_id)
+
+        interview.timestamps.append({
+            "event": event,
+            "timestamp": timestamp
+        })
+
+        interview.save()
+
+        return JsonResponse({"message": "Timestamp added successfully"}, status=200)
+
+    except Interview.DoesNotExist:
+        logging.error(f"Interview not found for interview_id={interview_id}")
+        return JsonResponse({"error": "Interview not found"}, status=404)
+
+    except Exception as e:
+        logging.error(f"Exception occurred while adding timestamp: {str(e)}", exc_info=True)
+        return JsonResponse({"error": str(e)}, status=500)
+
+import logging
+
 @api_view(['GET'])
 def download_transcript(request, interview_id):
     try:
         interview = Interview.objects.get(pk=interview_id)
         transcript = interview.transcript
-
         module = interview.moduleid
         modulename_part = module.modulename.split(':', 1)[1].strip() if ':' in module.modulename else module.modulename
 
+        timestamps = interview.timestamps
+
         transcript_lines = transcript.split("\n")
         updated_lines = []
-        for line in transcript_lines:
+
+        user_timestamp_index = 0
+        assistant_timestamp_index = 0
+
+        for i, line in enumerate(transcript_lines):
             if line.startswith('user:'):
-                updated_lines.append(line.replace('user:', f'{interview.userid.userid}:'))  # Replace 'user' with actual userid
+                while user_timestamp_index < len(timestamps) and timestamps[user_timestamp_index]["event"] != "audio_upload_start":
+                    user_timestamp_index += 1
+
+                if user_timestamp_index < len(timestamps):
+                    user_timestamp = timestamps[user_timestamp_index]["timestamp"]
+                    updated_line = line.replace('user:', f'[{user_timestamp}] {interview.userid.userid}:')
+                    user_timestamp_index += 1
+                else:
+                    updated_line = line
+
+                updated_lines.append(updated_line)
+
             elif line.startswith('assistant:'):
-                updated_lines.append(line.replace('assistant:', f'{modulename_part}:'))  # Replace 'assistant' with part of the module name
+                while assistant_timestamp_index < len(timestamps) and timestamps[assistant_timestamp_index]["event"] != "audio_playback_end":
+                    assistant_timestamp_index += 1
+
+                if assistant_timestamp_index < len(timestamps):
+                    assistant_timestamp = timestamps[assistant_timestamp_index]["timestamp"]
+                    updated_line = line.replace('assistant:', f'[{assistant_timestamp}] {modulename_part}:')
+                    assistant_timestamp_index += 1
+                else:
+                    updated_line = line
+
+                updated_lines.append(updated_line)
+
             else:
                 updated_lines.append(line)
 
@@ -140,10 +202,15 @@ def download_transcript(request, interview_id):
         response = HttpResponse(updated_transcript, content_type='text/plain')
         response['Content-Disposition'] = f'attachment; filename="transcript_{interview_id}.txt"'
         return response
+
     except Interview.DoesNotExist:
         return JsonResponse({"error": "Interview not found"}, status=404)
     except Exception as e:
+        logging.error(f"Error while processing transcript: {str(e)}")
         return JsonResponse({"error": str(e)}, status=500)
+
+
+
 
 # def clear_audio_files(request):
 #     try:
@@ -163,11 +230,7 @@ def download_transcript(request, interview_id):
 #     except Exception as e:
 #         return JsonResponse({"status": "error", "message": str(e)}, status=500)
 
-from .models import Users,Admin
-from rest_framework import status
-from rest_framework.response import Response
-from rest_framework.views import APIView
-from .serializers import UserSerializer
+
 
 @api_view(['POST'])
 def register(request):
