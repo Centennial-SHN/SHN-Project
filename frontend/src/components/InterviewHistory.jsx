@@ -69,7 +69,7 @@ const InterviewHistory = () => {
             <tr>
               <th>Module ID</th>
               <th>Interview Length</th>
-              <th>Download Transcript</th>
+              <th>Transcript</th>
             </tr>
           </thead>
           <tbody>
@@ -83,7 +83,7 @@ const InterviewHistory = () => {
                       handleDownloadTranscript(interview.interviewid)
                     }
                   >
-                    Download Transcript
+                    Download
                   </button>
                 </td>
               </tr>
