@@ -94,7 +94,9 @@ def get_modules(request):
 @api_view(['GET'])
 def get_module_by_id(request, module_id):
     try:
+
         module = Module.objects.get(moduleid=module_id)
+        logging.info(f"Module Data: {module}")
         serializer = ModuleSerializer(module)
         return Response(serializer.data)
     except Module.DoesNotExist:

@@ -1,0 +1,158 @@
+/* Interview.css */
+
+/* General layout for the Interview page */
+.audio-recorder {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+    background-color: #e9ecef; /* Light gray background matching the overall theme */
+  }
+  
+  /* Headings */
+  h1 {
+    font-family: Arial, sans-serif;
+    color: #000; /* Black text for headings */
+    margin-bottom: 20px;
+  }
+  
+  p {
+    color: #000; /* Black text for paragraphs */
+    font-size: 14px;
+    margin: 10px 0;
+  }
+  
+  /* Record button */
+  .record-button {
+    background-color: #4CAF50;
+    color: white;
+    padding: 15px 32px;
+    font-size: 16px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    margin-top: 20px;
+  }
+  
+  .record-button:hover {
+    background-color: #45a049;
+  }
+  
+  .record-button:focus {
+    outline: none;
+  }
+  
+  .record-button:disabled {
+    cursor: not-allowed;
+  }
+  
+  .record-button.processing {
+    background-color: #FF6347; /* Processing state: tomato red */
+  }
+  
+  .record-button:active {
+    background-color: #3e8e41;
+  }
+  
+  /* Exit button */
+  .exit-button {
+    background-color: #007BFF; /* Blue button */
+    color: white;
+    padding: 10px 24px;
+    font-size: 16px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    margin-top: 20px;
+  }
+  
+  .exit-button:disabled {
+    cursor: not-allowed;
+  }
+  
+  .exit-button:hover {
+    background-color: #0069d9;
+  }
+  
+  .exit-button:focus {
+    outline: none;
+  }
+  
+  .exit-button:active {
+    background-color: #0056b3;
+  }
+  
+  /* Sidebar */
+  .sidebar {
+    position: fixed;
+    right: -250px;
+    top: 0;
+    height: 100%;
+    width: 250px;
+    background-color: #333; /* Dark background for sidebar */
+    color: white;
+    padding: 20px;
+    box-shadow: -2px 0 5px rgba(0, 0, 0, 0.5);
+    transition: right 0.3s ease;
+  }
+  
+  .sidebar.open {
+    right: 0;
+  }
+  
+  .close-sidebar {
+    background-color: #FF6347;
+    color: white;
+    border: none;
+    padding: 10px;
+    font-size: 16px;
+    cursor: pointer;
+    display: block;
+    margin-bottom: 20px;
+    width: 100%;
+    text-align: center;
+    border-radius: 5px;
+  }
+  
+  .attachment-link {
+    display: block;
+    color: black;
+    text-decoration: none;
+    margin-bottom: 10px;
+  }
+  
+  .attachment-link:hover {
+    text-decoration: underline;
+  }
+  
+  /* Attachments button */
+  .attachment-button {
+    background-color: #f39c12;
+    color: white;
+    padding: 10px 20px;
+    font-size: 16px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+  }
+  
+  .attachment-button:hover {
+    background-color: #e67e22;
+  }
+  
+  /* Flexbox for button container */
+.button-container {
+    display: flex;
+    gap: 10px; /* Adds space between the buttons */
+    margin-top: 20px; /* Optional: Adds space between the buttons and other elements */
+  }
+  
+  /* Adjust button styling if necessary */
+  .record-button,
+  .exit-button {
+    flex: 1; /* Makes both buttons the same size */
+  }

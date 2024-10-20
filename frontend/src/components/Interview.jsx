@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef } from "react";
 import { useParams, useNavigate, useLocation } from "react-router-dom";
+import "./Interview.css";
 
 const Interview = () => {
   const { moduleId } = useParams();
@@ -12,6 +13,8 @@ const Interview = () => {
   const [isRecording, setIsRecording] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [isPlaying, setIsPlaying] = useState(false);
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  const [status, setStatus] = useState("Idle");
   const mediaRecorderRef = useRef(null);
   const audioChunksRef = useRef([]);
   const streamRef = useRef(null);
@@ -35,7 +38,7 @@ const Interview = () => {
         setCaseAbstract(data.case_abstract);
         setSystemPrompt(data.system_prompt);
         setPrompt(data.prompt);
-        setFiles(data.file || []);
+        setFiles(data.file || {});
       } catch (error) {
         console.error("Error fetching module name:", error);
       }
@@ -43,21 +46,6 @@ const Interview = () => {
 
     fetchModuleName();
   }, [moduleId]);
-
-  useEffect(() => {
-    const handleKeyDown = (event) => {
-      if (event.key === " ") {
-        event.preventDefault();
-        toggleRecording();
-      }
-    };
-
-    window.addEventListener("keydown", handleKeyDown);
-
-    return () => {
-      window.removeEventListener("keydown", handleKeyDown);
-    };
-  }, [isRecording]);
 
   const toggleRecording = async () => {
     if (isRecording) {
@@ -87,6 +75,7 @@ const Interview = () => {
 
       mediaRecorderRef.current.start();
       setIsRecording(true);
+      setStatus("Listening");
 
       recordingTimeoutRef.current = setTimeout(() => {
         stopRecording();
@@ -102,17 +91,17 @@ const Interview = () => {
     }
     clearTimeout(recordingTimeoutRef.current);
     setIsRecording(false);
+    setStatus("Listening");
   };
 
-  function getLocalTimeInIsoFormat() {
+  const getLocalTimeInIsoFormat = () => {
     const now = new Date();
     const timezoneOffsetInMinutes = now.getTimezoneOffset();
     const localTime = new Date(
       now.getTime() - timezoneOffsetInMinutes * 60 * 1000
     );
-
     return localTime.toISOString().slice(0, 19).replace("T", " ");
-  }
+  };
 
   const handleUpload = async (audioBlob) => {
     const formData = new FormData();
@@ -125,6 +114,7 @@ const Interview = () => {
 
     const uploadStartTime = getLocalTimeInIsoFormat();
     console.log(uploadStartTime);
+
     try {
       await fetch(`${backendUrl}/api/add_timestamp/`, {
         method: "POST",
@@ -156,19 +146,21 @@ const Interview = () => {
       }
     } catch (error) {
       console.error("Error uploading the audio:", error);
+    } finally {
+      setIsLoading(false);
     }
   };
 
   const playAudio = async (audioUrl) => {
     const audio = new Audio(audioUrl);
     setIsPlaying(true);
+    setStatus("Live");
 
     try {
       audio.play();
       const playbackEndTime = getLocalTimeInIsoFormat();
       console.log(playbackEndTime);
 
-      // Add a timestamp when the audio starts playing
       await fetch(`${backendUrl}/api/add_timestamp/`, {
         method: "POST",
         headers: {
@@ -183,8 +175,7 @@ const Interview = () => {
 
       audio.onended = async () => {
         setIsPlaying(false);
-        setIsLoading(false);
-
+        setStatus("Idle");
         await fetch(`${backendUrl}/api/delete_tts_file/`, {
           method: "POST",
           headers: {
@@ -198,42 +189,19 @@ const Interview = () => {
     } catch (playError) {
       console.error("Audio playback failed:", playError);
       setIsPlaying(false);
-      setIsLoading(false);
+      setStatus("Idle");
     }
   };
 
-  // const handleDownload = async () => {
-  //   try {
-  //     const response = await fetch(
-  //       `${backendUrl}/api/download_transcript/${interviewId}/`,
-  //       {
-  //         method: "GET",
-  //       }
-  //     );
-
-  //     if (!response.ok) {
-  //       throw new Error("Failed to download transcript");
-  //     }
-
-  //     const blob = await response.blob();
-  //     const url = window.URL.createObjectURL(blob);
-  //     const link = document.createElement("a");
-  //     link.href = url;
-  //     link.setAttribute("download", `transcript_${interviewId}.txt`);
-  //     document.body.appendChild(link);
-  //     link.click();
-  //     document.body.removeChild(link);
-  //   } catch (error) {
-  //     console.error("Error downloading transcript:", error);
-  //   }
-  // };
-
   const handleExit = async () => {
-    const userConfirmed = window.confirm("Are you sure you want to exit the interview?");
+    const userConfirmed = window.confirm(
+      "Are you sure you want to exit the interview?"
+    );
+    if (!userConfirmed) return;
 
-    if (!userConfirmed) {
-      return;
-    }
+    const exitTime = getLocalTimeInIsoFormat();
+    console.log("Interview ID:", interviewId);
+
     try {
       await fetch(`${backendUrl}/api/store_interview_length/`, {
         method: "POST",
@@ -242,6 +210,7 @@ const Interview = () => {
         },
         body: JSON.stringify({
           interview_id: interviewId,
+          exit_time: exitTime,
         }),
       });
 
@@ -251,55 +220,67 @@ const Interview = () => {
     }
   };
 
+  const toggleSidebar = () => {
+    setIsSidebarOpen(!isSidebarOpen);
+  };
+
   return (
     <div className="audio-recorder">
       <p>Please ensure your microphone is enabled</p>
       <h1>{moduleName}</h1>
+      <img
+        src="https://via.placeholder.com/150" // Replace with actual patient image URL if available
+        alt={moduleName}
+        className="patient-image"
+      />
+      <p>Status: <strong>{status}</strong></p>
       <p>{caseAbstract}</p>
 
-      {files.length > 0 ? (
-        <div>
-          <h4>Attachments:</h4>
-          {files.map((fileUrl, index) => (
-            <button
-              key={index}
-              onClick={() => window.open(fileUrl, "_blank")}
-              className="attachment-button"
-            >
-              View Attachment {index + 1}
-            </button>
-          ))}
-        </div>
+      {Object.keys(files).length > 0 ? (
+        <button onClick={toggleSidebar} className="attachment-button">
+          {isSidebarOpen ? "Close Attachments" : "See Attachments"}
+        </button>
       ) : (
         <p>Attachments: N/A</p>
       )}
 
-      <button
-        className={`record-button ${
-          isLoading || isPlaying ? "processing" : ""
-        }`}
-        onClick={toggleRecording}
-        disabled={isLoading || isPlaying}
-      >
-        {isRecording
-          ? "Click to Stop Speaking"
-          : isLoading || isPlaying
-          ? "Processing..."
-          : "Click to Speak"}
-      </button>
-      <h6>
-        Tip: You can press the spacebar to start the interview
-      </h6>
-      {/* <button className="exit-button" onClick={handleDownload}>
-        Download Transcript
-      </button> */}
-      <button
-        className="exit-button"
-        onClick={handleExit}
-        disabled={isLoading || isPlaying} 
-      >
-        End Interview
-      </button>
+      <div className={`sidebar ${isSidebarOpen ? "open" : ""}`}>
+        <button className="close-sidebar" onClick={toggleSidebar}>
+          X
+        </button>
+        <h4>Attachments:</h4>
+        {Object.entries(files).map(([fileName, fileUrl], index) => (
+          <a
+            key={index}
+            href={fileUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="attachment-link"
+          >
+            {fileName}
+          </a>
+        ))}
+      </div>
+
+      <div className="button-container">
+        <button
+          className={`record-button ${
+            isLoading || isPlaying ? "processing" : ""
+          }`}
+          onClick={toggleRecording}
+          disabled={isLoading || isPlaying}
+        >
+          {isRecording ? "Click to Stop Speaking" : isLoading || isPlaying ? "Processing..." : "Click to Speak"}
+        </button>
+        <button
+          className="exit-button"
+          onClick={handleExit}
+          disabled={isLoading || isPlaying}
+        >
+          End Interview
+        </button>
+      </div>
+      <p>Tip: You can press the sidebar to start the interview or start speaking</p>
     </div>
   );
 };
