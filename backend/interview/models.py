@@ -75,7 +75,7 @@ class Module(models.Model):
     voice = models.CharField(max_length=50)
     system_prompt = models.TextField(max_length=1000)
     case_abstract = models.TextField(max_length=200)
-    file = models.FileField(upload_to='attachments/', null=True, blank=True)
+    file = models.JSONField(default=list)
     model = models.CharField(max_length=50)
 
     def save(self, *args, **kwargs):
