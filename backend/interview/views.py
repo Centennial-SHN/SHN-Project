@@ -280,13 +280,19 @@ def download_transcript(request, interview_id):
 @api_view(['GET'])
 def interview_history(request, user_id):
     try:
-        interviews = Interview.objects.filter(userid__userid=user_id).values('interviewid', 'moduleid__modulename', 'interviewlength')
+        interviews = Interview.objects.filter(userid__userid=user_id).values(
+            'interviewid',
+            'moduleid__modulename',
+            'interviewlength',
+            'dateactive'
+        )
 
         interview_data = [
             {
                 'interviewid': interview['interviewid'],
                 'modulename': interview['moduleid__modulename'],
                 'interviewlength': str(interview['interviewlength']),
+                'dateactive': interview['dateactive'].strftime('%Y-%m-%d'),
             }
             for interview in interviews
         ]
@@ -295,6 +301,7 @@ def interview_history(request, user_id):
     except Exception as e:
         logger.error(f"Error fetching interview history: {str(e)}")
         return JsonResponse({'error': 'Internal server error'}, status=500)
+
 
 
 
