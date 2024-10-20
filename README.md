@@ -25,6 +25,7 @@ backend (Python 3.12)
 - DB_PASSWORD=''
 - DB_HOST=''
 - DB_PORT=''
+- MODULE_ATTACHMENTS_BLOB_CONTAINER=module-attachments
 
 3. Navigate to the root folder of the project and run the following commands to set up and start the server
 - python manage.py migrate
