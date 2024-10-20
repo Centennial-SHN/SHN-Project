@@ -229,6 +229,11 @@ const Interview = () => {
   // };
 
   const handleExit = async () => {
+    const userConfirmed = window.confirm("Are you sure you want to exit the interview?");
+
+    if (!userConfirmed) {
+      return;
+    }
     try {
       await fetch(`${backendUrl}/api/store_interview_length/`, {
         method: "POST",

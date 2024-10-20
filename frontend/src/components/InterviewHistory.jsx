@@ -23,7 +23,11 @@ const InterviewHistory = () => {
         }
 
         const data = await response.json();
-        setInterviews(data);
+
+        const filteredInterviews = data.filter(
+          (interview) => interview.interviewlength !== "0:00:00"
+        );
+        setInterviews(filteredInterviews);
       } catch (error) {
         console.error("Error fetching interview history:", error);
       }
@@ -67,7 +71,8 @@ const InterviewHistory = () => {
         <table>
           <thead>
             <tr>
-              <th>Module ID</th>
+              <th>Date</th>
+              <th>Module Name</th>
               <th>Interview Length</th>
               <th>Transcript</th>
             </tr>
@@ -75,6 +80,7 @@ const InterviewHistory = () => {
           <tbody>
             {interviews.map((interview, index) => (
               <tr key={index}>
+                <td>{interview.dateactive}</td>
                 <td>{interview.modulename}</td>
                 <td>{interview.interviewlength}</td>
                 <td>
@@ -94,5 +100,4 @@ const InterviewHistory = () => {
     </div>
   );
 };
-
 export default InterviewHistory;
