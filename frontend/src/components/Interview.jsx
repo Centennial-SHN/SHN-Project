@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from "react";
 import { useParams, useNavigate, useLocation } from "react-router-dom";
 import "./Interview.css";
+import castroImage from '../assets/castro.png';
 
 const Interview = () => {
   const { moduleId } = useParams();
@@ -46,6 +47,21 @@ const Interview = () => {
 
     fetchModuleName();
   }, [moduleId]);
+
+  useEffect(() => {
+    const handleKeyDown = (event) => {
+      if (event.key === " ") {
+        event.preventDefault();
+        toggleRecording();
+      }
+    };
+
+    window.addEventListener("keydown", handleKeyDown);
+
+    return () => {
+      window.removeEventListener("keydown", handleKeyDown);
+    };
+  }, [isRecording]);
 
   const toggleRecording = async () => {
     if (isRecording) {
@@ -175,6 +191,7 @@ const Interview = () => {
 
       audio.onended = async () => {
         setIsPlaying(false);
+        setIsLoading(false);
         setStatus("Idle");
         await fetch(`${backendUrl}/api/delete_tts_file/`, {
           method: "POST",
@@ -189,6 +206,7 @@ const Interview = () => {
     } catch (playError) {
       console.error("Audio playback failed:", playError);
       setIsPlaying(false);
+      setIsLoading(false);
       setStatus("Idle");
     }
   };
@@ -199,7 +217,6 @@ const Interview = () => {
     );
     if (!userConfirmed) return;
 
-    const exitTime = getLocalTimeInIsoFormat();
     console.log("Interview ID:", interviewId);
 
     try {
@@ -210,7 +227,6 @@ const Interview = () => {
         },
         body: JSON.stringify({
           interview_id: interviewId,
-          exit_time: exitTime,
         }),
       });
 
@@ -224,12 +240,37 @@ const Interview = () => {
     setIsSidebarOpen(!isSidebarOpen);
   };
 
+
+  const handleDownload = async (fileUrl, fileName) => {
+    try {
+      const response = await fetch(fileUrl);
+      if (!response.ok) {
+        throw new Error("Failed to fetch the file");
+      }
+      const blob = await response.blob();
+      const url = window.URL.createObjectURL(blob);
+
+      const link = document.createElement("a");
+      link.href = url;
+      link.download = fileName;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+
+      // Clean up the URL object
+      window.URL.revokeObjectURL(url);
+    } catch (error) {
+      console.error("Error downloading file:", error);
+    }
+  };
+  
+
   return (
     <div className="audio-recorder">
       <p>Please ensure your microphone is enabled</p>
       <h1>{moduleName}</h1>
       <img
-        src="https://via.placeholder.com/150" // Replace with actual patient image URL if available
+        src={castroImage} // Replace with actual patient image URL if available
         alt={moduleName}
         className="patient-image"
       />
@@ -244,23 +285,21 @@ const Interview = () => {
         <p>Attachments: N/A</p>
       )}
 
-      <div className={`sidebar ${isSidebarOpen ? "open" : ""}`}>
-        <button className="close-sidebar" onClick={toggleSidebar}>
-          X
-        </button>
-        <h4>Attachments:</h4>
-        {Object.entries(files).map(([fileName, fileUrl], index) => (
-          <a
-            key={index}
-            href={fileUrl}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="attachment-link"
-          >
-            {fileName}
-          </a>
-        ))}
-      </div>
+<div className={`sidebar ${isSidebarOpen ? "open" : ""}`}>
+      <button className="close-sidebar" onClick={toggleSidebar}>
+        X
+      </button>
+      <h4>Attachments:</h4>
+      {Object.entries(files).map(([fileName, fileUrl], index) => (
+        <a
+          key={index}
+          onClick={() => handleDownload(fileUrl, fileName)}
+          className="attachment-link"
+        >
+          {fileName}
+        </a>
+      ))}
+    </div>
 
       <div className="button-container">
         <button
@@ -280,7 +319,7 @@ const Interview = () => {
           End Interview
         </button>
       </div>
-      <p>Tip: You can press the sidebar to start the interview or start speaking</p>
+      <p>Tip: You can press the spacebar to start the interview or start speaking</p>
     </div>
   );
 };
