@@ -1,1 +1,1 @@
-python manage.py migrations
+python manage.py migrate
