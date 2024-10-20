@@ -8,6 +8,7 @@ const Interview = () => {
   const [caseAbstract, setCaseAbstract] = useState("");
   const [systemPrompt, setSystemPrompt] = useState("");
   const [prompt, setPrompt] = useState("");
+  const [files, setFiles] = useState([]);
   const [isRecording, setIsRecording] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [isPlaying, setIsPlaying] = useState(false);
@@ -34,6 +35,7 @@ const Interview = () => {
         setCaseAbstract(data.case_abstract);
         setSystemPrompt(data.system_prompt);
         setPrompt(data.prompt);
+        setFiles(data.file || []);
       } catch (error) {
         console.error("Error fetching module name:", error);
       }
@@ -249,6 +251,24 @@ const Interview = () => {
       <p>Please ensure your microphone is enabled</p>
       <h1>{moduleName}</h1>
       <p>{caseAbstract}</p>
+
+      {files.length > 0 ? (
+        <div>
+          <h4>Attachments:</h4>
+          {files.map((fileUrl, index) => (
+            <button
+              key={index}
+              onClick={() => window.open(fileUrl, "_blank")}
+              className="attachment-button"
+            >
+              View Attachment {index + 1}
+            </button>
+          ))}
+        </div>
+      ) : (
+        <p>Attachments: N/A</p>
+      )}
+
       <button
         className={`record-button ${
           isLoading || isPlaying ? "processing" : ""
@@ -263,8 +283,7 @@ const Interview = () => {
           : "Click to Speak"}
       </button>
       <h6>
-        The button can be controlled with a mouse click or by pressing the space
-        bar.
+        Tip: You can press the spacebar to start the interview
       </h6>
       {/* <button className="exit-button" onClick={handleDownload}>
         Download Transcript
