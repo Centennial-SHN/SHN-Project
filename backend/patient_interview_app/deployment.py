@@ -21,7 +21,7 @@ MIDDLEWARE = [
 ]
 
 CORS_ALLOWED_ORIGINS = [
-    "https://delightful-dune-031041b0f.5.azurestaticapps.net",
+    "https://ashy-stone-000b7c90f.5.azurestaticapps.net",
 ]
 
 STORAGES = {
