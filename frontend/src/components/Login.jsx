@@ -71,7 +71,7 @@ const Login = () => {
             <button type="submit">Login</button>
             <br/>
             <div>
-                <p>Don't have an account? <a href="/register" onClick={() => navigate('/register')}>Register here</a></p>
+                <p>Don't have an account? <a onClick={() => navigate('/register')}>Register here</a></p>
             </div>
         </form>
         </div>
