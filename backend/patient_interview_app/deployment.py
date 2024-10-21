@@ -20,12 +20,9 @@ MIDDLEWARE = [
     'django.middleware.common.CommonMiddleware',
 ]
 
-# CORS_ALLOWED_ORIGINS = [
-#     "https://ashy-stone-000b7c90f.5.azurestaticapps.net",
-# ]
-
-CORS_ALLOW_ALL_ORIGINS = True
-
+CORS_ALLOWED_ORIGINS = [
+    "https://ashy-stone-000b7c90f.5.azurestaticapps.net",
+]
 
 STORAGES = {
     "default": {
