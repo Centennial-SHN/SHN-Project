@@ -1,15 +1,11 @@
 import React, { useState, useEffect,useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faBars } from '@fortawesome/free-solid-svg-icons';
 import Sidebar from './Sidebar';
 import './ModuleAdmin.css';
 import { VITE_API_BASE_URL_LOCAL, VITE_API_BASE_URL_PROD } from '../constants';
 
 const AdminModuleList = () => {
     const [modules, setModules] = useState([]);
-    const [menuOpen, setMenuOpen] = useState(false); // State for toggling the menu
-    const [iconColor, setIconColor] = useState("black");
     const navigate = useNavigate();
     const isDevelopment = import.meta.env.MODE === "development";
     const baseUrl = isDevelopment ? VITE_API_BASE_URL_LOCAL : VITE_API_BASE_URL_PROD;
@@ -45,39 +41,13 @@ const AdminModuleList = () => {
     }, [navigate, backendUrl]);
 
     
-    const handleLogout = () => {
-        sessionStorage.removeItem("userId"); // Clear userId from sessionStorage
-        navigate("/"); // Redirect to login page
-      };
-
     const handleEdit = (moduleId) => {
         navigate(`/admin/modules/edit/${moduleId}`);
     };
 
-    const toggleMenu = () => {
-        setMenuOpen((prev) =>{
-          setIconColor(prev ? "black" : "#4DBDB1");
-          return !prev;
-        });
-      };
-
     return (
         <div className="admin-container">
-            <header>
-                <nav>
-                <div className="hamburger" onClick={toggleMenu}>
-                    <FontAwesomeIcon icon={faBars} size="2x" color={iconColor} /> {/* Use iconColor state */}
-                </div>
-                <ul className={`nav-menu ${menuOpen ? "show" : ""}`}>
-                    <li onClick={() => navigate('/admin/module-list')}>Modules</li>
-                    <li onClick={() => navigate('/admin/user-logs')}>User Logs</li>
-                    <li onClick={() => navigate(`/module`)}>Switch to user</li>
-                    <li onClick={() => navigate("/reset-password")}>Reset Password</li>
-                    <li onClick={handleLogout}>Logout</li>
-                </ul>
-                </nav>
-            </header>
-            {/* <Sidebar /> */}
+            <Sidebar />
             <div className="module-list">
                 <h2 className='title'>Module List</h2>
                 <br/>

@@ -1,7 +1,5 @@
 import React, { useState, useEffect,useRef } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faBars } from '@fortawesome/free-solid-svg-icons';
 import './ModuleAdmin.css';
 import Sidebar from './Sidebar.jsx';
 import { VITE_API_BASE_URL_LOCAL, VITE_API_BASE_URL_PROD } from '../constants.js';
@@ -19,9 +17,6 @@ const EditModule = () => {
     const isDevelopment = import.meta.env.MODE === "development";
     const baseUrl = isDevelopment ? VITE_API_BASE_URL_LOCAL : VITE_API_BASE_URL_PROD;
     const backendUrl = baseUrl;
-
-    const [menuOpen, setMenuOpen] = useState(false); // State for toggling the menu
-    const [iconColor, setIconColor] = useState("black");
 
     const hasCheckedSuperuser = useRef(false);
 
@@ -94,35 +89,9 @@ const EditModule = () => {
         }
     };
 
-    const handleLogout = () => {
-        sessionStorage.removeItem("userId"); // Clear userId from sessionStorage
-        navigate("/"); // Redirect to login page
-      };
-
-    const toggleMenu = () => {
-        setMenuOpen((prev) =>{
-            setIconColor(prev ? "black" : "#4DBDB1");
-            return !prev;
-        });
-    };
-
     return (
         <div className="admin-container">
-        <header>
-            <nav>
-            <div className="hamburger" onClick={toggleMenu}>
-                <FontAwesomeIcon icon={faBars} size="2x" color={iconColor} /> {/* Use iconColor state */}
-            </div>
-            <ul className={`nav-menu ${menuOpen ? "show" : ""}`}>
-                <li onClick={() => navigate('/admin/module-list')}>Modules</li>
-                <li onClick={() => navigate('/admin/user-logs')}>User Logs</li>
-                <li onClick={() => navigate(`/module`)}>Switch to user</li>
-                <li onClick={() => navigate("/reset-password")}>Reset Password</li>
-                <li onClick={handleLogout}>Logout</li>
-            </ul>
-            </nav>
-        </header>
-        {/* <Sidebar /> */}
+        <Sidebar />
         <form className="add-module" onSubmit={handleSave} encType="multipart/form-data">
             <h2>Edit Module</h2>
             <div className="form-group">
