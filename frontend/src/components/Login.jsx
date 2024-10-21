@@ -27,13 +27,13 @@ const Login = () => {
             const data = await response.json();
             console.log(data)
             alert('Login successful! User: ' + data.email);
-            // Redirect or store user data here
             sessionStorage.setItem('userId', data.userid);
+            sessionStorage.setItem('isSuperUser',data.is_superuser);
 
             if (data.is_superuser) {
-                navigate('/admin/module-list');  // Redirect to the module list page for superusers
+                navigate('/admin/module-list');
             } else {
-                navigate('/module');  // Redirect to the module selection page for regular users
+                navigate('/module');
             }
         } else {
             const data = await response.json();

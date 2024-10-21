@@ -30,6 +30,12 @@ const Interview = () => {
   const backendUrl = baseUrl;
 
   useEffect(() => {
+    if (!userId) {
+      navigate("/");
+    }
+  }, [userId, navigate]);
+
+  useEffect(() => {
     const fetchModuleName = async () => {
       try {
         const response = await fetch(`${backendUrl}/api/modules/${moduleId}/`);
