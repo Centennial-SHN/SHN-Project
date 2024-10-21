@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import { VITE_API_BASE_URL_LOCAL, VITE_API_BASE_URL_PROD } from "../constants";
 
 const ModuleSelection = () => {
   const [modules, setModules] = useState([]);
@@ -7,7 +8,7 @@ const ModuleSelection = () => {
   const navigate = useNavigate();  
   const userId = sessionStorage.getItem('userId');
   const isDevelopment = import.meta.env.MODE === "development";
-  const baseUrl = isDevelopment ? import.meta.env.VITE_API_BASE_URL_LOCAL : import.meta.env.VITE_API_BASE_URL_PROD;
+  const baseUrl = isDevelopment ? VITE_API_BASE_URL_LOCAL : VITE_API_BASE_URL_PROD;
 
   const backendUrl = baseUrl;
 
