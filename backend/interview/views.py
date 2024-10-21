@@ -359,3 +359,44 @@ def edit_module(request, moduleid):
             return Response(serializer.errors, status=400)
     except Module.DoesNotExist:
         return Response({'error': 'Module not found.'}, status=status.HTTP_404_NOT_FOUND)
+    
+logger = logging.getLogger(__name__)
+@api_view(['GET'])
+def user_admin(request):
+    try:
+        # Fetch all users
+        users = Users.objects.all()
+        logger.debug(f'fetched users: {users}')
+        user_data = []
+
+        for user in users:
+            # Get interviews related to the user
+            interviews = Interview.objects.filter(userid__userid=user.userid).values(
+                'interviewid',
+                'dateactive',
+                'moduleid__modulename',
+                'interviewlength',
+            )
+
+            total_interviews = interviews.count()
+            total_interview_time = sum(interview['interviewlength'].total_seconds() for interview in interviews) / 3600  # Convert seconds to hours
+
+            user_data.append({
+                'userid':user.userid,
+                'email': user.email,
+                'total_interviews': total_interviews,
+                'total_interview_time': total_interview_time,
+                'interviews': [
+                    {
+                        'dateactive': interview['dateactive'].strftime('%Y-%m-%d'),
+                        'module_name': interview['moduleid__modulename'],
+                        'interviewlength': str(interview['interviewlength']),
+                    }
+                    for interview in interviews
+                ],
+            })
+
+        return JsonResponse(user_data, safe=False)
+    except Exception as e:
+        logger.error(f"Error fetching user admin data: {str(e)}")
+        return JsonResponse({'error': 'Internal server error'}, status=500)
