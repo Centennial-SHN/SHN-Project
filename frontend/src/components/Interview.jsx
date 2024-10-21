@@ -153,9 +153,6 @@ const Interview = () => {
 
       const response = await fetch(`${backendUrl}/api/process_audio/`, {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
         body: formData,
       });
 
