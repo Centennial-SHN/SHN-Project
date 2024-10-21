@@ -13,6 +13,11 @@ const ModuleSelection = () => {
   const backendUrl = baseUrl;
 
   useEffect(() => {
+    if (!userId) {
+      navigate("/");
+      return;
+    }
+
     const fetchModules = async () => {
       try {
         const response = await fetch(`${backendUrl}/api/modules/`);

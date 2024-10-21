@@ -1,16 +1,28 @@
 import React, { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useParams,useNavigate } from "react-router-dom";
 import { VITE_API_BASE_URL_LOCAL, VITE_API_BASE_URL_PROD } from "../constants";
 
 const InterviewHistory = () => {
   const [interviews, setInterviews] = useState([]);
-  const { userid } = useParams(); 
+  const { userid } = useParams();
+  const navigate = useNavigate();
   const isDevelopment = import.meta.env.MODE === "development";
   const baseUrl = isDevelopment ? VITE_API_BASE_URL_LOCAL : VITE_API_BASE_URL_PROD;
 
   const backendUrl = baseUrl;
 
+  const checkIfLoggedIn = () => {
+    const storedUserId = sessionStorage.getItem("userId"); // Get userid from sessionStorage
+    return storedUserId === userid; // Compare it with the userid from params
+  };
+
   useEffect(() => {
+    console.log(checkIfLoggedIn())
+    if (!checkIfLoggedIn()) {
+      navigate("/"); // Redirect to login page if not authenticated
+      return;
+    }
+
     const fetchInterviews = async () => {
       try {
         const response = await fetch(
