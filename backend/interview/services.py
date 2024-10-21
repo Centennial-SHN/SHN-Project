@@ -19,6 +19,13 @@ def process_audio_file(audio_file):
 
     if USE_AZURE_BLOB_STORAGE:
         audio_file_path = _upload_stt_to_blob_storage(audio_file, audio_file_name)
+    else:
+        # Save audio file locally if not using Azure Blob Storage
+        local_file_path = os.path.join('/tmp', audio_file_name)
+        with open(local_file_path, 'wb+') as destination:
+            for chunk in audio_file.chunks():
+                destination.write(chunk)
+        audio_file_path = local_file_path
 
     return _process_stt_audio(audio_file_path)
 
