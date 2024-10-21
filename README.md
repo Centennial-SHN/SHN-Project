@@ -37,6 +37,8 @@ frontend
 1. Install the necessary packages (make sure your under frontend/virtual-patient-interview directory)
 - npm install
 - npm install react-router-dom
+- npm install @fortawesome/react-fontawesome @fortawesome/free-solid-svg-icons
+
 
 2. Add the .env file in the root directory under the 'frontend' directory
 - VITE_API_BASE_URL_LOCAL = 'http://localhost:8000'
