@@ -2,6 +2,7 @@ import { useState, useEffect, useRef } from "react";
 import { useParams, useNavigate, useLocation } from "react-router-dom";
 import "./Interview.css";
 import castroImage from '../assets/castro.png';
+import { VITE_API_BASE_URL_LOCAL, VITE_API_BASE_URL_PROD } from "../constants";
 
 const Interview = () => {
   const { moduleId } = useParams();
@@ -24,9 +25,7 @@ const Interview = () => {
   const userId = location.state?.userId;
   const recordingTimeoutRef = useRef(null);
   const isDevelopment = import.meta.env.MODE === "development";
-  const baseUrl = isDevelopment
-    ? import.meta.env.VITE_API_BASE_URL_LOCAL
-    : import.meta.env.VITE_API_BASE_URL_PROD;
+  const baseUrl = isDevelopment ? VITE_API_BASE_URL_LOCAL : VITE_API_BASE_URL_PROD;
 
   const backendUrl = baseUrl;
 

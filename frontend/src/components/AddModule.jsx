@@ -3,6 +3,7 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import './ModuleAdmin.css';
 import Sidebar from './Sidebar.jsx';
+import { VITE_API_BASE_URL_LOCAL, VITE_API_BASE_URL_PROD } from '../constants.js';
 
 const AddModule = () => {
     const [moduleName, setModuleName] = useState('');
@@ -14,7 +15,7 @@ const AddModule = () => {
     const [model, setModel] = useState('GPT-4-turbo');
     const navigate = useNavigate();
     const isDevelopment = import.meta.env.MODE === "development";
-    const baseUrl = isDevelopment ? import.meta.env.VITE_API_BASE_URL_LOCAL : import.meta.env.VITE_API_BASE_URL_PROD;
+    const baseUrl = isDevelopment ? VITE_API_BASE_URL_LOCAL : VITE_API_BASE_URL_PROD;
 
     const backendUrl = baseUrl;
 

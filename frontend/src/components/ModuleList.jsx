@@ -2,13 +2,13 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Sidebar from './Sidebar';
 import './ModuleAdmin.css';
+import { VITE_API_BASE_URL_LOCAL, VITE_API_BASE_URL_PROD } from '../constants';
 
 const AdminModuleList = () => {
     const [modules, setModules] = useState([]);
     const navigate = useNavigate();
     const isDevelopment = import.meta.env.MODE === "development";
-    const baseUrl = isDevelopment ? import.meta.env.VITE_API_BASE_URL_LOCAL : import.meta.env.VITE_API_BASE_URL_PROD;
-
+    const baseUrl = isDevelopment ? VITE_API_BASE_URL_LOCAL : VITE_API_BASE_URL_PROD;
     const backendUrl = baseUrl;
 
     // Fetch modules from the API when the component mounts
