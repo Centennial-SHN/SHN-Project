@@ -2,14 +2,15 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import './UserForm.css';
+import { VITE_API_BASE_URL_LOCAL } from '../constants';
 
 const Login = () => {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const navigate = useNavigate();
     const isDevelopment = import.meta.env.MODE === "development";
-    const baseUrl = isDevelopment ? import.meta.env.VITE_API_BASE_URL_LOCAL : import.meta.env.VITE_API_BASE_URL_PROD;
-
+    const baseUrl = isDevelopment ? VITE_API_BASE_URL_LOCAL : VITE_API_BASE_URL_PROD;
+    
     const backendUrl = baseUrl;
 
     const handleLogin = async (e) => {
