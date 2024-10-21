@@ -8,10 +8,13 @@ import io
 from .models import Module
 
 load_dotenv()
+openai.api_key = os.getenv('OPENAI_API_KEY')
 USE_AZURE_BLOB_STORAGE = os.getenv('USE_AZURE_BLOB_STORAGE', 'False') == 'True'
 AZURE_STORAGE_CONNECTION_STRING = os.getenv('AZURE_STORAGE_CONNECTION_STRING')
 AZURE_BLOB_CONTAINER_NAME = os.getenv('AZURE_BLOB_CONTAINER_NAME')
 MODULE_ATTACHMENTS_BLOB_CONTAINER= os.getenv('MODULE_ATTACHMENTS_BLOB_CONTAINER')
+
+
 
 def process_audio_file(audio_file):
     extension = os.path.splitext(audio_file.name)[1] or '.mp3'
