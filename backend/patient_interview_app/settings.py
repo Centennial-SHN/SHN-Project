@@ -45,7 +45,8 @@ MIDDLEWARE = [
 ]
 
 CORS_ALLOWED_ORIGINS = [
-    "http://localhost:5173"
+    "http://localhost:5173",
+    "https://ashy-stone-000b7c90f.5.azurestaticapps.net"
 ]
 
 
