@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect,useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Sidebar from './Sidebar';
 import './ModuleAdmin.css';
@@ -11,8 +11,26 @@ const AdminModuleList = () => {
     const baseUrl = isDevelopment ? VITE_API_BASE_URL_LOCAL : VITE_API_BASE_URL_PROD;
     const backendUrl = baseUrl;
 
-    // Fetch modules from the API when the component mounts
+    const hasCheckedSuperuser = useRef(false);
+
+    const checkSuperuser = () => {
+        const storedIsSuperuser = sessionStorage.getItem("isSuperUser");
+        const storedUserId = sessionStorage.getItem("userId");
+
+        if (!storedIsSuperuser || storedIsSuperuser !== "true" || !storedUserId) {
+            alert('Only admins are allowed to access this page.');
+            navigate("/");
+            return true;
+        }
+        return false;
+    };
+
     useEffect(() => {
+        if (!hasCheckedSuperuser.current) {
+            hasCheckedSuperuser.current = true;
+            if (checkSuperuser()) return;
+        }
+        
         const fetchModules = async () => {
             const response = await fetch(`${backendUrl}/api/modules/`);
             const data = await response.json();
@@ -20,9 +38,9 @@ const AdminModuleList = () => {
             setModules(data);
         };
         fetchModules();
-    }, []);
+    }, [navigate, backendUrl]);
 
-    // Handle navigation to the edit page
+    
     const handleEdit = (moduleId) => {
         navigate(`/admin/modules/edit/${moduleId}`);
     };

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect,useRef } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import './ModuleAdmin.css';
 import Sidebar from './Sidebar.jsx';
@@ -18,8 +18,27 @@ const EditModule = () => {
     const baseUrl = isDevelopment ? VITE_API_BASE_URL_LOCAL : VITE_API_BASE_URL_PROD;
     const backendUrl = baseUrl;
 
+    const hasCheckedSuperuser = useRef(false);
+
+    const checkSuperuser = () => {
+        const storedIsSuperuser = sessionStorage.getItem("isSuperUser");
+        const storedUserId = sessionStorage.getItem("userId");
+
+        if (!storedIsSuperuser || storedIsSuperuser !== "true" || !storedUserId) {
+            alert('Only admins are allowed to access this page.');
+            navigate("/");
+            return true;
+        }
+        return false;
+    };
+
     // Fetch existing module data on mount
     useEffect(() => {
+        if (!hasCheckedSuperuser.current) {
+            hasCheckedSuperuser.current = true;
+            if (checkSuperuser()) return;
+        }
+
         const fetchModule = async () => {
             const response = await fetch(`${backendUrl}/api/modules/edit/${moduleid}/`);
             const data = await response.json();
