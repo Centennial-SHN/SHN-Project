@@ -25,13 +25,6 @@ def process_audio_file(audio_file):
 
     if USE_AZURE_BLOB_STORAGE:
         audio_file_path = _upload_stt_to_blob_storage(audio_file, audio_file_name)
-    else:
-        # Save audio file locally if not using Azure Blob Storage
-        local_file_path = os.path.join('/tmp', audio_file_name)
-        with open(local_file_path, 'wb+') as destination:
-            for chunk in audio_file.chunks():
-                destination.write(chunk)
-        audio_file_path = local_file_path
 
     stt_duration = time.time() - start_time
     logging.info(f"STT processing took {stt_duration:.2f} seconds.")
@@ -55,13 +48,11 @@ def generate_text_from_prompt(conversation_history, system_prompt, prompt, model
 
     conversation.extend(conversation_history)
 
-    logging.debug(f"Messages for OpenAI API: {conversation}")
-
     try:
         response = openai.chat.completions.create(
             model=model,
             messages=conversation,
-            max_tokens=50,
+            max_tokens=100,
             temperature=0.7
         )
         generation_duration = time.time() - start_time
@@ -129,17 +120,6 @@ def _process_stt_audio(file_path_or_url):
 
             blob_client.delete_blob()
 
-        else:
-            with open(file_path_or_url, 'rb') as file_to_transcribe:
-                response = openai.audio.transcriptions.create(
-                    model='whisper-1',
-                    file=file_to_transcribe,
-                    response_format='text',
-                    prompt='ZyntriQix, Digique Plus, CynapseFive, VortiQore V8, EchoNix Array, OrbitalLink Seven, DigiFractal Matrix, PULSE, RAPT, B.R.I.C.K., Q.U.A.R.T.Z., F.L.I.N.T.'
-                )
-
-            os.remove(file_path_or_url)
-
         return response.get('text', '') if isinstance(response, dict) else response
 
     except Exception as e:
@@ -160,8 +140,6 @@ def _upload_tts_to_blob_storage(text, audio_file_name, voice):
         blob_client = blob_service_client.get_blob_client(container=AZURE_BLOB_CONTAINER_NAME, blob=audio_file_name)
 
         blob_client.upload_blob(audio_content, overwrite=True)
-
-        logging.info(f"Uploaded TTS audio to Azure Blob Storage: {audio_file_name}")
 
         blob_url = blob_client.url
         return blob_url

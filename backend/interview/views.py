@@ -1,7 +1,6 @@
 import openai
 from django.http import HttpResponse
 from dotenv import load_dotenv
-import logging
 from .services import process_audio_file, generate_text_from_prompt, convert_text_to_speech
 from rest_framework.response import Response
 from .serializers import ModuleSerializer
@@ -14,7 +13,6 @@ import os
 from .models import Users, Admin
 from rest_framework import status
 from .serializers import UserSerializer
-from django.contrib.auth.decorators import login_required
 from django.contrib.auth import authenticate, login
 from django.http import JsonResponse
 import logging
@@ -34,9 +32,7 @@ def process_audio(request):
     audio_file = request.FILES.get('audio')
     module_id = request.POST.get('module_id')
     interview_id = request.POST.get('interview_id')
-    user_id = request.POST.get('user_id')
-    system_prompt = request.POST.get('system_prompt')
-    prompt = request.POST.get('prompt')
+    date_active = request.POST.get('date_active')
 
     if not audio_file:
         logging.error("No audio file provided")
@@ -44,11 +40,10 @@ def process_audio(request):
 
     try:
         interview = Interview.objects.get(pk=interview_id)
-        user = Users.objects.get(userid=user_id)
         module = Module.objects.get(moduleid=module_id)
         module_model = module.model
-
-        modulename_part = module.modulename.split(':', 1)[1].strip() if ':' in module.modulename else module.modulename
+        module_system_prompt = module.system_prompt
+        module_prompt = module.prompt
 
         conversation_history = []
 
@@ -66,12 +61,12 @@ def process_audio(request):
 
         conversation_history.append({'role': 'user', 'content': transcribed_text})
 
-        generated_text = generate_text_from_prompt(conversation_history, system_prompt, prompt, module_model)
+        generated_text = generate_text_from_prompt(conversation_history, module_system_prompt, module_prompt, module_model)
 
         conversation_history.append({'role': 'assistant', 'content': generated_text})
 
         interview.transcript = "\n".join([f"{msg['role']}: {msg['content']}" for msg in conversation_history])
-        interview.dateactive = timezone.now()
+        interview.dateactive = date_active
         interview.save()
 
         if USE_AZURE_BLOB_STORAGE:
