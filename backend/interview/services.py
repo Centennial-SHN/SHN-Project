@@ -6,6 +6,7 @@ from azure.storage.blob import BlobServiceClient
 from dotenv import load_dotenv
 import io
 from .models import Module
+import time
 
 load_dotenv()
 openai.api_key = os.getenv('OPENAI_API_KEY')
@@ -17,6 +18,8 @@ MODULE_ATTACHMENTS_BLOB_CONTAINER= os.getenv('MODULE_ATTACHMENTS_BLOB_CONTAINER'
 
 
 def process_audio_file(audio_file):
+    start_time = time.time()
+
     extension = os.path.splitext(audio_file.name)[1] or '.mp3'
     audio_file_name = 'stt' + str(uuid.uuid4()) + extension
 
@@ -30,10 +33,13 @@ def process_audio_file(audio_file):
                 destination.write(chunk)
         audio_file_path = local_file_path
 
+    stt_duration = time.time() - start_time
+    logging.info(f"STT processing took {stt_duration:.2f} seconds.")
+
     return _process_stt_audio(audio_file_path)
 
 def generate_text_from_prompt(conversation_history, system_prompt, prompt, model):
-    logging.info(f"Generating text with conversation history: {conversation_history}")
+    start_time = time.time()
 
     conversation = [
         {'role': 'system', 'content': 'You are a patient in a simulated interview with a doctor. '
@@ -58,6 +64,8 @@ def generate_text_from_prompt(conversation_history, system_prompt, prompt, model
             max_tokens=50,
             temperature=0.7
         )
+        generation_duration = time.time() - start_time
+        logging.info(f"Text generation took {generation_duration:.2f} seconds.")
 
         return response.choices[0].message.content.strip()
 
@@ -68,6 +76,7 @@ def generate_text_from_prompt(conversation_history, system_prompt, prompt, model
 
 
 def convert_text_to_speech(text, module_id):
+    start_time = time.time()
     module = Module.objects.get(moduleid=module_id)
     voice = module.voice
 
@@ -75,6 +84,9 @@ def convert_text_to_speech(text, module_id):
 
     if USE_AZURE_BLOB_STORAGE:
         audio_file_url = _upload_tts_to_blob_storage(text, audio_file_name, voice)
+
+    tts_duration = time.time() - start_time
+    logging.info(f"TTS generation and upload took {tts_duration:.2f} seconds.")
 
     return audio_file_url
 

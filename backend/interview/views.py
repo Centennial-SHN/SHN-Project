@@ -76,7 +76,6 @@ def process_audio(request):
 
         if USE_AZURE_BLOB_STORAGE:
             speech_file_url = convert_text_to_speech(generated_text, module_id)
-            logging.info(f"Generated speech file URL: {speech_file_url}")
             return JsonResponse({"speech_file_url": speech_file_url}, status=200)
 
     except Exception as e:
@@ -87,7 +86,6 @@ def process_audio(request):
 @api_view(['GET'])
 def get_modules(request):
     modules = Module.objects.all()
-    logging.info(f"Modules: {modules}")
     serializer = ModuleSerializer(modules, many=True)
     return Response(serializer.data)
 
@@ -96,7 +94,6 @@ def get_module_by_id(request, module_id):
     try:
 
         module = Module.objects.get(moduleid=module_id)
-        logging.info(f"Module Data: {module}")
         serializer = ModuleSerializer(module)
         return Response(serializer.data)
     except Module.DoesNotExist:
@@ -134,8 +131,6 @@ def add_timestamp(request):
             logging.error("Missing required parameters: interview_id, event, or timestamp")
             return JsonResponse({"error": "Missing required parameters"}, status=400)
 
-        logging.info(f"Received data: interview_id={interview_id}, event={event}, timestamp={timestamp}")
-
         interview = Interview.objects.get(interviewid=interview_id)
 
         interview.timestamps.append({
@@ -169,7 +164,6 @@ def delete_tts_file(request):
         blob_client = blob_service_client.get_blob_client(container=AZURE_BLOB_CONTAINER_NAME, blob=blob_name)
 
         blob_client.delete_blob()
-        logging.info(f"TTS file {blob_name} deleted successfully from Azure Blob Storage")
 
         return JsonResponse({"message": "TTS file deleted successfully"}, status=200)
 
