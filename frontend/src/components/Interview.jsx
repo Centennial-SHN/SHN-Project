@@ -9,8 +9,6 @@ const Interview = () => {
   const location = useLocation();
   const [moduleName, setModuleName] = useState("");
   const [caseAbstract, setCaseAbstract] = useState("");
-  const [systemPrompt, setSystemPrompt] = useState("");
-  const [prompt, setPrompt] = useState("");
   const [files, setFiles] = useState([]);
   const [isRecording, setIsRecording] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
@@ -42,8 +40,6 @@ const Interview = () => {
         const data = await response.json();
         setModuleName(data.modulename);
         setCaseAbstract(data.case_abstract);
-        setSystemPrompt(data.system_prompt);
-        setPrompt(data.prompt);
         setFiles(data.file || {});
       } catch (error) {
         console.error("Error fetching module name:", error);
@@ -132,6 +128,7 @@ const Interview = () => {
     formData.append("module_id", moduleId);
     formData.append("interview_id", interviewId);
     formData.append("date_active", date_active)
+
 
     const uploadStartTime = getLocalTimeInIsoFormat();
     console.log(uploadStartTime);
