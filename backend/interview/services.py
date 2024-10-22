@@ -52,7 +52,7 @@ def generate_text_from_prompt(conversation_history, system_prompt, prompt, model
         response = openai.chat.completions.create(
             model=model,
             messages=conversation,
-            max_tokens=100,
+            max_tokens=50,
             temperature=0.7
         )
         generation_duration = time.time() - start_time
