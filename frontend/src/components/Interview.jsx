@@ -125,13 +125,13 @@ const Interview = () => {
   };
 
   const handleUpload = async (audioBlob) => {
+    const date_active = getLocalTimeInIsoFormat();
+
     const formData = new FormData();
     formData.append("audio", audioBlob, "user_audio.mp3");
     formData.append("module_id", moduleId);
-    formData.append("system_prompt", systemPrompt);
-    formData.append("prompt", prompt);
     formData.append("interview_id", interviewId);
-    formData.append("user_id", userId);
+    formData.append("date_active", date_active)
 
     const uploadStartTime = getLocalTimeInIsoFormat();
     console.log(uploadStartTime);
