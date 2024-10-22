@@ -35,14 +35,7 @@ def generate_text_from_prompt(conversation_history, system_prompt, prompt, model
     start_time = time.time()
 
     conversation = [
-        {'role': 'system', 'content': 'You are a patient in a simulated interview with a doctor. '
-                                      'Please engage in a conversation and provide brief responses. '
-                                      'Keep your answers short and interactive. '
-                                      'Do not provide overly long responses. '
-                                      'Speak naturally, using fillers like "um," "uh," and "like." '
-                                      'Make sure your tone is friendly and human-like, '
-                                      'with pauses where appropriate, and avoid sounding too formal or robotic. '
-                                      + system_prompt},
+        {'role': 'system', 'content': system_prompt},
         {'role': 'user', 'content': prompt},
     ]
 
