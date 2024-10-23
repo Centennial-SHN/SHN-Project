@@ -168,7 +168,7 @@ const AddModule = () => {
                 <div className="form-group">
                     <label>Model:</label>
                     <select value={model} onChange={(e) => setModel(e.target.value)}>
-                        <option value="gpt-4-turbo">gpt-4o-mini</option>
+                        <option value="gpt-4o-mini">gpt-4o-mini</option>
                         <option value="gpt-4o">gpt-4o</option>
                     </select>
                 </div>
