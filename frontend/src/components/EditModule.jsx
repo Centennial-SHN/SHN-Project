@@ -14,7 +14,7 @@ const EditModule = () => {
     const [systemPrompt, setSystemPrompt] = useState('');
     const [caseAbstract, setCaseAbstract] = useState('');
     const [file, setFile] = useState(null);
-    const [model, setModel] = useState('GPT-4-turbo');
+    const [model, setModel] = useState('gpt-4o-mini');
     const navigate = useNavigate();
     const isDevelopment = import.meta.env.MODE === "development";
     const baseUrl = isDevelopment ? VITE_API_BASE_URL_LOCAL : VITE_API_BASE_URL_PROD;
