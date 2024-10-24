@@ -4,14 +4,51 @@
   box-sizing: border-box;
 }
 
-body {
+/*Ant Design Custom CSS*/
+/*H1*/
+h1.ant-typography {
+  font-weight: 700;
+}
+
+/*H2*/
+h2.ant-typography {
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  font-weight: 700;
+}
+
+/*H3*/
+h3.ant-typography {
+  font-weight: 600;
+}
+
+/*H4*/
+h4.ant-typography {
+  font-weight: 600;
+}
+
+/*H5*/
+h5.ant-typography {
+  font-weight: 700;
+}
+
+/*H6*/
+.customH6 {
+  font-size: 12px;
+  font-weight: 400;
+  line-height: 20px;
+  text-transform: uppercase;
+  letter-spacing: 4px;
+}
+
+/* body {
   font-family: 'Arial', sans-serif;
   background-color: #e9ecef;
   color: #333;
   line-height: 1.6;
-}
+} */
 
-h1 {
+/* h1 {
   font-family: Arial, sans-serif;
   color: #333;
   margin-bottom: 15px;
@@ -29,7 +66,7 @@ p {
   max-width: 600px;
   margin: 0 auto 20px auto;
   line-height: 1.5;
-}
+} */
 
 
 /* Module Selection */
@@ -42,12 +79,12 @@ p {
   background-color: #f5f5f5; /* Same background to match overall */
 }
 
-h1 {
+/* h1 {
   font-family: Arial, sans-serif;
   color: #333;
   margin-bottom: 20px;
   font-size: 2rem;
-}
+} */
 
 #module-select {
   width: 250px;
@@ -60,8 +97,8 @@ h1 {
   box-shadow: 0px 3px 6px rgba(0, 0, 0, 0.1);
 }
 
-button {
-  background-color: #007BFF;  /* Matches play button style */
+/* button {
+  background-color: #007BFF;  / Matches play button style /
   color: white;
   padding: 10px 24px;
   font-size: 16px;
@@ -81,7 +118,7 @@ button:focus {
 
 button:active {
   background-color: #0056b3;
-}
+} */
 
 
 /*moduleselection*/
