@@ -57,10 +57,10 @@ const NavBar = () => {
 
     return (
         <Header className="navBar">
-            <Space direction='horizontal' size="medium" style={{ width: 'fit-content' }}>
+            <Space direction='horizontal' size="middle" style={{ width: 'fit-content' }}>
                 <img src={logo} alt="SHN Logo" style={{ width: '64px' }} />
                 <Divider type='vertical' style={{ borderColor: '#5C5E84', height: '28px', }}></Divider>
-                <Text style={{ color: '#5C5E84', fontSize: '16px', lineHeight: '24px' }}>Virtual Interviews</Text>
+                <Text style={{ color: '#5C5E84', fontSize: '16px', lineHeight: '24px', fontWeight:600, }}>Virtual Interviews</Text>
             </Space>
             <Dropdown
                 menu={{ items }}

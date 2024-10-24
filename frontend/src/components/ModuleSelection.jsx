@@ -4,15 +4,15 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faBars } from '@fortawesome/free-solid-svg-icons';
 import { VITE_API_BASE_URL_LOCAL, VITE_API_BASE_URL_PROD } from "../constants";
 import NavBar from "./NavBar";
-import { Button, Typography, Layout, Space, Divider } from 'antd';
+import { Button, Typography, Layout, Space, Select } from 'antd';
 import logo from '../assets/logo-alt.svg';
 
 const { Title, Text } = Typography;
-const { Header, Content } = Layout;
+const { Content } = Layout;
 
 const ModuleSelection = () => {
   const [modules, setModules] = useState([]);
-  const [selectedModule, setSelectedModule] = useState("");
+  const [selectedModule, setSelectedModule] = useState(null);
   const navigate = useNavigate();
   const [menuOpen, setMenuOpen] = useState(false);
   const [iconColor, setIconColor] = useState("black");
@@ -111,25 +111,31 @@ const ModuleSelection = () => {
 
     <Layout className="layoutModuleSelect">
       <NavBar isAdmin={isAdmin} />
-      <Content>
-        <h1>Module</h1>
-        <div>
-          <label htmlFor="module-select"></label>
-          <select
+      <Content className="layoutModSelContent">
+        <Space direction="vertical" size="small">
+        <Title level={3} style={{color: '#191e72',}}>Welcome to SHN Virtual Interviews</Title>
+        <Text>Please select a model to start training with a virtual patient.</Text>
+        </Space>
+          {/* <label htmlFor="module-select"></label> */}
+          <Select
             id="module-select"
             value={selectedModule}
             onChange={handleModuleChange}
+            style={{width: '100%'}}
+            options={modules.map((module) => ({
+              value: module.moduleid,
+              label: module.modulename,
+            }))}
+            placeholder="Please choose a module"
           >
-            <option value="">Please choose a module</option>
+            {/* <option value="">Please choose a module</option>
             {modules.map((module) => (
               <option key={module.moduleid} value={module.moduleid}>
                 {module.modulename}
               </option>
-            ))}
-          </select>
-        </div>
-        <button onClick={handleProceed}>Start</button>
-        <br />
+            ))} */}
+          </Select>
+        <Button type="primary" onClick={handleProceed}>Start Interview</Button>
         {/* <button onClick={handleViewHistory}>View Interview History</button> */}
       </Content>
     </Layout>

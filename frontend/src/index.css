@@ -159,6 +159,7 @@ h5.ant-typography {
   line-height: 16px;
   text-transform: uppercase;
   letter-spacing: 4px;
+  background-color: var(--primary-teal) !important;
   border: solid 1px var(--primary-teal);
   box-shadow: 0 2px 0 0 rgba(73, 198, 185, 0.1);
   border-radius: 40px;
@@ -349,8 +350,26 @@ padding: 48px 24px;
 .layoutModuleSelect{
   width:100vw;
   height:100vh;
-  background-color: var(--global-white);
+  background: linear-gradient(
+    var(--global-white),
+    #f7f7f7
+  );
   display: flex;
   flex-direction: column;
   overflow: hidden;
+}
+
+.layoutModSelContent {
+  max-width: 450px;
+  margin:auto;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  gap: 32px;
+}
+
+.layoutModSelContent .ant-select {
+  text-align:left;
 }
