@@ -51,7 +51,7 @@ const Login = () => {
         <Layout className="layoutLogInReg">
             <Layout className="layoutRedirectLog">
                 <Space direction="vertical" size="middle" style={{ marginBottom: '32px', position: 'relative', }}>
-                    <div class="highlight"></div>
+                    <div className="highlight"></div>
                     <Title level={1}>First Time Here?</Title>
                     <Text className="ant-typography-xl">Don't have an account yet? Sign up to start training with SHN  Virtual Interviews.</Text>
                 </Space>

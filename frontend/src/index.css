@@ -248,11 +248,33 @@ padding: 48px 24px;
   align-items: center;
 }
 
-.layoutRedirectLog .ant-typography {
+.layoutRedirectReg {
+  width:40%;
+  min-width: 400px;
+  max-width:600px;
+  background: radial-gradient(
+      circle at 50% 0%,
+      #4349AD,
+      var(--primary-navy) 100%  
+    )
+  ;
+  color: var(--global-white);
+  text-align: center;
+  padding:48px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.layoutRedirectLog .ant-typography,
+.layoutRedirectReg .ant-typography
+{
   color: var(--global-white);
 }
 
-.layoutRedirectLog .ant-space {
+.layoutRedirectLog .ant-space,
+.layoutRedirectReg .ant-space
+{
   max-width:415px;
 }
 
