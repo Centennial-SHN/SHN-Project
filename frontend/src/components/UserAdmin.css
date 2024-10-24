@@ -41,4 +41,37 @@
   .user-admin th {
     background-color: #007bff;
   }
-  
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 20px;
+}
+
+th, td {
+    border: 1px solid #ddd;
+    padding: 8px;
+    text-align: center;
+}
+
+th {
+    background-color: #007bff;
+    color: white;
+    padding: 12px 8px;
+}
+
+a {
+    color: #6a1b9a;
+    text-decoration: none;
+}
+
+tr:nth-child(even) {
+    background-color: #f2f2f2;
+}
+
+tr:hover {
+    background-color: #ddd;
+}
+
+td {
+    vertical-align: middle;
+}

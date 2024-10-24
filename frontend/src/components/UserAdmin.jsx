@@ -42,7 +42,9 @@ const UserAdmin = () => {
           throw new Error("Failed to fetch users");
         }
         const data = await response.json();
-        
+        // Log the users data to verify structure
+        console.log("Fetched Users Data:", data);
+       
         const usersWithInterviews = await Promise.all(
           data.map(async (user) => {
             // Log user data to verify user.id
@@ -59,12 +61,16 @@ const UserAdmin = () => {
               throw new Error(`Failed to fetch interviews for user ${user.userid}`);
             }
             const interviews = await interviewsResponse.json();
+            // Log interviews for each user
+            console.log(`Interviews for user ${user.userid}:`, interviews);
             const filteredInterviews = interviews.filter(
                 (interview) => interview.interviewlength !== "0:00:00" // Assuming interview_length is in seconds
               );
             return { ...user, interviews: filteredInterviews }; // Attach interviews to each user object
           })
         );
+        // Log the final users data after attaching interviews
+        console.log("Users with Interviews:", usersWithInterviews);
         setUsers(usersWithInterviews);
       } catch (error) {
         console.error("Error fetching users or interviews:", error);
@@ -175,49 +181,74 @@ const UserAdmin = () => {
       <button className="all" onClick={handleShowAllUsers}>All</button>
       </div>
       <table>
-        <thead>
-          <tr>
-            <th>Email</th>
-            <th>Total Interviews</th>
-            <th>Total Interview Time</th>
-            <th>Interview Logs</th>
-          </tr>
-        </thead>
-        <tbody>
-          {filteredUsers.map(user => {
-            const totalInterviews = user.interviews.length;
-            const totalTime = user.interviews.reduce((acc, interview) => acc + convertTimeToSeconds(interview.interviewlength), 0);
+      
+          <thead>
+            <tr>
+              <th>Email</th>
+              <th>Total Interviews</th>
+              <th>Total Interview Time</th>
+              <th>Date</th>
+              <th>Module</th>
+              <th>Interview Logs</th>
+            </tr>
+          </thead>
 
-            return (
-              <tr key={user.id}>
-                <td>
-                    <a href="" onClick={() => navigate(`/admin/manage-user/${user.userid}`)}>
-                    {user.email}
-                  </a></td>
-                <td>{totalInterviews}</td>
-                <td>{formatTime(totalTime)}</td>
-                <td>
-                  <ul>
-                    {user.interviews.map((interview, index) => (
-                      <li key={index}>
-                        <p>Date: {interview.date_active}</p>
-                        <p>Module: {interview.module_name}</p>
-                        <p>Length: {interview.interview_length}</p>
-                        <p>
-                          Transcript:{" "}
+          <tbody>
+            {filteredUsers.map(user => {
+              const totalInterviews = user.interviews.length;
+              const totalTime = user.interviews.reduce(
+                (acc, interview) => acc + convertTimeToSeconds(interview.interviewlength),
+                0
+              );
+
+              return (
+                <React.Fragment key={user.id}>
+                  {totalInterviews > 0 && (
+                    // First row with Email, Total Interviews, Total Interview Time, and blank for Date, Module, Logs
+                    <tr>
+                      <td>
+                        <a href="" onClick={() => navigate(`/admin/manage-user/${user.userid}`)}>
+                          {user.email}
+                        </a>
+                      </td>
+                      <td>{totalInterviews}</td>
+                      <td>{formatTime(totalTime)}</td> {/* Total Interview Time */}
+                      {/* Blank cells for Date, Module, and Logs */}
+                      <td></td>
+                      <td></td>
+                      <td></td>
+                    </tr>
+                  )}
+
+                  {/* Sub-rows for each interview */}
+                  {user.interviews.map((interview, index) => {
+                    const moduleName = interview.module_name || interview.modulename || "N/A";
+                    return (
+                      <tr key={index}>
+                        <td></td> {/* Blank Email column for sub-rows */}
+                        <td></td> {/* Blank Total Interviews column for sub-rows */}
+                        <td>{interview.interviewlength}</td> {/* Interview Length under Total Interview Time */}
+                        <td>{interview.dateactive || "No Date Available"}</td>
+                        <td>{moduleName}</td>
+                        <td>
                           <button onClick={() => handleDownloadTranscript(interview.interviewid)}>
                             Download Transcript
                           </button>
-                        </p>
-                      </li>
-                    ))}
-                  </ul>
-                </td>
-              </tr>
-            );
-          })}
-        </tbody>
-      </table>
+                        </td>
+                      </tr>
+                    );
+                  })}
+                </React.Fragment>
+              );
+            })}
+          </tbody>
+        </table>
+
+
+
+          
+  
+ 
     </div>
   );
 };
