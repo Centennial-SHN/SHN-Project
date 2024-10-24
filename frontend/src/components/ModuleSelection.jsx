@@ -3,11 +3,17 @@ import { useNavigate } from "react-router-dom";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faBars } from '@fortawesome/free-solid-svg-icons';
 import { VITE_API_BASE_URL_LOCAL, VITE_API_BASE_URL_PROD } from "../constants";
+import NavBar from "./NavBar";
+import { Button, Typography, Layout, Space, Select } from 'antd';
+import logo from '../assets/logo-alt.svg';
+
+const { Title, Text } = Typography;
+const { Content } = Layout;
 
 const ModuleSelection = () => {
   const [modules, setModules] = useState([]);
-  const [selectedModule, setSelectedModule] = useState("");
-  const navigate = useNavigate();  
+  const [selectedModule, setSelectedModule] = useState(null);
+  const navigate = useNavigate();
   const [menuOpen, setMenuOpen] = useState(false);
   const [iconColor, setIconColor] = useState("black");
   const userId = sessionStorage.getItem('userId');
@@ -36,15 +42,13 @@ const ModuleSelection = () => {
     fetchModules();
   }, []);
 
-  const handleModuleChange = (event) => {
-    setSelectedModule(event.target.value);
+  const handleModuleChange = (value) => {
+    setSelectedModule(value);
   };
 
   const handleProceed = async () => {
     if (selectedModule) {
       try {
-        
-
 
         if (!userId) {
           alert("User is not logged in. Please log in first.");
@@ -57,7 +61,7 @@ const ModuleSelection = () => {
           },
           body: JSON.stringify({
             module_id: selectedModule,
-            user_id: userId 
+            user_id: userId
           }),
         });
 
@@ -78,66 +82,61 @@ const ModuleSelection = () => {
     } else {
       alert("Please select a module to proceed.");
     }
-  }; 
-
-  const handleViewHistory = () => {
-    navigate(`/interview-history/${userId}`);
   };
 
-  const handleLogout = () => {
-    sessionStorage.removeItem("userId"); // Clear userId from sessionStorage
-    navigate("/"); // Redirect to login page
-  };
+  // const handleViewHistory = () => {
+  //   navigate(`/interview-history/${userId}`);
+  // };
 
-  const toggleMenu = () => {
-    setMenuOpen((prev) =>{
-      setIconColor(prev ? "black" : "#4DBDB1");
-      return !prev;
-    });
-  };
+  // const handleLogout = () => {
+  //   sessionStorage.removeItem("userId"); // Clear userId from sessionStorage
+  //   navigate("/"); // Redirect to login page
+  // };
 
-  const handleSwitchToAdmin = () => {
-    navigate("/admin/module-list"); // Replace with the actual admin route
-  };
+  // const toggleMenu = () => {
+  //   setMenuOpen((prev) => {
+  //     setIconColor(prev ? "black" : "#4DBDB1");
+  //     return !prev;
+  //   });
+  // };
+
+  // const handleSwitchToAdmin = () => {
+  //   navigate("/admin/module-list"); // Replace with the actual admin route
+  // };
 
 
   return (
-    <div className="module-selection">
-      <header>
-        <nav>
-          <div className="hamburger" onClick={toggleMenu}>
-            <FontAwesomeIcon icon={faBars} size="2x" color={iconColor}/>
-          </div>
-            <ul className={`nav-menu${menuOpen ? " show" : ""}`}>
-              <li onClick={() => navigate(`/interview-history/${userId}`)}>Interview History</li>
-              <li onClick={() => navigate("/reset-password")}>Reset Password</li>
-              {isAdmin && ( // This line ensures the "Switch to Admin" item is shown only to admin users
-                <li onClick={handleSwitchToAdmin}>Switch to Admin</li>
-              )}
-              <li onClick={handleLogout}>Logout</li>
-            </ul>
-        </nav>
-      </header>
-      <h1>Module</h1>
-      <div>
-        <label htmlFor="module-select"></label>
-        <select
-          id="module-select"
-          value={selectedModule}
-          onChange={handleModuleChange}
-        >
-            <option value="">Please choose a module</option>
-          {modules.map((module) => (
-            <option key={module.moduleid} value={module.moduleid}>
-              {module.modulename}
-            </option>
-          ))}
-        </select>
-      </div>
-      <button onClick={handleProceed}>Start</button>
-      <br />
-      {/* <button onClick={handleViewHistory}>View Interview History</button> */}
-    </div>
+
+    <Layout className="layoutModuleSelect">
+      <NavBar isAdmin={isAdmin} />
+      <Content className="layoutModSelContent">
+        <Space direction="vertical" size="small">
+        <Title level={3} style={{color: '#191e72',}}>Welcome to SHN Virtual Interviews</Title>
+        <Text>Please select a model to start training with a virtual patient.</Text>
+        </Space>
+          {/* <label htmlFor="module-select"></label> */}
+          <Select
+            id="module-select"
+            value={selectedModule}
+            onChange={handleModuleChange}
+            style={{width: '100%'}}
+            options={modules.map((module) => ({
+              value: module.moduleid,
+              label: module.modulename,
+            }))}
+            placeholder="Please choose a module"
+          >
+            {/* <option value="">Please choose a module</option>
+            {modules.map((module) => (
+              <option key={module.moduleid} value={module.moduleid}>
+                {module.modulename}
+              </option>
+            ))} */}
+          </Select>
+        <Button type="primary" onClick={handleProceed}>Start Interview</Button>
+        {/* <button onClick={handleViewHistory}>View Interview History</button> */}
+      </Content>
+    </Layout>
   );
 };
 
