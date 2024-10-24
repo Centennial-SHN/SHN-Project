@@ -9,8 +9,6 @@ const Interview = () => {
   const location = useLocation();
   const [moduleName, setModuleName] = useState("");
   const [caseAbstract, setCaseAbstract] = useState("");
-  const [systemPrompt, setSystemPrompt] = useState("");
-  const [prompt, setPrompt] = useState("");
   const [files, setFiles] = useState([]);
   const [isRecording, setIsRecording] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
@@ -24,10 +22,13 @@ const Interview = () => {
   const interviewId = location.state?.interviewId;
   const userId = location.state?.userId;
   const recordingTimeoutRef = useRef(null);
+  const debounceTimeoutRef = useRef(null); 
   const isDevelopment = import.meta.env.MODE === "development";
   const baseUrl = isDevelopment ? VITE_API_BASE_URL_LOCAL : VITE_API_BASE_URL_PROD;
 
   const backendUrl = baseUrl;
+
+  const DEBOUNCE_DELAY = 500; 
 
   useEffect(() => {
     if (!userId) {
@@ -42,8 +43,6 @@ const Interview = () => {
         const data = await response.json();
         setModuleName(data.modulename);
         setCaseAbstract(data.case_abstract);
-        setSystemPrompt(data.system_prompt);
-        setPrompt(data.prompt);
         setFiles(data.file || {});
       } catch (error) {
         console.error("Error fetching module name:", error);
@@ -54,19 +53,58 @@ const Interview = () => {
   }, [moduleId]);
 
   useEffect(() => {
+    let holdTimeoutRef = null; 
+    let isRecordingTriggered = false; 
+  
     const handleKeyDown = (event) => {
+      if (event.key === " " && !isRecording && !isRecordingTriggered && !(isLoading || isPlaying)) {
+        event.preventDefault();
+        
+        isRecordingTriggered = true;
+        
+        holdTimeoutRef = setTimeout(() => {
+          startRecording();
+        }, 500); 
+      }
+    };
+  
+    const handleKeyUp = (event) => {
       if (event.key === " ") {
         event.preventDefault();
-        toggleRecording();
+  
+        if (holdTimeoutRef) {
+          clearTimeout(holdTimeoutRef);
+          holdTimeoutRef = null;
+        }
+
+        if (isRecording) {
+          stopRecording();
+        }
+  
+        isRecordingTriggered = false; 
       }
     };
 
     window.addEventListener("keydown", handleKeyDown);
-
+    window.addEventListener("keyup", handleKeyUp);
+  
     return () => {
       window.removeEventListener("keydown", handleKeyDown);
+      window.removeEventListener("keyup", handleKeyUp);
+      if (holdTimeoutRef) {
+        clearTimeout(holdTimeoutRef);
+      }
     };
-  }, [isRecording]);
+  }, [isRecording, isLoading, isPlaying]);
+  
+  
+  const debounceToggleRecording = () => {
+    clearTimeout(debounceTimeoutRef.current);
+
+    debounceTimeoutRef.current = setTimeout(() => {
+      toggleRecording();
+    }, DEBOUNCE_DELAY);
+  };
 
   const toggleRecording = async () => {
     if (isRecording) {
@@ -100,7 +138,7 @@ const Interview = () => {
 
       recordingTimeoutRef.current = setTimeout(() => {
         stopRecording();
-      }, 20000);
+      }, 20000); // Automatically stop recording after 20 seconds
     } catch (error) {
       console.error("Error accessing microphone:", error);
     }
@@ -112,7 +150,7 @@ const Interview = () => {
     }
     clearTimeout(recordingTimeoutRef.current);
     setIsRecording(false);
-    setStatus("Listening");
+    setStatus("Idle");
   };
 
   const getLocalTimeInIsoFormat = () => {
@@ -125,13 +163,13 @@ const Interview = () => {
   };
 
   const handleUpload = async (audioBlob) => {
+    const date_active = getLocalTimeInIsoFormat();
+
     const formData = new FormData();
     formData.append("audio", audioBlob, "user_audio.mp3");
     formData.append("module_id", moduleId);
-    formData.append("system_prompt", systemPrompt);
-    formData.append("prompt", prompt);
     formData.append("interview_id", interviewId);
-    formData.append("user_id", userId);
+    formData.append("date_active", date_active);
 
     const uploadStartTime = getLocalTimeInIsoFormat();
     console.log(uploadStartTime);
@@ -245,7 +283,6 @@ const Interview = () => {
     setIsSidebarOpen(!isSidebarOpen);
   };
 
-
   const handleDownload = async (fileUrl, fileName) => {
     try {
       const response = await fetch(fileUrl);
@@ -268,7 +305,6 @@ const Interview = () => {
       console.error("Error downloading file:", error);
     }
   };
-  
 
   return (
     <div className="audio-recorder">
@@ -290,28 +326,28 @@ const Interview = () => {
         <p>Attachments: N/A</p>
       )}
 
-<div className={`sidebar ${isSidebarOpen ? "open" : ""}`}>
-      <button className="close-sidebar" onClick={toggleSidebar}>
-        X
-      </button>
-      <h4>Attachments:</h4>
-      {Object.entries(files).map(([fileName, fileUrl], index) => (
-        <a
-          key={index}
-          onClick={() => handleDownload(fileUrl, fileName)}
-          className="attachment-link"
-        >
-          {fileName}
-        </a>
-      ))}
-    </div>
+      <div className={`sidebar ${isSidebarOpen ? "open" : ""}`}>
+        <button className="close-sidebar" onClick={toggleSidebar}>
+          X
+        </button>
+        <h4>Attachments:</h4>
+        {Object.entries(files).map(([fileName, fileUrl], index) => (
+          <a
+            key={index}
+            onClick={() => handleDownload(fileUrl, fileName)}
+            className="attachment-link"
+          >
+            {fileName}
+          </a>
+        ))}
+      </div>
 
       <div className="button-container">
         <button
           className={`record-button ${
             isLoading || isPlaying ? "processing" : ""
           }`}
-          onClick={toggleRecording}
+          onClick={debounceToggleRecording}
           disabled={isLoading || isPlaying}
         >
           {isRecording ? "Click to Stop Speaking" : isLoading || isPlaying ? "Processing..." : "Click to Speak"}

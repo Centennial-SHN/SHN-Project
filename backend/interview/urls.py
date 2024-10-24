@@ -7,6 +7,7 @@ urlpatterns = [
     path('login/',views.user_login,name='login'),
     path('modules/add/', views.add_module, name='add-module'),
     path('modules/edit/<str:moduleid>/', views.edit_module, name='edit_module'),
+    path('admin/users/', views.user_admin, name='user-admin'),
     path('process_audio/', views.process_audio, name='process_audio'),
     path('modules/', views.get_modules, name='get_modules'),
     path('modules/<str:module_id>/', views.get_module_by_id, name='get_module_by_id'),

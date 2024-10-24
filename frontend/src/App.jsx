@@ -9,6 +9,7 @@ import EditModule from './components/EditModule';
 import InterviewHistory from './components/InterviewHistory';
 import 'antd/dist/reset.css';
 import { ThemeProvider } from './themeConfig';
+import UserAdmin from './components/UserAdmin';
 
 function App() {
   return (
@@ -24,7 +25,8 @@ function App() {
             <Route path="/admin/module-list" element={<ModuleList />} />
             <Route path="/admin/modules/add" element={<AddModule />} />
             <Route path="/admin/modules/edit/:moduleid" element={<EditModule />} />
-          </Routes>
+            <Route path="/admin/user-logs" element={<UserAdmin />} />
+        </Routes>
         </div>
       </Router>
     </ThemeProvider>

@@ -1,7 +1,6 @@
 import openai
 from django.http import HttpResponse
 from dotenv import load_dotenv
-import logging
 from .services import process_audio_file, generate_text_from_prompt, convert_text_to_speech
 from rest_framework.response import Response
 from .serializers import ModuleSerializer
@@ -14,7 +13,6 @@ import os
 from .models import Users, Admin
 from rest_framework import status
 from .serializers import UserSerializer
-from django.contrib.auth.decorators import login_required
 from django.contrib.auth import authenticate, login
 from django.http import JsonResponse
 import logging
@@ -34,9 +32,7 @@ def process_audio(request):
     audio_file = request.FILES.get('audio')
     module_id = request.POST.get('module_id')
     interview_id = request.POST.get('interview_id')
-    user_id = request.POST.get('user_id')
-    system_prompt = request.POST.get('system_prompt')
-    prompt = request.POST.get('prompt')
+    date_active = request.POST.get('date_active')
 
     if not audio_file:
         logging.error("No audio file provided")
@@ -44,11 +40,10 @@ def process_audio(request):
 
     try:
         interview = Interview.objects.get(pk=interview_id)
-        user = Users.objects.get(userid=user_id)
         module = Module.objects.get(moduleid=module_id)
         module_model = module.model
-
-        modulename_part = module.modulename.split(':', 1)[1].strip() if ':' in module.modulename else module.modulename
+        module_system_prompt = module.system_prompt
+        module_prompt = module.prompt
 
         conversation_history = []
 
@@ -66,17 +61,16 @@ def process_audio(request):
 
         conversation_history.append({'role': 'user', 'content': transcribed_text})
 
-        generated_text = generate_text_from_prompt(conversation_history, system_prompt, prompt, module_model)
+        generated_text = generate_text_from_prompt(conversation_history, module_system_prompt, module_prompt, module_model)
 
         conversation_history.append({'role': 'assistant', 'content': generated_text})
 
         interview.transcript = "\n".join([f"{msg['role']}: {msg['content']}" for msg in conversation_history])
-        interview.dateactive = timezone.now()
+        interview.dateactive = date_active
         interview.save()
 
         if USE_AZURE_BLOB_STORAGE:
             speech_file_url = convert_text_to_speech(generated_text, module_id)
-            logging.info(f"Generated speech file URL: {speech_file_url}")
             return JsonResponse({"speech_file_url": speech_file_url}, status=200)
 
     except Exception as e:
@@ -87,7 +81,6 @@ def process_audio(request):
 @api_view(['GET'])
 def get_modules(request):
     modules = Module.objects.all()
-    logging.info(f"Modules: {modules}")
     serializer = ModuleSerializer(modules, many=True)
     return Response(serializer.data)
 
@@ -96,7 +89,6 @@ def get_module_by_id(request, module_id):
     try:
 
         module = Module.objects.get(moduleid=module_id)
-        logging.info(f"Module Data: {module}")
         serializer = ModuleSerializer(module)
         return Response(serializer.data)
     except Module.DoesNotExist:
@@ -134,8 +126,6 @@ def add_timestamp(request):
             logging.error("Missing required parameters: interview_id, event, or timestamp")
             return JsonResponse({"error": "Missing required parameters"}, status=400)
 
-        logging.info(f"Received data: interview_id={interview_id}, event={event}, timestamp={timestamp}")
-
         interview = Interview.objects.get(interviewid=interview_id)
 
         interview.timestamps.append({
@@ -169,7 +159,6 @@ def delete_tts_file(request):
         blob_client = blob_service_client.get_blob_client(container=AZURE_BLOB_CONTAINER_NAME, blob=blob_name)
 
         blob_client.delete_blob()
-        logging.info(f"TTS file {blob_name} deleted successfully from Azure Blob Storage")
 
         return JsonResponse({"message": "TTS file deleted successfully"}, status=200)
 
@@ -359,3 +348,44 @@ def edit_module(request, moduleid):
             return Response(serializer.errors, status=400)
     except Module.DoesNotExist:
         return Response({'error': 'Module not found.'}, status=status.HTTP_404_NOT_FOUND)
+    
+logger = logging.getLogger(__name__)
+@api_view(['GET'])
+def user_admin(request):
+    try:
+        # Fetch all users
+        users = Users.objects.all()
+        logger.debug(f'fetched users: {users}')
+        user_data = []
+
+        for user in users:
+            # Get interviews related to the user
+            interviews = Interview.objects.filter(userid__userid=user.userid).values(
+                'interviewid',
+                'dateactive',
+                'moduleid__modulename',
+                'interviewlength',
+            )
+
+            total_interviews = interviews.count()
+            total_interview_time = sum(interview['interviewlength'].total_seconds() for interview in interviews) / 3600  # Convert seconds to hours
+
+            user_data.append({
+                'userid':user.userid,
+                'email': user.email,
+                'total_interviews': total_interviews,
+                'total_interview_time': total_interview_time,
+                'interviews': [
+                    {
+                        'dateactive': interview['dateactive'].strftime('%Y-%m-%d'),
+                        'module_name': interview['moduleid__modulename'],
+                        'interviewlength': str(interview['interviewlength']),
+                    }
+                    for interview in interviews
+                ],
+            })
+
+        return JsonResponse(user_data, safe=False)
+    except Exception as e:
+        logger.error(f"Error fetching user admin data: {str(e)}")
+        return JsonResponse({'error': 'Internal server error'}, status=500)

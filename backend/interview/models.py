@@ -72,10 +72,10 @@ class Users(AbstractBaseUser):
 class Module(models.Model):
     moduleid=models.CharField(max_length=30, primary_key=True)
     modulename = models.CharField(max_length=30)
-    prompt = models.TextField(max_length=1000)
+    prompt = models.TextField()
     voice = models.CharField(max_length=50)
-    system_prompt = models.TextField(max_length=1000)
-    case_abstract = models.TextField(max_length=200)
+    system_prompt = models.TextField()
+    case_abstract = models.TextField()
     file = models.JSONField(default=list)
     model = models.CharField(max_length=50)
 

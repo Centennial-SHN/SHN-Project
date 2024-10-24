@@ -102,7 +102,8 @@ const InterviewHistory = () => {
             <FontAwesomeIcon icon={faBars} size="2x" color={iconColor} /> {/* Use iconColor state */}
           </div>
           <ul className={`nav-menu ${menuOpen ? "show" : ""}`}>
-            <li onClick={() => navigate(`/interview-history/${userid}`)}>Interview History</li>
+            {/* <li onClick={() => navigate(`/interview-history/${userid}`)}>Interview History</li> */}
+            <li onClick={() => navigate("/module")}>Select Module</li>
             <li onClick={() => navigate("/reset-password")}>Reset Password</li>
             {isAdmin && ( // This line ensures the "Switch to Admin" item is shown only to admin users
                 <li onClick={handleSwitchToAdmin}>Switch to Admin</li>
