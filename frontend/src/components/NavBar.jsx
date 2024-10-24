@@ -27,9 +27,10 @@ const NavBar = () => {
             ),
         },
         {
+            //need to update reset password link
             key: '2',
             label: (
-                <a onClick={() => navigate("/reset-password")}>
+                <a onClick={() => navigate("/")}>
                     Reset Password
                 </a>
             ),

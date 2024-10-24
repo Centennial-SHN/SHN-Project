@@ -42,15 +42,13 @@ const ModuleSelection = () => {
     fetchModules();
   }, []);
 
-  const handleModuleChange = (event) => {
-    setSelectedModule(event.target.value);
+  const handleModuleChange = (value) => {
+    setSelectedModule(value);
   };
 
   const handleProceed = async () => {
     if (selectedModule) {
       try {
-
-
 
         if (!userId) {
           alert("User is not logged in. Please log in first.");
