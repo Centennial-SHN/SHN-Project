@@ -33,13 +33,13 @@ body {
 }
 
 /* Module Selection */
-.module-selection {
+/* .module-selection {
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
   min-height: 100vh;
-  background-color: #f5f5f5; /* Same background to match overall */
+  background-color: #f5f5f5; /* Same background to match overall /
 }
 
 #module-select {
@@ -51,32 +51,32 @@ body {
   font-size: 1rem;
   background-color: #fff;
   box-shadow: 0px 3px 6px rgba(0, 0, 0, 0.1);
-}
+} */
 
 /*moduleselection*/
-.nav-menu {
-  display: none; /* Initially hide the menu */
+/* .nav-menu {
+  display: none; /* Initially hide the menu /
 }
 
 .nav-menu.show {
-  display: block; /* Show the menu when 'show' class is applied */
-}
+  display: block; /* Show the menu when 'show' class is applied /
+} */
 
 
 /* Additional styles for nav-menu */
-.nav-menu {
+/* .nav-menu {
   list-style-type: none;
   padding: 10px;
   background-color: #f0f0f0;
   position: absolute;
-  top: 60px; /* Adjust position as needed */
-  right: 40px; /* Adjust position as needed */
+  top: 60px; /* Adjust position as needed /
+  right: 40px; /* Adjust position as needed /
   z-index: 100;
   border: 1px solid #ccc;
-}
+} */
 
 /* Styling the menu items */
-.nav-menu li {
+/* .nav-menu li {
   margin: 10px 0;
   cursor: pointer;
   color: black;
@@ -87,18 +87,18 @@ body {
 }
 
 .nav-menu li:hover {
-  background-color: rgba(73, 198, 185, 0.1);
-}
+  background-color: rgba(73, 198, 185, 0.1); 
+}*/
 
 /* Hamburger icon styling */
-.hamburger {
+/* .hamburger {
   cursor: pointer;
   margin: 20px;
   position: absolute;
-  top: 0px; /* Adjust position as needed */
-  right: 20px; /* Adjust position as needed */
+  top: 0px; /* Adjust position as needed /
+  right: 20px; /* Adjust position as needed /
   z-index: 100;
-}
+} */
 
 .highlight {
   position:absolute;
@@ -189,6 +189,42 @@ h5.ant-typography {
   background-color: var(--global-grey1) !important;
   border-color: var(--global-grey2) !important;
   color: var(--global-grey4) !important;
+}
+
+/*NavBar*/
+.navBar {
+  background-color: var(--global-white);
+  box-shadow: 0 2px 4px 1px #f5f5f5;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.navBar .ant-btn {
+  border: none !important;
+  background: none !important;
+  box-shadow: none !important;
+  color: var(--global-grey4) !important;
+}
+
+.navBar .ant-btn:hover,
+.navBar .ant-btn:active
+{
+  color: var(--primary-teal) !important;
+}
+
+.ant-dropdown-menu {
+  border-radius: 4px !important;
+}
+
+.ant-dropdown-menu a {
+  text-decoration: none ;
+  color: var(--global-black)
+}
+
+.ant-dropdown-menu-item:last-child a {
+  color: var(--primary-teal) !important;
 }
 
 /*Card*/
@@ -307,4 +343,14 @@ padding: 48px 24px;
   justify-content: start;
   align-items: start;
   width: fit-content;
+}
+
+/*Module Selection Layout*/
+.layoutModuleSelect{
+  width:100vw;
+  height:100vh;
+  background-color: var(--global-white);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
 }
