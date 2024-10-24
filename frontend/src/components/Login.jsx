@@ -3,7 +3,8 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 // import './UserForm.css';
 import { VITE_API_BASE_URL_LOCAL, VITE_API_BASE_URL_PROD } from '../constants';
-import { Input, Button, Typography, Card } from 'antd';
+import { Input, Button, Typography, Card, Layout, Space, Divider } from 'antd';
+import logo from '../assets/logo-alt.svg';
 
 const { Title, Text } = Typography;
 
@@ -15,6 +16,8 @@ const Login = () => {
     const baseUrl = isDevelopment ? VITE_API_BASE_URL_LOCAL : VITE_API_BASE_URL_PROD;
 
     const backendUrl = baseUrl;
+
+    const [passwordVisible, setPasswordVisible] = React.useState(false);
 
     const handleLogin = async (e) => {
         e.preventDefault();
@@ -45,37 +48,51 @@ const Login = () => {
     };
 
     return (
-        <div className="forms">
-            <Card bordered={false}>
-                <form onSubmit={handleLogin}>
-                    <Title level={2}>Login</Title>
-                    <div className='container'>
-                        <Text>Email</Text>
-                        <Input
-                            type="email"
-                            placeholder="Email"
-                            value={email}
-                            onChange={(e) => setEmail(e.target.value)}
-                            required
-                        />
-                    </div>
-                    <div className='container'>
-                        <Text>Password</Text>
-                        <Input
-                            type="password"
-                            placeholder="Password"
-                            value={password}
-                            onChange={(e) => setPassword(e.target.value)}
-                            required
-                        />
-                    </div>
-                    <Button type="submit">Login</Button>
-                    <div>
-                        <Text>Don't have an account? <a onClick={() => navigate('/register')}>Register here</a></Text>
-                    </div>
-                </form>
-            </Card>
-        </div>
+        <Layout className="layoutLogInReg">
+            <Layout className="layoutRedirectLog">
+                <Space direction="vertical" size="middle" style={{ marginBottom: '32px', position: 'relative', }}>
+                    <div class="highlight"></div>
+                    <Title level={1}>First Time Here?</Title>
+                    <Text className="ant-typography-xl">Don't have an account yet? Sign up to start training with SHN  Virtual Interviews.</Text>
+                </Space>
+                <Button type="default" onClick={() => navigate('/register')}>Sign Up</Button>
+            </Layout>
+            <Layout className="layoutLoginRegForm">
+                <Space direction='horizontal' size="large" className="logoLoginReg">
+                    <img src={logo} alt="SHN Logo" style={{ width: '150px' }} />
+                    <Divider type='vertical' style={{  borderColor: '#5C5E84', height: '68px', }}></Divider>
+                    <Title level={3} style={{ color: '#5C5E84', width: '150px', }}>Virtual Interviews</Title>
+                </Space>
+                <Card bordered={false}>
+                    <form onSubmit={handleLogin}>
+                        <Space direction="vertical" size="large">
+                            <Space direction="vertical" size="middle">
+                                <Title level={1} style={{ color: '#191e72' }}>Login to Your Account</Title>
+                                <Text>Login to start using the virtual patient simulator.</Text>
+                            </Space>
+                            <Space direction="vertical" size="middle">
+                                <Input
+                                    type="email"
+                                    placeholder="Email"
+                                    value={email}
+                                    onChange={(e) => setEmail(e.target.value)}
+                                    required
+                                />
+                                <Input.Password
+                                    type="password"
+                                    placeholder="Password"
+                                    value={password}
+                                    onChange={(e) => setPassword(e.target.value)}
+                                    required
+                                    visibilityToggle={{ visible: passwordVisible, onVisibleChange: setPasswordVisible }}
+                                />
+                            </Space>
+                            <Button type="primary" htmlType="submit">Login</Button>
+                        </Space>
+                    </form>
+                </Card>
+            </Layout>
+        </Layout>
     );
 };
 

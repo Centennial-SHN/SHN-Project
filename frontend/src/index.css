@@ -2,72 +2,35 @@
   margin: 0;
   padding: 0;
   box-sizing: border-box;
+  --primary-teal: #49c6b9;
+  --primary-navy: #191e72;
+  --secondary-coral: #f96065;
+  --secondary-yellow: #fec24d;
+  --secondary-grey: #3a3a3c;
+  --global-black: #1D1E3A;
+  --global-white: #fff;
+  --global-grey1: #F1F2F3;
+  --global-grey2: #D8D9DE;
+  --global-grey3: #C1C2CD;
+  --global-grey4: #A6A8B9;
+  --global-grey5: #8E8FA9;
+  --global-grey6: #717398;
+  --global-grey7: #5C5E84;
+  --global-grey8: #474A6B;
+  --global-grey9: #343655;
+  --status-success: #5DE5B5;
+  --status-warning: #FEB934;
+  --status-error: #F8494F;
+  --status-info: #357CED;
 }
 
-/*Ant Design Custom CSS*/
-/*H1*/
-h1.ant-typography {
-  font-weight: 700;
+body {
+    display: flex;
+    flex-direction:row;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
 }
-
-/*H2*/
-h2.ant-typography {
-  text-transform: uppercase;
-  letter-spacing: 2px;
-  font-weight: 700;
-}
-
-/*H3*/
-h3.ant-typography {
-  font-weight: 600;
-}
-
-/*H4*/
-h4.ant-typography {
-  font-weight: 600;
-}
-
-/*H5*/
-h5.ant-typography {
-  font-weight: 700;
-}
-
-/*H6*/
-.customH6 {
-  font-size: 12px;
-  font-weight: 400;
-  line-height: 20px;
-  text-transform: uppercase;
-  letter-spacing: 4px;
-}
-
-/* body {
-  font-family: 'Arial', sans-serif;
-  background-color: #e9ecef;
-  color: #333;
-  line-height: 1.6;
-} */
-
-/* h1 {
-  font-family: Arial, sans-serif;
-  color: #333;
-  margin-bottom: 15px;
-  font-size: 2rem;
-}
-
-h3 {
-  margin-bottom: 10px;
-  color: #555;
-}
-
-p {
-  font-size: 1.2rem;
-  color: #666;
-  max-width: 600px;
-  margin: 0 auto 20px auto;
-  line-height: 1.5;
-} */
-
 
 /* Module Selection */
 .module-selection {
@@ -79,13 +42,6 @@ p {
   background-color: #f5f5f5; /* Same background to match overall */
 }
 
-/* h1 {
-  font-family: Arial, sans-serif;
-  color: #333;
-  margin-bottom: 20px;
-  font-size: 2rem;
-} */
-
 #module-select {
   width: 250px;
   padding: 10px;
@@ -96,30 +52,6 @@ p {
   background-color: #fff;
   box-shadow: 0px 3px 6px rgba(0, 0, 0, 0.1);
 }
-
-/* button {
-  background-color: #007BFF;  / Matches play button style /
-  color: white;
-  padding: 10px 24px;
-  font-size: 16px;
-  border: none;
-  border-radius: 5px;
-  cursor: pointer;
-  transition: background-color 0.3s ease;
-}
-
-button:hover {
-  background-color: #0069d9;
-}
-
-button:focus {
-  outline: none;
-}
-
-button:active {
-  background-color: #0056b3;
-} */
-
 
 /*moduleselection*/
 .nav-menu {
@@ -166,4 +98,185 @@ button:active {
   top: 0px; /* Adjust position as needed */
   right: 20px; /* Adjust position as needed */
   z-index: 100;
+}
+
+.highlight {
+  position:absolute;
+  /* z-index: -1; */
+  height:400px;
+  width:650px;
+  top:100%;
+  border-radius:100%;
+  opacity:15%;
+  mix-blend-mode: overlay;
+  background: linear-gradient(
+    rgba(250,250,250,100%),
+    rgba(250,250,250,0%)
+  );
+  filter: blur(6px);
+}
+
+/* ---- Ant Design Custom CSS ---- */
+/*H1*/
+h1.ant-typography {
+  font-weight: 700;
+}
+
+/*H2*/
+h2.ant-typography {
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  font-weight: 700;
+}
+
+/*H3*/
+h3.ant-typography {
+  font-weight: 600;
+}
+
+/*H4*/
+h4.ant-typography {
+  font-weight: 600;
+}
+
+/*H5*/
+h5.ant-typography {
+  font-weight: 700;
+}
+
+/*H6*/
+.customH6 {
+  font-size: 12px;
+  font-weight: 400;
+  line-height: 16px;
+  text-transform: uppercase;
+  letter-spacing: 4px;
+}
+
+/*Button*/
+.ant-btn {
+  font-size: 12px;
+  line-height: 16px;
+  text-transform: uppercase;
+  letter-spacing: 4px;
+  border: solid 1px var(--primary-teal);
+  box-shadow: 0 2px 0 0 rgba(73, 198, 185, 0.1);
+  border-radius: 40px;
+  padding: 4px 20px;
+}
+
+.ant-btn-default {
+  background-color: #fff !important;
+  color: var(--primary-teal);
+}
+
+.ant-btn:hover,
+.ant-btn-default:hover {
+  background-color: #6FD2C8 !important;
+  color: #fff !important;
+}
+
+.ant-btn:active,
+.ant-btn-default:active {
+  background-color: #3DD1C2 !important;
+  color: #fff !important;
+}
+
+.ant-btn-disabled,
+.ant-btn-disabled:hover,
+.ant-btn-disabled:active,
+.ant-btn:disabled {
+  background-color: var(--global-grey1) !important;
+  border-color: var(--global-grey2) !important;
+  color: var(--global-grey4) !important;
+}
+
+/*Card*/
+.ant-card .ant-card-body{
+padding: 48px 24px;
+}
+
+/*Space*/
+.ant-space {
+  width:100%;
+  margin:0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.ant-space-item {
+  width: inherit;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+/*Login & Reg Layout*/
+.layoutLogInReg{
+  width:100vw;
+  height:100vh;
+  background-color: var(--global-white);
+  display: flex;
+  flex-direction: row;
+  overflow: hidden;
+}
+
+.layoutLogInReg .ant-typography {
+  margin-bottom:0;
+}
+
+.layoutLogInReg .ant-btn {
+  min-width:150px;
+}
+
+.layoutRedirectLog {
+  width:40%;
+  min-width: 400px;
+  max-width:600px;
+  background: radial-gradient(
+      circle at 50% 0%,
+      #A4EAE2,
+      var(--primary-teal) 100%  
+    )
+  ;
+  color: var(--global-white);
+  text-align: center;
+  padding:48px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.layoutRedirectLog .ant-typography {
+  color: var(--global-white);
+}
+
+.layoutRedirectLog .ant-space {
+  max-width:415px;
+}
+
+.layoutLoginRegForm {
+  width:60%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  background-color: inherit;
+  position:relative;
+}
+
+.logoLoginReg {
+  position:absolute;
+  top:64px;
+  left:64px;
+  justify-content: start;
+  align-items: start;
+}
+
+.logoLoginReg .ant-space-item {
+  display: flex;
+  justify-content: start;
+  align-items: start;
+  width: fit-content;
 }
