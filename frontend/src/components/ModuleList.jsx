@@ -4,6 +4,8 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faBars } from '@fortawesome/free-solid-svg-icons';
 import Sidebar from './Sidebar';
 import './ModuleAdmin.css';
+import './navbar.css';
+import Cookies from 'js-cookie';
 import { VITE_API_BASE_URL_LOCAL, VITE_API_BASE_URL_PROD } from '../constants';
 
 const AdminModuleList = () => {
@@ -14,7 +16,7 @@ const AdminModuleList = () => {
     const isDevelopment = import.meta.env.MODE === "development";
     const baseUrl = isDevelopment ? VITE_API_BASE_URL_LOCAL : VITE_API_BASE_URL_PROD;
     const backendUrl = baseUrl;
-
+    const csrfToken = Cookies.get('csrftoken');
     const hasCheckedSuperuser = useRef(false);
 
     const checkSuperuser = () => {
@@ -36,7 +38,14 @@ const AdminModuleList = () => {
         }
         
         const fetchModules = async () => {
-            const response = await fetch(`${backendUrl}/api/modules/`);
+            const response = await fetch(`${backendUrl}/api/modules/`,{
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': csrfToken,
+                },
+                credentials: 'include',
+            });
             const data = await response.json();
             console.log(data)
             setModules(data);
@@ -80,7 +89,7 @@ const AdminModuleList = () => {
             {/* <Sidebar /> */}
             <div className="module-list">
                 <h2 className='title'>Module List</h2>
-                <br/>
+                {/* <br/> */}
                 {/* Add Module button */}
                 <button className="addModule" onClick={() => navigate('/admin/modules/add')}>Add New Module</button>
                 <br/>

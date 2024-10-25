@@ -4,7 +4,9 @@ import { useNavigate } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faBars } from '@fortawesome/free-solid-svg-icons';
 import './ModuleAdmin.css';
+import './navbar.css';
 import Sidebar from './Sidebar.jsx';
+import Cookies from 'js-cookie';
 import { VITE_API_BASE_URL_LOCAL, VITE_API_BASE_URL_PROD } from '../constants.js';
 
 const AddModule = () => {
@@ -25,6 +27,7 @@ const AddModule = () => {
     const [iconColor, setIconColor] = useState("black");
 
     const hasCheckedSuperuser = useRef(false);
+    const csrfToken = Cookies.get('csrftoken');
 
     const checkSuperuser = () => {
         const storedIsSuperuser = sessionStorage.getItem("isSuperUser");
@@ -68,6 +71,11 @@ const AddModule = () => {
         const response = await fetch(`${backendUrl}/api/modules/add/`, {
             method: 'POST',
             body: formData,
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': csrfToken,
+            },
+            credentials: 'include',
         });
 
         if (response.ok) {
