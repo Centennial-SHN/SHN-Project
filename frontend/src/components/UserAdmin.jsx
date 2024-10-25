@@ -1,8 +1,10 @@
 import React, { useEffect, useState, useRef } from "react";
 import { useNavigate } from 'react-router-dom';
 import './UserAdmin.css';
+import './navbar.css'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faBars } from '@fortawesome/free-solid-svg-icons';
+import Cookies from 'js-cookie';
 import { VITE_API_BASE_URL_LOCAL, VITE_API_BASE_URL_PROD } from "../constants";
 
 const UserAdmin = () => {
@@ -14,7 +16,7 @@ const UserAdmin = () => {
   const isDevelopment = import.meta.env.MODE === "development";
   const baseUrl = isDevelopment ? VITE_API_BASE_URL_LOCAL : VITE_API_BASE_URL_PROD;
   const backendUrl = baseUrl;
-
+  const csrfToken = Cookies.get('csrftoken');
   const hasCheckedSuperuser = useRef(false);
 
   const checkSuperuser = () => {
@@ -99,12 +101,14 @@ const UserAdmin = () => {
   const handleDownloadTranscript = async (interviewId) => {
     console.log("Interview ID:", interviewId);
     try {
-      const response = await fetch(
-        `${backendUrl}/api/download_transcript/${interviewId}/`,
-        {
-          method: "GET",
-        }
-      );
+      const response = await fetch(`${backendUrl}/api/admin/users/`,{
+        method: 'GET',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRFToken': csrfToken,
+        },
+        credentials: 'include',
+    });
 
       if (!response.ok) {
         throw new Error("Failed to download transcript");
@@ -203,7 +207,7 @@ const UserAdmin = () => {
 
               return (
                 <React.Fragment key={user.id}>
-                  {totalInterviews > 0 && (
+                  {
                     // First row with Email, Total Interviews, Total Interview Time, and blank for Date, Module, Logs
                     <tr>
                       <td>
@@ -218,7 +222,7 @@ const UserAdmin = () => {
                       <td></td>
                       <td></td>
                     </tr>
-                  )}
+                  }
 
                   {/* Sub-rows for each interview */}
                   {user.interviews.map((interview, index) => {

@@ -3,7 +3,9 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faBars } from '@fortawesome/free-solid-svg-icons';
 import './ModuleAdmin.css';
+import './navbar.css';
 import Sidebar from './Sidebar.jsx';
+import Cookies from 'js-cookie';
 import { VITE_API_BASE_URL_LOCAL, VITE_API_BASE_URL_PROD } from '../constants.js';
 
 const EditModule = () => {
@@ -19,6 +21,7 @@ const EditModule = () => {
     const isDevelopment = import.meta.env.MODE === "development";
     const baseUrl = isDevelopment ? VITE_API_BASE_URL_LOCAL : VITE_API_BASE_URL_PROD;
     const backendUrl = baseUrl;
+    const csrfToken = Cookies.get('csrftoken');
 
     const [menuOpen, setMenuOpen] = useState(false); // State for toggling the menu
     const [iconColor, setIconColor] = useState("black");
@@ -45,7 +48,14 @@ const EditModule = () => {
         }
 
         const fetchModule = async () => {
-            const response = await fetch(`${backendUrl}/api/modules/edit/${moduleid}/`);
+            const response = await fetch(`${backendUrl}/api/modules/edit/${moduleid}/`,{
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': csrfToken,
+                },
+                credentials: 'include',
+            });
             const data = await response.json();
             console.log(moduleid)
             if (response.ok) {
@@ -83,6 +93,11 @@ const EditModule = () => {
         const response = await fetch(`${backendUrl}/api/modules/edit/${moduleid}/`, {
             method: 'PUT',
             body: formData,
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': csrfToken,
+            },
+            credentials: 'include',
         });
 
         if (response.ok) {
