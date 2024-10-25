@@ -16,6 +16,7 @@ from .serializers import UserSerializer
 from django.contrib.auth import authenticate, login
 from django.http import JsonResponse
 import logging
+import csv
 
 
 logging.basicConfig(level=logging.DEBUG)
@@ -219,8 +220,8 @@ def download_transcript(request, interview_id):
 
         timestamps = interview.timestamps
 
-        transcript_lines = transcript.split("\n")
-        updated_lines = []
+        transcript_lines = [line for line in transcript.split("\n") if line.strip()]
+        csv_rows = []
 
         user_timestamp_index = 0
         assistant_timestamp_index = 0
@@ -232,12 +233,12 @@ def download_transcript(request, interview_id):
 
                 if user_timestamp_index < len(timestamps):
                     user_timestamp = timestamps[user_timestamp_index]["timestamp"]
-                    updated_line = line.replace('user:', f'[{user_timestamp}] {interview.userid.userid}:')
+                    user_id = interview.userid.userid
+                    message = line.replace('user:', '').strip()
+                    csv_rows.append([user_timestamp, user_id, message])
                     user_timestamp_index += 1
                 else:
-                    updated_line = line
-
-                updated_lines.append(updated_line)
+                    csv_rows.append(["", interview.userid.userid, line.replace('user:', '').strip()])
 
             elif line.startswith('assistant:'):
                 while assistant_timestamp_index < len(timestamps) and timestamps[assistant_timestamp_index]["event"] != "audio_playback_end":
@@ -245,20 +246,22 @@ def download_transcript(request, interview_id):
 
                 if assistant_timestamp_index < len(timestamps):
                     assistant_timestamp = timestamps[assistant_timestamp_index]["timestamp"]
-                    updated_line = line.replace('assistant:', f'[{assistant_timestamp}] {modulename_part}:')
+                    message = line.replace('assistant:', '').strip()
+                    csv_rows.append([assistant_timestamp, modulename_part, message])
                     assistant_timestamp_index += 1
                 else:
-                    updated_line = line
-
-                updated_lines.append(updated_line)
+                    csv_rows.append(["", modulename_part, line.replace('assistant:', '').strip()])
 
             else:
-                updated_lines.append(line)
+                csv_rows.append(["", "", line])
 
-        updated_transcript = "\n".join(updated_lines)
+        response = HttpResponse(content_type='text/csv')
+        response['Content-Disposition'] = f'attachment; filename="transcript_{interview_id}.csv"'
 
-        response = HttpResponse(updated_transcript, content_type='text/plain')
-        response['Content-Disposition'] = f'attachment; filename="transcript_{interview_id}.txt"'
+        writer = csv.writer(response)
+        writer.writerow(['timestamp', 'speaker_id', 'message'])  # CSV header
+        writer.writerows(csv_rows)
+
         return response
 
     except Interview.DoesNotExist:
@@ -266,6 +269,7 @@ def download_transcript(request, interview_id):
     except Exception as e:
         logging.error(f"Error while processing transcript: {str(e)}")
         return JsonResponse({"error": str(e)}, status=500)
+
 
 
 @api_view(['GET'])
