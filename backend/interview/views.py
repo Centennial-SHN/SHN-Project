@@ -18,7 +18,6 @@ from django.http import JsonResponse
 import logging
 import csv
 
-
 logging.basicConfig(level=logging.DEBUG)
 
 load_dotenv()

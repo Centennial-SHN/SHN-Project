@@ -52,7 +52,6 @@ const InterviewHistory = () => {
     fetchInterviews();
   }, [userid, backendUrl]);
 
-
   const handleDownloadTranscript = async (interviewId) => {
     try {
       const response = await fetch(
