@@ -58,7 +58,7 @@ CSRF_TRUSTED_ORIGINS = [
 
 SESSION_ENGINE = 'django.contrib.sessions.backends.db'
 
-ALLOWED_HOSTS = ['localhost', '127.0.0.1']
+# ALLOWED_HOSTS = ['localhost', '127.0.0.1']
 
 SESSION_COOKIE_SAMESITE = 'None'
 SESSION_COOKIE_SECURE = True  # Set to True for HTTPS, False for local testing
