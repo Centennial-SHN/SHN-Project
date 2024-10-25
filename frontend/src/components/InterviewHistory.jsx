@@ -69,7 +69,7 @@ const InterviewHistory = () => {
       const url = window.URL.createObjectURL(blob);
       const link = document.createElement("a");
       link.href = url;
-      link.setAttribute("download", `transcript_${interviewId}.txt`);
+      link.setAttribute("download", `transcript_${interviewId}.csv`); // Updated to .csv
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
@@ -77,6 +77,7 @@ const InterviewHistory = () => {
       console.error("Error downloading transcript:", error);
     }
   };
+
 
   const handleLogout = () => {
     sessionStorage.removeItem("userId"); // Clear userId from sessionStorage
