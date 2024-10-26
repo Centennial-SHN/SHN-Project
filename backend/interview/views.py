@@ -1,8 +1,8 @@
-from interview.utils import upload_file_to_blob
+
 import openai
 from django.http import HttpResponse
 from dotenv import load_dotenv
-from .services import process_audio_file, generate_text_from_prompt, convert_text_to_speech
+from .services import process_audio_file, generate_text_from_prompt, convert_text_to_speech, upload_file_to_blob
 from .serializers import ModuleSerializer
 from datetime import timedelta, datetime
 from azure.storage.blob import BlobServiceClient
