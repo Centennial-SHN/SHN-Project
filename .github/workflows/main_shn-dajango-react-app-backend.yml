@@ -33,13 +33,7 @@ jobs:
           cd backend
           python -m pip install --upgrade pip
           pip install -r requirements.txt
-
-      - name: Run Django commands
-        env:
-          AZURE_STORAGE_CONNECTION_STRING: ${{ secrets.AZURE_STORAGE_CONNECTION_STRING }}
-        run: |
-          python manage.py collectstatic --noinput
-          python manage.py migrate
+      
 
       - name: Collect static files
         run:  |

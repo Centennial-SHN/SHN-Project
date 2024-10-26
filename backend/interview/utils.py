@@ -4,10 +4,16 @@ import os
 import uuid
 from azure.storage.blob import BlobServiceClient
 from azure.core.exceptions import AzureError
-from django.conf import settings
+from dotenv import load_dotenv
 import logging
 
 logger = logging.getLogger(__name__)
+# Load environment variables from .env file
+load_dotenv()
+# Get environment variables
+AZURE_STORAGE_CONNECTION_STRING = os.getenv('AZURE_STORAGE_CONNECTION_STRING')
+MODULE_ATTACHMENTS_BLOB_CONTAINER = os.getenv('MODULE_ATTACHMENTS_BLOB_CONTAINER', 'module-attachments')
+
 
 def upload_file_to_blob(file):
     try:
@@ -16,14 +22,10 @@ def upload_file_to_blob(file):
         blob_name = f"{uuid.uuid4()}{file_extension}"
         
         # Initialize the blob service client
-        blob_service_client = BlobServiceClient.from_connection_string(
-            settings.AZURE_STORAGE_CONNECTION_STRING
-        )
+        blob_service_client = BlobServiceClient.from_connection_string(AZURE_STORAGE_CONNECTION_STRING)
         
         # Get the container client
-        container_client = blob_service_client.get_container_client(
-            settings.AZURE_BLOB_CONTAINER_NAME
-        )
+        container_client = blob_service_client.get_container_client(MODULE_ATTACHMENTS_BLOB_CONTAINER)
         
         # Get blob client
         blob_client = container_client.get_blob_client(blob_name)
@@ -32,9 +34,8 @@ def upload_file_to_blob(file):
         content = file.read()
 
         # For text files, ensure proper encoding
-        if file.content_type == 'text/plain':
-            if isinstance(content, str):
-                content = content.encode('utf-8')
+        if file.content_type == 'text/plain' and isinstance(content, str):
+            content = content.encode('utf-8')
         
         # Upload the blob
         blob_client.upload_blob(content, overwrite=True)
