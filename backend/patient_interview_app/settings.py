@@ -1,6 +1,7 @@
 from pathlib import Path
 import os
 from dotenv import load_dotenv
+from decouple import config
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -134,6 +135,6 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 # settings.py
 from decouple import config
 
-AZURE_STORAGE_CONNECTION_STRING = config('AZURE_STORAGE_CONNECTION_STRING')
+AZURE_STORAGE_CONNECTION_STRING = config('AZURE_STORAGE_CONNECTION_STRING', default='')
 AZURE_BLOB_CONTAINER_NAME = config('AZURE_BLOB_CONTAINER_NAME')
 
