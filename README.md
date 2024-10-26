@@ -38,6 +38,7 @@ frontend
 - npm install
 - npm install react-router-dom
 - npm install @fortawesome/react-fontawesome @fortawesome/free-solid-svg-icons
+- npm install antd --save
 
 
 2. Add the .env file in the root directory under the 'frontend' directory
@@ -48,5 +49,5 @@ frontend
 - npm run dev
 
 4. Open your browser and go to localhost:5173 to view the running application
-<<<<<<<< HEAD.
+<<<<<<<<< HEAD
 
