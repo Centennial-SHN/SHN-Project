@@ -132,9 +132,4 @@ STATIC_ROOT = BASE_DIR/'staticfiles'
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
-# settings.py
-from decouple import config
-
-AZURE_STORAGE_CONNECTION_STRING = config('AZURE_STORAGE_CONNECTION_STRING', default='')
-AZURE_BLOB_CONTAINER_NAME = config('AZURE_BLOB_CONTAINER_NAME')
 
