@@ -43,15 +43,15 @@ const UserAdmin = () => {
         }
         const data = await response.json();
         // Log the users data to verify structure
-        console.log("Fetched Users Data:", data);
+        
        
         const usersWithInterviews = await Promise.all(
           data.map(async (user) => {
             // Log user data to verify user.id
-            console.log("User data:", user);
+            
 
             if (!user.userid) {
-              console.error("Error: user.userid is undefined for user:", user);
+              
               return user;
             }
 
@@ -62,15 +62,14 @@ const UserAdmin = () => {
             }
             const interviews = await interviewsResponse.json();
             // Log interviews for each user
-            console.log(`Interviews for user ${user.userid}:`, interviews);
+            
             const filteredInterviews = interviews.filter(
                 (interview) => interview.interviewlength !== "0:00:00" // Assuming interview_length is in seconds
               );
             return { ...user, interviews: filteredInterviews }; // Attach interviews to each user object
           })
         );
-        // Log the final users data after attaching interviews
-        console.log("Users with Interviews:", usersWithInterviews);
+       
         setUsers(usersWithInterviews);
       } catch (error) {
         console.error("Error fetching users or interviews:", error);
@@ -97,7 +96,7 @@ const UserAdmin = () => {
   );
 
   const handleDownloadTranscript = async (interviewId) => {
-    console.log("Interview ID:", interviewId);
+    
     try {
       const response = await fetch(
         `${backendUrl}/api/download_transcript/${interviewId}/`,
@@ -164,7 +163,7 @@ const UserAdmin = () => {
           <ul className={`nav-menu ${menuOpen ? "show" : ""}`}>
             <li onClick={() => navigate('/admin/module-list')}>Modules</li>
             <li onClick={() => navigate('/admin/user-logs')}>User Logs</li>
-            <li onClick={() => navigate(`/module`)}>Switch to user</li>
+            <li onClick={() => navigate('/module')}>Switch to user</li>
             <li onClick={() => navigate("/reset-password")}>Reset Password</li>
             <li onClick={handleLogout}>Logout</li>
           </ul>
@@ -203,7 +202,7 @@ const UserAdmin = () => {
 
               return (
                 <React.Fragment key={user.id}>
-                  {totalInterviews > 0 && (
+                  {(
                     // First row with Email, Total Interviews, Total Interview Time, and blank for Date, Module, Logs
                     <tr>
                       <td>
@@ -211,6 +210,7 @@ const UserAdmin = () => {
                           {user.email}
                         </a>
                       </td>
+                      <td>{user.name}</td>
                       <td>{totalInterviews}</td>
                       <td>{formatTime(totalTime)}</td> {/* Total Interview Time */}
                       {/* Blank cells for Date, Module, and Logs */}

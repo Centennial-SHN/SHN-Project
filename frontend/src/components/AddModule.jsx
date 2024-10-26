@@ -13,7 +13,8 @@ const AddModule = () => {
     const [voice, setVoice] = useState('Alloy');
     const [systemPrompt, setSystemPrompt] = useState('');
     const [caseAbstract, setCaseAbstract] = useState('');
-    const [file, setFile] = useState(null);
+    const [files, setFiles] = useState([]);
+    const fileInputRef = useRef(null);
     const [model, setModel] = useState('gpt-4o-mini');
     const navigate = useNavigate();
     const isDevelopment = import.meta.env.MODE === "development";
@@ -46,7 +47,16 @@ const AddModule = () => {
     }, []);
 
     const handleFileChange = (e) => {
-        setFile(e.target.files[0]);
+        setFiles([...files, ...Array.from(e.target.files)]); // Append new files
+    }
+    const removeFile = (indexToRemove) => {
+        const updatedFiles = files.filter((_, index) => index !== indexToRemove);
+        setFiles(updatedFiles);
+
+        // Reset the file input field after removal
+        if (updatedFiles.length === 0 && fileInputRef.current) {
+            fileInputRef.current.value = "";  // Clear the file input field
+        }
     };
 
     const handleSave = async (e) => {
@@ -59,23 +69,38 @@ const AddModule = () => {
         formData.append('system_prompt', systemPrompt);
         formData.append('case_abstract', caseAbstract);
         
-        if (file) {
-            formData.append('file', file);
+        // Append multiple files
+
+        if (files && files.length > 0) {
+            files.forEach((file) => {
+                formData.append('file', file);  // Ensure each file is appended as 'file'
+            });
         }
 
         formData.append('model', model);
+        // Debugging: Log form data
+        for (let [key, value] of formData.entries()) {
+            console.log(`${key}: ${value}`);
+        }
 
-        const response = await fetch(`${backendUrl}/api/modules/add/`, {
-            method: 'POST',
-            body: formData,
-        });
-
-        if (response.ok) {
-            alert('Module added successfully!');
-            navigate('/admin/module-list'); // Redirect to the module list after saving
-        } else {
-            const data = await response.json();
-            alert(data.error || 'Error adding module.');
+        try {
+            const response = await fetch(`${backendUrl}/api/modules/add/`, {
+                method: 'POST',
+                body: formData,
+            });
+    
+            if (response.ok) {
+                const data = await response.json(); // Get response data
+                alert('Module added successfully!');
+                // Navigate to the modules list after successful addition
+                navigate('/admin/module-list'); // Adjust this URL based on your routing setup
+            } else {
+                const data = await response.json();
+                alert(data.error || 'Error adding module.');
+            }
+        } catch (error) {
+            console.error('Network error:', error);
+            alert('Network error. Please try again later.');
         }
     };
 
@@ -101,7 +126,7 @@ const AddModule = () => {
             <ul className={`nav-menu ${menuOpen ? "show" : ""}`}>
                 <li onClick={() => navigate('/admin/module-list')}>Modules</li>
                 <li onClick={() => navigate('/admin/user-logs')}>User Logs</li>
-                <li onClick={() => navigate(`/module`)}>Switch to user</li>
+                <li onClick={() => navigate('/module')}>Switch to user</li>
                 <li onClick={() => navigate("/reset-password")}>Reset Password</li>
                 <li onClick={handleLogout}>Logout</li>
             </ul>
@@ -161,9 +186,26 @@ const AddModule = () => {
                 </div>
 
                 <div className="form-group">
-                    <label>File attachment:</label>
-                    <input type="file" onChange={handleFileChange} />
-                </div>
+                        <label>File attachment:</label>
+                        <input type="file" onChange={handleFileChange} multiple className="file-input" ref={fileInputRef} />
+                        
+                        {files.length > 0 && (
+                            <ul className="file-list">
+                                {files.map((file, index) => (
+                                    <li key={index} className="file-item">
+                                        <span className="file-name">{file.name}</span>
+                                        <span
+                                            className="remove-file-cross"
+                                            onClick={() => removeFile(index)}
+                                        >
+                                            ✕
+                                        </span>
+                                    </li>
+                                ))}
+                            </ul>
+                        )}
+                    </div>
+
 
                 <div className="form-group">
                     <label>Model:</label>

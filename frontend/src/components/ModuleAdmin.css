@@ -126,3 +126,68 @@ button[type="button"] {
 button[type="button"]:hover {
     background-color: #5a6268;
 }
+/* File upload input styling */
+.file-input {
+  display: block;
+  margin-top: 10px;
+  padding: 10px;
+  border: 2px solid #4dbdb1;
+  border-radius: 6px;
+  background-color: #f9f9f9;
+  cursor: pointer;
+  width: 100%;
+  box-sizing: border-box;
+  transition: border-color 0.3s ease;
+}
+
+.file-input:hover {
+  border-color: #3498db;
+}
+
+/* File list */
+.file-list {
+  list-style-type: none;
+  padding: 0;
+  margin: 15px 0 0;
+  max-width: 100%;
+}
+
+/* File item */
+.file-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px;
+  background-color: #f0f8ff;
+  border: 1px solid #c0c0c0;
+  border-radius: 8px;
+  margin-bottom: 8px;
+  transition: background-color 0.3s ease;
+}
+
+/* Hover effect for file item */
+.file-item:hover {
+  background-color: #e0f7fa;
+}
+
+/* File name */
+.file-name {
+  font-size: 14px;
+  font-weight: 500;
+  color: #333;
+  flex-grow: 1;
+  word-wrap: break-word;
+}
+
+/* Remove cross */
+.remove-file-cross {
+  color: #e74c3c;
+  font-size: 18px;
+  cursor: pointer;
+  padding-left: 10px;
+  transition: color 0.2s ease;
+}
+
+.remove-file-cross:hover {
+  color: #c0392b;
+}

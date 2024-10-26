@@ -1,24 +1,29 @@
+from interview.utils import upload_file_to_blob
 import openai
 from django.http import HttpResponse
 from dotenv import load_dotenv
 from .services import process_audio_file, generate_text_from_prompt, convert_text_to_speech
-from rest_framework.response import Response
 from .serializers import ModuleSerializer
 from datetime import timedelta, datetime
 from azure.storage.blob import BlobServiceClient
-from rest_framework.decorators import api_view
 from django.utils import timezone
 from .models import Interview, Module, Users
 import os
 from .models import Users, Admin
+from rest_framework.response import Response
 from rest_framework import status
+from rest_framework.decorators import api_view, parser_classes
+from rest_framework.parsers import MultiPartParser, FormParser , JSONParser
 from .serializers import UserSerializer
 from django.contrib.auth import authenticate, login
 from django.http import JsonResponse
 import logging
-
+import csv
 
 logging.basicConfig(level=logging.DEBUG)
+logger = logging.getLogger(__name__)
+
+
 
 load_dotenv()
 openai.api_key = os.getenv('OPENAI_API_KEY')
@@ -219,8 +224,8 @@ def download_transcript(request, interview_id):
 
         timestamps = interview.timestamps
 
-        transcript_lines = transcript.split("\n")
-        updated_lines = []
+        transcript_lines = [line for line in transcript.split("\n") if line.strip()]
+        csv_rows = []
 
         user_timestamp_index = 0
         assistant_timestamp_index = 0
@@ -232,12 +237,12 @@ def download_transcript(request, interview_id):
 
                 if user_timestamp_index < len(timestamps):
                     user_timestamp = timestamps[user_timestamp_index]["timestamp"]
-                    updated_line = line.replace('user:', f'[{user_timestamp}] {interview.userid.userid}:')
+                    user_id = interview.userid.userid
+                    message = line.replace('user:', '').strip()
+                    csv_rows.append([user_timestamp, user_id, message])
                     user_timestamp_index += 1
                 else:
-                    updated_line = line
-
-                updated_lines.append(updated_line)
+                    csv_rows.append(["", interview.userid.userid, line.replace('user:', '').strip()])
 
             elif line.startswith('assistant:'):
                 while assistant_timestamp_index < len(timestamps) and timestamps[assistant_timestamp_index]["event"] != "audio_playback_end":
@@ -245,20 +250,22 @@ def download_transcript(request, interview_id):
 
                 if assistant_timestamp_index < len(timestamps):
                     assistant_timestamp = timestamps[assistant_timestamp_index]["timestamp"]
-                    updated_line = line.replace('assistant:', f'[{assistant_timestamp}] {modulename_part}:')
+                    message = line.replace('assistant:', '').strip()
+                    csv_rows.append([assistant_timestamp, modulename_part, message])
                     assistant_timestamp_index += 1
                 else:
-                    updated_line = line
-
-                updated_lines.append(updated_line)
+                    csv_rows.append(["", modulename_part, line.replace('assistant:', '').strip()])
 
             else:
-                updated_lines.append(line)
+                csv_rows.append(["", "", line])
 
-        updated_transcript = "\n".join(updated_lines)
+        response = HttpResponse(content_type='text/csv')
+        response['Content-Disposition'] = f'attachment; filename="transcript_{interview_id}.csv"'
 
-        response = HttpResponse(updated_transcript, content_type='text/plain')
-        response['Content-Disposition'] = f'attachment; filename="transcript_{interview_id}.txt"'
+        writer = csv.writer(response)
+        writer.writerow(['timestamp', 'speaker_id', 'message'])  # CSV header
+        writer.writerows(csv_rows)
+
         return response
 
     except Interview.DoesNotExist:
@@ -266,6 +273,7 @@ def download_transcript(request, interview_id):
     except Exception as e:
         logging.error(f"Error while processing transcript: {str(e)}")
         return JsonResponse({"error": str(e)}, status=500)
+
 
 
 @api_view(['GET'])
@@ -320,18 +328,77 @@ def user_login(request):
 
 
 logger = logging.getLogger(__name__)
+
 @api_view(['POST'])
+@parser_classes([MultiPartParser, FormParser, JSONParser])
+# def add_module(request):
 def add_module(request):
-    if request.method == 'POST':
-        serializer = ModuleSerializer(data=request.data)
+    try:
+        logger.info("Starting file upload process")
+        
+        # Get files from request
+        files = request.FILES.getlist('file')
+        logger.info(f"request.FILES: {request.FILES}")
+
+        logger.info(f"Received {len(files)} files")
+        
+
+        
+        # Initialize file list for JSON field
+        file_list = []
+        
+        # Process each uploaded file
+        for uploaded_file in files:
+            logger.info(f"Processing file: {uploaded_file.name}")
+            # Upload to Azure and get URL
+            file_url = upload_file_to_blob(uploaded_file)
+            
+            if file_url:
+                # Create file metadata
+                # file_info = {
+                #     "name": uploaded_file.name,
+                #     "url": file_url,
+                    
+                # }
+                file_info = {  uploaded_file.name : file_url  }
+                file_list.append(file_info)
+                logger.info(f"File processed successfully: {file_info}")
+        
+        # Prepare data for serializer
+        logger.info(f"File list for serializer: {file_list}")
+        data = {
+            'modulename': request.data.get('modulename', ''),
+            'prompt': request.data.get('prompt', ''),
+            'voice': request.data.get('voice', ''),
+            'system_prompt': request.data.get('system_prompt', ''),
+            'case_abstract': request.data.get('case_abstract', ''),
+            'model': request.data.get('model', ''),
+            'file': file_list  # Use the processed file list
+            
+        }
+        
+        logger.info("Creating serializer")
+        logger.info(f"Data sent to serializer: {data}")
+        serializer = ModuleSerializer(data=data)
+
         if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
+            logger.info("Serializer is valid, saving module")
+            module = serializer.save()
+            # Return success response with the new module's URL
+            response_data = {
+                'message': 'Module created successfully',
+                'module': serializer.data,
+                'redirect_url': '/api/modules/'  # URL to redirect to
+            }
+            return Response(response_data, status=status.HTTP_201_CREATED)
         else:
-            print(serializer.errors)
             logger.error(f"Validation errors: {serializer.errors}")
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-        
+            
+    except Exception as e:
+        logger.error(f"Error in add_module: {str(e)}")
+        return Response({'error': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+    
 @api_view(['GET','PUT'])
 def edit_module(request, moduleid):
     try:

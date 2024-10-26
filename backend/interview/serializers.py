@@ -1,13 +1,33 @@
+from interview.utils import upload_file_to_blob
 from rest_framework import serializers
 from .models import Module, Users,Admin
 
 class ModuleSerializer(serializers.ModelSerializer):
+    files = serializers.ListField(
+        child=serializers.FileField(),
+        write_only=True,
+        required=False
+    )
+    # class Meta:
+    #     model = Module
+    #     fields = "__all__"
+    #     extra_kwargs = {
+    #         'moduleid': {'required': False}  # Make moduleid not required in the serializer
+    #     }
     class Meta:
         model = Module
-        fields = "__all__"
-        extra_kwargs = {
-            'moduleid': {'required': False}  # Make moduleid not required in the serializer
-        }
+        fields = ['moduleid', 'modulename', 'prompt', 'voice', 
+                 'system_prompt', 'case_abstract', 'file', 'model','files']
+        read_only_fields = ['moduleid']
+
+    def create(self, validated_data):
+        validated_data.pop('files', None)
+        module = Module.objects.create(**validated_data)
+        return module
+
+        
+        
+    
 
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
