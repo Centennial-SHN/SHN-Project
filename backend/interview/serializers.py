@@ -1,4 +1,3 @@
-from interview.utils import upload_file_to_blob
 from rest_framework import serializers
 from .models import Module, Users,Admin
 
