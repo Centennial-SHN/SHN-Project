@@ -2,6 +2,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 // import './UserForm.css';
+import Cookies from 'js-cookie';
 import { VITE_API_BASE_URL_LOCAL, VITE_API_BASE_URL_PROD } from '../constants';
 import { Input, Button, Typography, Card, Layout, Space, Divider, message } from 'antd';
 import logo from '../assets/logo-alt.svg';
@@ -13,6 +14,7 @@ const Login = () => {
     const [password, setPassword] = useState('');
     const navigate = useNavigate();
     const isDevelopment = import.meta.env.MODE === "development";
+    const csrfToken = Cookies.get('csrftoken');
     const baseUrl = isDevelopment ? VITE_API_BASE_URL_LOCAL : VITE_API_BASE_URL_PROD;
 
     const backendUrl = baseUrl;
@@ -27,7 +29,9 @@ const Login = () => {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
+                'X-CSRFToken': csrfToken
             },
+            credentials: 'include',
             body: JSON.stringify({ email, password }),
         });
 
