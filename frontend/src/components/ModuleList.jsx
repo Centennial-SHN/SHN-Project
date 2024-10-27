@@ -79,12 +79,15 @@ const AdminModuleList = () => {
             </header>
             {/* <Sidebar /> */}
             <div className="module-list">
+                <div className='header'>
                 <h2 className='title'>Module List</h2>
                 <br/>
                 {/* Add Module button */}
                 <button className="addModule" onClick={() => navigate('/admin/modules/add')}>Add New Module</button>
+                </div>
                 <br/>
                 <br/>
+                <div className="table-container">
                 <table>
                     <thead>
                         <tr>
@@ -105,6 +108,7 @@ const AdminModuleList = () => {
                         ))}
                     </tbody>
                 </table>
+                </div>
             </div>
         </div>
     );
