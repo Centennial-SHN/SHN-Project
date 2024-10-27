@@ -344,28 +344,23 @@ def add_module(request):
         
 
         
-        # Initialize file list for JSON field
-        file_list = []
+       
         
-        # Process each uploaded file
+        file_info = {}  # Initialize once outside the loop to collect all files
+
         for uploaded_file in files:
             logger.info(f"Processing file: {uploaded_file.name}")
+            
             # Upload to Azure and get URL
             file_url = upload_file_to_blob(uploaded_file)
             
             if file_url:
-                # Create file metadata
-                # file_info = {
-                #     "name": uploaded_file.name,
-                #     "url": file_url,
-                    
-                # }
-                file_info = {  uploaded_file.name : file_url  }
-                file_list.append(file_info)
+                # Append file metadata to the dictionary
+                file_info[uploaded_file.name] = file_url  # Adds new file without overwriting previous entries
                 logger.info(f"File processed successfully: {file_info}")
         
         # Prepare data for serializer
-        logger.info(f"File list for serializer: {file_list}")
+        logger.info(f"File list for serializer: {file_info}")
         data = {
             'modulename': request.data.get('modulename', ''),
             'prompt': request.data.get('prompt', ''),
@@ -373,7 +368,7 @@ def add_module(request):
             'system_prompt': request.data.get('system_prompt', ''),
             'case_abstract': request.data.get('case_abstract', ''),
             'model': request.data.get('model', ''),
-            'file': file_list  # Use the processed file list
+            'file': file_info  # Use the processed file list
             
         }
         
