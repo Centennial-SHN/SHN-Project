@@ -149,7 +149,8 @@ def upload_file_to_blob(file):
     try:
         # Generate a unique name for the blob
         file_extension = os.path.splitext(file.name)[1]
-        blob_name = f"{uuid.uuid4()}{file_extension}"
+        base_file_name = os.path.splitext(file.name)[0]
+        blob_name = f"{base_file_name}{file_extension}"
         
         # Initialize the blob service client
         blob_service_client = BlobServiceClient.from_connection_string(AZURE_STORAGE_CONNECTION_STRING)
