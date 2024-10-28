@@ -183,6 +183,29 @@ def upload_file_to_blob(file):
     except Exception as e:
         logger.error(f"Unexpected error uploading file: {str(e)}")
         return None
+def delete_file_from_blob(file_name):
+    try:
+        # Initialize the blob service client
+        blob_service_client = BlobServiceClient.from_connection_string(AZURE_STORAGE_CONNECTION_STRING)
+        
+        # Get the container client
+        container_client = blob_service_client.get_container_client(MODULE_ATTACHMENTS_BLOB_CONTAINER)
+        
+        # Get blob client for the specific file
+        blob_client = container_client.get_blob_client(file_name)
+        
+        # Delete the blob
+        blob_client.delete_blob()
+        
+        logger.info(f"File deleted successfully: {file_name}")
+        return True
+
+    except AzureError as e:
+        logger.error(f"Azure Storage error during deletion: {str(e)}")
+        return False
+    except Exception as e:
+        logger.error(f"Unexpected error deleting file: {str(e)}")
+        return False
 
 
 # TODO
