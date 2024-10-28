@@ -323,6 +323,8 @@ def user_login(request):
     
     if user is not None:
         login(request, user)
+        logger.debug(f'Session: {request.session.items()}')
+        logger.debug(f'User after login: {request.user}, is_authenticated: {request.user.is_authenticated}')
         return Response({'message': 'Login successful', 'userid': user.userid,'email': user.email,
             'is_superuser': user.is_superuser}, status=status.HTTP_200_OK)
     return Response({'error': 'Invalid email or password'}, status=status.HTTP_401_UNAUTHORIZED)
