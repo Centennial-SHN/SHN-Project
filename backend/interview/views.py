@@ -240,9 +240,9 @@ def download_transcript(request, interview_id):
 
                 if user_timestamp_index < len(timestamps):
                     user_timestamp = timestamps[user_timestamp_index]["timestamp"]
-                    user_id = interview.userid.userid
+                    user_email = interview.userid.email
                     message = line.replace('user:', '').strip()
-                    csv_rows.append([user_timestamp, user_id, message])
+                    csv_rows.append([user_timestamp, user_email, message])
                     user_timestamp_index += 1
                 else:
                     csv_rows.append(["", interview.userid.userid, line.replace('user:', '').strip()])

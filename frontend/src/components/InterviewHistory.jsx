@@ -150,7 +150,7 @@ const InterviewHistory = () => {
           </ul>
         </nav>
       </header>
-      <h1>{userid} Interview History</h1>
+      <h1>Your Interview History</h1>
       {interviews.length === 0 ? (
         <p>No interviews found.</p>
       ) : (
