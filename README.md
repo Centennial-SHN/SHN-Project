@@ -32,8 +32,10 @@ backend (Python 3.12)
 ```
 
 3. Navigate to the root folder of the project and run the following commands to set up and start the server
+```
 - python manage.py migrate
 - python manage.py runserver
+```
 
 4. Open your browser and go to localhost:8000 to view the running application
 
@@ -47,12 +49,14 @@ frontend
 ```
 
 2. Add the .env file in the root directory under the 'frontend' directory
+```
 - VITE_API_BASE_URL_LOCAL = 'http://localhost:8000'
 - VITE_API_BASE_URL_PROD = 'standarizedpatientai-bygdfaf7epfwbafn.canadacentral-01.azurewebsites.net'.
-  
+```
 3. Navigate to the root folder of the project and run the following commands to set up and start the server
+```
 - npm run dev
-
+```
 4. Open your browser and go to localhost:5173 to view the running application
 <<<<<<<<< HEAD
 5.For Testing
