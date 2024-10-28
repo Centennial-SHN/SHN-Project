@@ -1,8 +1,14 @@
 import { useState, useEffect, useRef } from "react";
 import { useParams, useNavigate, useLocation } from "react-router-dom";
-import "./Interview.css";
+// import "./Interview.css";
 import castroImage from '../assets/castro.png';
 import { VITE_API_BASE_URL_LOCAL, VITE_API_BASE_URL_PROD } from "../constants";
+import NavBar from "./NavBar";
+import { Button, Typography, Layout, Space, Card, Row, Col, Divider, Drawer } from 'antd';
+import { UserOutlined, PlayCircleOutlined, CloseCircleOutlined, PaperClipOutlined, DownloadOutlined } from '@ant-design/icons';
+
+const { Title, Text } = Typography;
+const { Content } = Layout;
 
 const Interview = () => {
   const { moduleId } = useParams();
@@ -22,13 +28,13 @@ const Interview = () => {
   const interviewId = location.state?.interviewId;
   const userId = location.state?.userId;
   const recordingTimeoutRef = useRef(null);
-  const debounceTimeoutRef = useRef(null); 
+  const debounceTimeoutRef = useRef(null);
   const isDevelopment = import.meta.env.MODE === "development";
   const baseUrl = isDevelopment ? VITE_API_BASE_URL_LOCAL : VITE_API_BASE_URL_PROD;
 
   const backendUrl = baseUrl;
 
-  const DEBOUNCE_DELAY = 500; 
+  const DEBOUNCE_DELAY = 500;
 
   useEffect(() => {
     if (!userId) {
@@ -53,25 +59,25 @@ const Interview = () => {
   }, [moduleId]);
 
   useEffect(() => {
-    let holdTimeoutRef = null; 
-    let isRecordingTriggered = false; 
-  
+    let holdTimeoutRef = null;
+    let isRecordingTriggered = false;
+
     const handleKeyDown = (event) => {
       if (event.key === " " && !isRecording && !isRecordingTriggered && !(isLoading || isPlaying)) {
         event.preventDefault();
-        
+
         isRecordingTriggered = true;
-        
+
         holdTimeoutRef = setTimeout(() => {
           startRecording();
-        }, 500); 
+        }, 500);
       }
     };
-  
+
     const handleKeyUp = (event) => {
       if (event.key === " ") {
         event.preventDefault();
-  
+
         if (holdTimeoutRef) {
           clearTimeout(holdTimeoutRef);
           holdTimeoutRef = null;
@@ -80,14 +86,14 @@ const Interview = () => {
         if (isRecording) {
           stopRecording();
         }
-  
-        isRecordingTriggered = false; 
+
+        isRecordingTriggered = false;
       }
     };
 
     window.addEventListener("keydown", handleKeyDown);
     window.addEventListener("keyup", handleKeyUp);
-  
+
     return () => {
       window.removeEventListener("keydown", handleKeyDown);
       window.removeEventListener("keyup", handleKeyUp);
@@ -96,8 +102,8 @@ const Interview = () => {
       }
     };
   }, [isRecording, isLoading, isPlaying]);
-  
-  
+
+
   const debounceToggleRecording = () => {
     clearTimeout(debounceTimeoutRef.current);
 
@@ -307,61 +313,143 @@ const Interview = () => {
   };
 
   return (
-    <div className="audio-recorder">
-      <p>Please ensure your microphone is enabled</p>
-      <h1>{moduleName}</h1>
-      <img
-        src={castroImage} // Replace with actual patient image URL if available
-        alt={moduleName}
-        className="patient-image"
-      />
-      <p>Status: <strong>{status}</strong></p>
-      <p>{caseAbstract}</p>
+    <Layout className="layoutInterview">
+      <NavBar />
+      <Content className="layoutInterviewContent">
+        <Card bordered={false}>
+          <Row>
+            <Col span={24}>
+              <Title level={5} style={{ color: "#A6A8B9", marginBottom: "48px" }}>Please ensure your microphone is enabled</Title>
+            </Col>
+          </Row>
+          <Row>
+            <Col span={14} className="interviewCol1">
+              {/* <img
+            src={castroImage} // Replace with actual patient image URL if available
+            alt={moduleName}
+            className="patient-image"
+            style={{ width: '200px' }}
+          /> */}
+              <div className={`status-border ${status.toLowerCase()}-status`}>
+                <UserOutlined className="userIcon" />
+              </div>
+              <Space direction="horizontal" size="middle" className={`interviewStatus ${status.toLowerCase()}-status`}>
+                <span className="dot"></span>
+                <Text>{status}</Text>
+              </Space>
+            </Col>
+            <Divider type='vertical' className="interviewDiv"></Divider>
+            <Col span={10} className="interviewCol2">
+              <Text className="customH6">{moduleName}</Text>
+              <Text style={{ marginBottom: "24px" }}>{caseAbstract}</Text>
 
-      {Object.keys(files).length > 0 ? (
-        <button onClick={toggleSidebar} className="attachment-button">
-          {isSidebarOpen ? "Close Attachments" : "See Attachments"}
-        </button>
-      ) : (
-        <p>Attachments: N/A</p>
-      )}
+              {Object.keys(files).length > 0 ? (
+                <Space direction="vertical" size="small">
+                  <Text className="customH6">Attachments:</Text>
+                  {Object.entries(files).map(([fileName, fileUrl], index) => (
+                    <a
+                      key={index}
+                      onClick={toggleSidebar}
+                      // className="attachment-link"
+                    >
+                      {fileName}
+                    </a>
+                  ))}
+                </Space>
+              ) : (
+                <Space direction="vertical" size="small">
+                  <Text className="customH6">Attachments:</Text>
+                  <Text>N/A</Text>
+                </Space>
+              )}
+            </Col>
+          </Row>
+        </Card>
+        <Space direction="vertical" className="interviewControl" size="middle">
+          <Space direction="horizontal" size="large" style={{ width: "min-content" }}>
+            <Button
+              type="primary"
+              icon={<PlayCircleOutlined />}
+              className={`record-button ${isLoading || isPlaying ? "processing" : ""
+                }`}
+              onClick={debounceToggleRecording}
+              disabled={isLoading || isPlaying}
+            >
+              {isRecording ? "Stop Speaking" : isLoading || isPlaying ? "Processing" : "Speak"}
+            </Button>
+            <Button
+              type="primary"
+              icon={<CloseCircleOutlined />}
+              className="exit-button"
+              onClick={handleExit}
+              disabled={isLoading || isPlaying}
+            >
+              End Interview
+            </Button>
+            {/* attachment button */}
+            {Object.keys(files).length > 0 ? (
+              <Button
+                type="primary"
+                icon={<PaperClipOutlined />}
+                onClick={toggleSidebar}
+                className="attachment-button"
+                shape="circle">
+              </Button>
+            ) : (
+              <Button
+                disabled
+                icon={<PaperClipOutlined />}
+                onClick={toggleSidebar}
+                className="attachment-button"
+                shape="circle">
+              </Button>
+            )}
 
-      <div className={`sidebar ${isSidebarOpen ? "open" : ""}`}>
-        <button className="close-sidebar" onClick={toggleSidebar}>
-          X
-        </button>
-        <h4>Attachments:</h4>
-        {Object.entries(files).map(([fileName, fileUrl], index) => (
-          <a
-            key={index}
-            onClick={() => handleDownload(fileUrl, fileName)}
-            className="attachment-link"
-          >
-            {fileName}
-          </a>
-        ))}
-      </div>
+          </Space>
+          <Title level={5} style={{ color: "#A6A8B9", marginBottom: '0px' }}>Tip: You can press or hold the spacebar to start the interview or start speaking</Title>
+        </Space>
 
-      <div className="button-container">
-        <button
-          className={`record-button ${
-            isLoading || isPlaying ? "processing" : ""
-          }`}
-          onClick={debounceToggleRecording}
-          disabled={isLoading || isPlaying}
+
+        {/*-- Code for drawer --*/}
+        {/* <div className={`sidebar ${isSidebarOpen ? "open" : ""}`}>
+            <button className="close-sidebar" onClick={toggleSidebar}>
+              X
+            </button>
+            <h4>Attachments:</h4>
+            {Object.entries(files).map(([fileName, fileUrl], index) => (
+              <a
+                key={index}
+                onClick={() => handleDownload(fileUrl, fileName)}
+                className="attachment-link"
+              >
+                {fileName}
+              </a>
+            ))}
+          </div> */}
+
+        <Drawer
+          title="Attachments"
+          placement="right"
+          onClose={toggleSidebar}
+          open={isSidebarOpen}
         >
-          {isRecording ? "Click to Stop Speaking" : isLoading || isPlaying ? "Processing..." : "Click to Speak"}
-        </button>
-        <button
-          className="exit-button"
-          onClick={handleExit}
-          disabled={isLoading || isPlaying}
-        >
-          End Interview
-        </button>
-      </div>
-      <p>Tip: You can press the spacebar to start the interview or start speaking</p>
-    </div>
+          {Object.entries(files).map(([fileName, fileUrl], index) => (
+            
+            <a
+              key={index}
+              onClick={() => handleDownload(fileUrl, fileName)}
+            >
+              <Space direction="horizontal" className="attachment-link">
+              {fileName}
+              <DownloadOutlined />
+              </Space>
+            </a>
+            
+          ))}
+        </Drawer>
+
+      </Content>
+    </Layout>
   );
 };
 

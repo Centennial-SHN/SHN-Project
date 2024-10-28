@@ -26,8 +26,8 @@
 
 body {
     display: flex;
-    flex-direction:row;
-    justify-content: center;
+    flex-direction:column;
+    justify-content: flex-start;
     align-items: center;
     min-height: 100vh;
 }
@@ -145,10 +145,12 @@ h5.ant-typography {
 }
 
 /*H6*/
-.customH6 {
-  font-size: 12px;
-  font-weight: 400;
-  line-height: 16px;
+.customH6,
+.ant-drawer-title
+{
+  font-size: 12px !important;
+  font-weight: 400 !important;
+  line-height: 16px !important;
   text-transform: uppercase;
   letter-spacing: 4px;
 }
@@ -372,4 +374,247 @@ padding: 48px 24px;
 
 .layoutModSelContent .ant-select {
   text-align:left;
+}
+
+/*Module Interview Layout*/
+.layoutInterview{
+  width:calc(100vw - 16px);
+  background: var(--global-white);
+  display: flex;
+  justify-content: flex-start;
+  flex-direction: column;
+  overflow-x: hidden;
+}
+
+.layoutInterviewContent {
+  /* margin:auto; */
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: center;
+  text-align: center;
+  padding: 48px 62.5px;
+  gap: 24px;
+}
+
+.layoutInterviewContent .ant-card {
+  width: 100%;
+}
+
+.layoutInterviewContent .ant-card-body {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: center;
+}
+
+.interviewControl {
+  width: 100%;
+  background: #f7f7f7;
+  border-radius: 16px;
+  padding: 32px 48px;
+}
+
+.layoutInterviewContent .userIcon {
+  font-size: 120px;
+  color: var(--primary-teal);
+  background-color: #f7f7f7;
+  padding: 40px;
+  border-radius: 100px;
+  width: fit-content;
+}
+
+.interviewDiv {
+  border-color: var(--global-grey1);
+  margin: -1px;
+  height: inherit;
+}
+
+.interviewCol1 {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 16px;
+}
+.interviewCol2 {
+  min-height: 400px;
+  padding: 64px 48px;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: center;
+  gap: 12px;
+}
+
+.interviewCol2 .customH6 {
+  color: var(--primary-navy);
+}
+
+/* Styles for different statuses */
+.interviewStatus {
+  width: fit-content;
+  padding: 4px 16px;
+  border-width: 1px;
+  border-style: solid;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 16px;
+  line-height: 24px;
+  text-transform: uppercase;
+  box-shadow: none !important;
+}
+
+.interviewStatus .ant-typography {
+  color:inherit;
+}
+
+.interviewStatus .dot {
+  height: 12px;
+  width: 12px;
+  border-radius: 50%;
+}
+
+.idle-status .dot {
+  background-color: var(--global-grey4);
+}
+
+.listening-status .dot {
+  background-color: var(--status-info);
+}
+
+.live-status .dot {
+  background-color: var(--status-success);
+}
+
+.status-border {
+  padding: 8px;
+  border-width: 5px;
+  border-style: solid;
+  border-radius: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.idle-status {
+  border-color: var(--global-grey2);
+  color: var(--global-grey4);
+}
+
+.listening-status {
+  border-color: var(--status-info);
+  color: var(--status-info);
+  box-shadow: 0 4px 8px 0 rgba(53,124,237,.25);
+}
+
+.live-status {
+  border-color: var(--status-success);
+  color: var(--status-success);
+  box-shadow: 0 4px 8px 0 rgba(93,229,181,.25);
+}
+
+/* Record button */
+/* .record-button {
+  background-color: #4CAF50;
+  color: white;
+  font-size: 14px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.record-button:hover {
+  background-color: #45a049;
+}
+
+.record-button:focus {
+  outline: none;
+}
+
+.record-button:disabled {
+  cursor: not-allowed;
+} */
+
+.record-button.processing {
+  background-color: var(--status-info);
+}
+
+/* .record-button:active {
+  background-color: var(--status-info);
+} */
+
+/* Exit button */
+.exit-button {
+  background-color: var(--secondary-coral) !important; 
+  border-color: var(--secondary-coral) !important;
+}
+
+.exit-button:disabled {
+  background-color: var(--global-grey1);
+  border-color: var(--global-grey2);
+  color: var(--global-grey4);
+  cursor: not-allowed;
+}
+
+.exit-button:disabled:hover {
+  background-color: var(--global-grey1) !important;
+  border-color: var(--global-grey2)!important;
+  color: var(--global-grey4) !important;
+}
+
+.exit-button:hover {
+  background-color: #fb757a !important;
+}
+
+.exit-button:focus {
+  background-color: var(--secondary-coral);
+}
+
+.exit-button:active {
+  background-color: var(--secondary-coral);
+}
+
+/*Attachment Button*/
+.attachment-button {
+  position: absolute;
+  right: 0;
+}
+
+.interviewControl .ant-space-item:nth-child(1) {
+  position: relative;
+}
+
+/*Drawer*/
+.ant-drawer-close {
+  padding:16px;
+  border-radius: 50% !important;
+}
+
+.attachment-link {
+  padding: 12px 24px;
+  width:100%;
+  justify-content: space-between;
+  border-radius: 4px;
+}
+
+.attachment-link .ant-space-item {
+  width:auto;
+}
+
+.attachment-link:hover {
+  background: rgba(73,198,185,.1);
+}
+
+.attachment-link .anticon{
+  font-size: 20px;
+  color: var(--global-grey4);
+  transition: 0.3s;
+}
+
+.attachment-link:hover .anticon{
+  color: var(--primary-teal);
 }
