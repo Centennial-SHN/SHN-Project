@@ -3,6 +3,7 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faBars } from '@fortawesome/free-solid-svg-icons';
 import './ModuleAdmin.css';
+import { faTrash, faFileAlt } from '@fortawesome/free-solid-svg-icons';
 import Sidebar from './Sidebar.jsx';
 import { VITE_API_BASE_URL_LOCAL, VITE_API_BASE_URL_PROD } from '../constants.js';
 
@@ -14,6 +15,7 @@ const EditModule = () => {
     const [systemPrompt, setSystemPrompt] = useState('');
     const [caseAbstract, setCaseAbstract] = useState('');
     const [file, setFile] = useState(null);
+    const [existingFiles, setExistingFiles] = useState('');
     const [model, setModel] = useState('gpt-4o-mini');
     const navigate = useNavigate();
     const isDevelopment = import.meta.env.MODE === "development";
@@ -55,6 +57,7 @@ const EditModule = () => {
                 setSystemPrompt(data.system_prompt);
                 setCaseAbstract(data.case_abstract);
                 setModel(data.model);
+                setExistingFiles(Object.entries(data.file || {})); 
             } else {
                 alert(data.error || 'Error fetching module data.');
             }
@@ -93,6 +96,31 @@ const EditModule = () => {
             alert(data.error || 'Error updating module.');
         }
     };
+
+        const handleFileDelete = async (filename) => {
+            try {
+                const encodedFilename = encodeURIComponent(filename);
+                const response = await fetch(`${backendUrl}/api/modules/${moduleid}/files/${encodedFilename}/`, {
+                    method: 'DELETE',
+                });
+                
+                if (response.ok) {
+                    setExistingFiles((prevFiles) => prevFiles.filter(([name]) => name !== filename));
+                    alert('File deleted successfully.');
+                } else {
+                    const data = await response.json(); // Attempt to read JSON response
+                    console.error("Failed to delete the file:", data.detail || response.statusText);
+                    alert(`Failed to delete file: ${data.detail || response.statusText}`);
+                }
+            } catch (error) {
+                console.error("Error deleting file:", error);
+                alert(`Error deleting file: ${error.message}`);
+            }
+        };
+        
+        
+        
+    
 
     const handleLogout = () => {
         sessionStorage.removeItem("userId"); // Clear userId from sessionStorage
@@ -175,7 +203,24 @@ const EditModule = () => {
             </div>
 
             <div className="form-group">
-                <label>File attachment:</label>
+                <label>File attachments:</label>
+                {existingFiles.length > 0 && (
+                    <ul className="file-list">
+                        {existingFiles.map(([filename, url]) => (
+                            <li key={filename}>
+                                <FontAwesomeIcon icon={faFileAlt} color="#6c757d" />
+                                <a href={url} target="_blank" rel="noopener noreferrer">
+                                    {filename}
+                                </a>
+                                <FontAwesomeIcon
+                                    icon={faTrash}
+                                    className="delete-icon"
+                                    onClick={() => handleFileDelete(filename)}
+                                />
+                            </li>
+                        ))}
+                    </ul>
+                )}
                 <input type="file" onChange={handleFileChange} />
             </div>
 

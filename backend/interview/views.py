@@ -2,7 +2,7 @@
 import openai
 from django.http import HttpResponse
 from dotenv import load_dotenv
-from .services import process_audio_file, generate_text_from_prompt, convert_text_to_speech, upload_file_to_blob
+from .services import process_audio_file, generate_text_from_prompt, convert_text_to_speech, upload_file_to_blob,delete_file_from_blob
 from .serializers import ModuleSerializer
 from datetime import timedelta, datetime
 from azure.storage.blob import BlobServiceClient
@@ -19,6 +19,7 @@ from django.contrib.auth import authenticate, login
 from django.http import JsonResponse
 import logging
 import csv
+
 
 logging.basicConfig(level=logging.DEBUG)
 logger = logging.getLogger(__name__)
@@ -397,20 +398,87 @@ def add_module(request):
 @api_view(['GET','PUT'])
 def edit_module(request, moduleid):
     try:
+        # Fetch the module instance by ID
         module = Module.objects.get(moduleid=moduleid)
+        
+        # Handle GET request to retrieve module data
         if request.method == 'GET':
             serializer = ModuleSerializer(module)
             return Response(serializer.data)
+        
+        # Handle PUT request to update module data
         elif request.method == 'PUT':
-            serializer = ModuleSerializer(module, data=request.data)
+            # Log starting of the file update process
+            logger.info("Starting file update process")
+            
+            # Process files if present in request.FILES
+            files = request.FILES.getlist('file')
+            existing_file_info = module.file if module.file else {}  # Retrieve existing files
+            updated_file_info = existing_file_info.copy()  # Copy existing file data to preserve
+            
+            logger.info(f"Received {len(files)} files for update")
+            
+            # Loop through new files and upload them
+            for uploaded_file in files:
+                logger.info(f"Processing file: {uploaded_file.name}")
+                file_url = upload_file_to_blob(uploaded_file)
+                if file_url:
+                    updated_file_info[uploaded_file.name] = file_url  # Add or replace the file entry
+                    logger.info(f"File processed successfully: {uploaded_file.name} -> {file_url}")
+
+            # Prepare data for serializer
+            data = {
+                'modulename': request.data.get('modulename', module.modulename),
+                'prompt': request.data.get('prompt', module.prompt),
+                'voice': request.data.get('voice', module.voice),
+                'system_prompt': request.data.get('system_prompt', module.system_prompt),
+                'case_abstract': request.data.get('case_abstract', module.case_abstract),
+                'model': request.data.get('model', module.model),
+                'file': updated_file_info  # Updated file data
+            }
+            
+            logger.info("Creating serializer for update")
+            serializer = ModuleSerializer(module, data=data)
+            
+            # Validate and save the updated data
             if serializer.is_valid():
                 serializer.save()
-                return Response(serializer.data)
-            logger.error(f"Validation errors: {serializer.errors}")
-            return Response(serializer.errors, status=400)
+                logger.info("Module updated successfully")
+                return Response(serializer.data, status=status.HTTP_200_OK)
+            else:
+                logger.error(f"Validation errors: {serializer.errors}")
+                return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    
+    # Handle case where module does not exist
     except Module.DoesNotExist:
+        logger.error("Module not found")
         return Response({'error': 'Module not found.'}, status=status.HTTP_404_NOT_FOUND)
     
+    # Handle other exceptions
+    except Exception as e:
+        logger.error(f"Error in edit_module: {str(e)}")
+        return Response({'error': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+logger = logging.getLogger(__name__)   
+@api_view(['DELETE'])
+def delete_module_file(request, moduleid, filename):
+    logger.info(f"Deleting file: {filename} from module: {moduleid}")
+    try:
+        module = Module.objects.get(moduleid=moduleid)
+        if filename in module.file:
+            del module.file[filename]  # Remove from the model
+            module.save()  # Save changes to the model
+            
+            # Call the function to delete the file from Azure Blob Storage
+            if delete_file_from_blob(filename):  # Make sure to pass the correct file name
+                return Response(status=status.HTTP_204_NO_CONTENT)
+            else:
+                return Response({"detail": "File deletion from blob failed."}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+        else:
+            return Response({"detail": "File not found."}, status=status.HTTP_404_NOT_FOUND)
+    except Module.DoesNotExist:
+        return Response({"detail": "Module not found."}, status=status.HTTP_404_NOT_FOUND)
+
+
 logger = logging.getLogger(__name__)
 @api_view(['GET'])
 def user_admin(request):
