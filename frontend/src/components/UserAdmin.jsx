@@ -249,7 +249,9 @@ const UserAdmin = () => {
                     // First row with Email, Total Interviews, Total Interview Time, and blank for Date, Module, Logs
                     <tr>
                       <td>
-                        <a href="" onClick={() => navigate(`/admin/manage-user/${user.userid}`)}>
+                        <a href="" onClick={() => {navigate(`/admin/manage-user/${user.userid}`)
+                        console.log(csrfToken);
+                      }}>
                           {user.email}
                         </a>
                       </td>
