@@ -19,6 +19,8 @@ from django.contrib.auth import authenticate, login
 from django.http import JsonResponse
 import logging
 import csv
+from django.core.exceptions import ObjectDoesNotExist
+import json
 
 
 logging.basicConfig(level=logging.DEBUG)
@@ -336,6 +338,8 @@ logger = logging.getLogger(__name__)
 @parser_classes([MultiPartParser, FormParser, JSONParser])
 # def add_module(request):
 def add_module(request):
+    logger.debug(f'Session: {request.session.items()}')
+    logger.debug(f'User after login: {request.user}, is_authenticated: {request.user.is_authenticated}')
     try:
         logger.info("Starting file upload process")
         
@@ -400,6 +404,8 @@ def add_module(request):
 @api_view(['GET','PUT'])
 def edit_module(request, moduleid):
     try:
+        logger.debug(f'user: {request.user},{request.user.is_authenticated},{request.user.is_superuser}')
+        logger.debug(f'Session: {request.session.items()}')
         # Fetch the module instance by ID
         module = Module.objects.get(moduleid=moduleid)
         
@@ -521,3 +527,237 @@ def user_admin(request):
     except Exception as e:
         logger.error(f"Error fetching user admin data: {str(e)}")
         return JsonResponse({'error': 'Internal server error'}, status=500)
+    
+from django.http import JsonResponse
+from rest_framework.decorators import api_view
+from django.shortcuts import get_object_or_404
+from .models import Users  # Make sure to import your User model
+import logging
+
+logger = logging.getLogger(__name__)
+
+@api_view(['GET'])
+def user_manage(request, user_id):
+    logger.debug(f'Session: {request.session.items()}')
+    logger.debug(f'User after login: {request.user}, is_authenticated: {request.user.is_authenticated}')
+    try:
+        user = get_object_or_404(Users, userid=user_id)  # Assuming 'userid' is the primary key field for the User model
+
+        response_data = {
+            'email': user.email,  # Assuming 'email' is a field in your User model
+        }
+
+        return JsonResponse(response_data, status=200)
+    except Exception as e:
+        logger.error(f"Error fetching user email: {str(e)}")
+        return JsonResponse({'error': 'Internal server error'}, status=500)
+
+
+# @csrf_exempt  # Disable CSRF protection for this view
+@api_view(["PATCH"])
+def change_user_email(request, user_id):
+    
+    logger.debug(f'user: {request.user},{request.user.is_authenticated},{request.user.is_superuser}')
+    logger.debug(f'Session: {request.session.items()}')
+    # if not request.user.is_authenticated or not request.user.is_superuser:
+    #     return JsonResponse({"error": "Unauthorized"}, status=403)
+
+    if not request.user.is_authenticated:
+        logger.warning("User is not authenticated.")
+        return JsonResponse({"error": "Unauthorized"}, status=403)
+    
+    # Check if the user is a superuser
+    if not request.user.is_superuser:
+        logger.warning("User is not a superuser.")
+        return JsonResponse({"error": "Unauthorized"}, status=403)
+        
+    try:
+        # Load data from the request body
+        body = json.loads(request.body)
+        new_email = body.get('email')
+
+        if not new_email:
+            return JsonResponse({"error": "Email is required"}, status=400)
+
+        # Fetch the user by user_id
+        user = Users.objects.get(userid=user_id)
+
+        # Update the user's email
+        user.email = new_email
+        user.save()
+
+        return JsonResponse({"message": "Email address updated successfully"}, status=200)
+
+    except ObjectDoesNotExist:
+        return JsonResponse({"error": "User not found"}, status=404)
+    except Exception as e:
+        return JsonResponse({"error": str(e)}, status=500)
+
+@api_view(['POST'])
+def make_superuser(request, user_id):
+    try:
+        # Get the user by user_id
+        user = Users.objects.get(userid=user_id)
+        
+        # Grant superuser and staff permissions
+        user.is_superuser = True
+        user.is_admin = True
+        user.save()
+
+        return Response({"message": "User granted superuser permissions"}, status=status.HTTP_200_OK)
+
+    except Users.DoesNotExist:
+        return Response({"error": "User not found"}, status=status.HTTP_404_NOT_FOUND)
+
+    except Exception as e:
+        logger.error(f"Error: {str(e)}")
+        return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+    
+@api_view(['DELETE'])
+def delete_user_records(request, user_id):
+    logger.debug('endpoint found')
+    # Fetch the user or return a 404 if not found
+    user = get_object_or_404(Users, userid=user_id)
+    
+    # Delete all interviews associated with this user
+    interviews_deleted, _ = Interview.objects.filter(userid=user_id).delete()
+    
+    if interviews_deleted:
+        return Response({"message": "User interview records deleted successfully."}, status=status.HTTP_200_OK)
+    else:
+        return Response({"message": "No interview records found for this user."}, status=status.HTTP_404_NOT_FOUND)
+
+
+from django.db import connection
+
+@api_view(['DELETE'])
+def delete_user(request, user_id):
+    logger.debug(f'Request to delete user: {user_id}')
+    
+    if not request.user.is_authenticated or not request.user.is_superuser:
+        logger.warning("Unauthorized access attempt to delete user.")
+        return JsonResponse({"error": "Unauthorized"}, status=403)
+
+    try:
+        with connection.cursor() as cursor:
+            cursor.execute("""
+                DELETE FROM interview_users WHERE userid = CAST(%s AS NVARCHAR(255))
+            """, [user_id])
+        logger.info(f'User {user_id} deleted successfully.')
+        return JsonResponse({"message": "User deleted successfully"}, status=204)
+    except Exception as e:
+        logger.error(f"Error deleting user: {str(e)}")
+        return JsonResponse({"error": "Internal server error"}, status=500)
+    
+
+from django.utils.crypto import get_random_string
+from django.core.mail import send_mail
+@api_view(['POST'])
+def reset_password(request, user_id):
+    try:
+        user = Users.objects.get(userid=user_id)
+    except Users.DoesNotExist:
+        return Response({"error": "User not found."}, status=status.HTTP_404_NOT_FOUND)
+
+    # Generate a new password
+    new_password = get_random_string(length=12)  # Change the length as needed
+    user.set_password(new_password)
+    user.save()
+
+    # Send the new password to the user's email
+    send_mail(
+        subject='Your Password has been Reset',
+        message=f'Your new password is: {new_password}',
+        from_email='noreply@domain.com',
+        recipient_list=[user.email],
+    )
+
+    return Response({"message": "Password reset successfully. Check your email for the new password."}, status=status.HTTP_200_OK)
+    
+import csv
+from datetime import timedelta
+@api_view(['GET'])
+def download_user_data(request, user_id):
+    try:
+        user = Users.objects.get(userid=user_id)  # Fetch the user by ID
+        logger.debug(f"length__lte:{type(Interview.interviewlength)}")
+        interviews = Interview.objects.filter(userid=user_id).exclude(interviewlength__lte=timedelta(seconds=0))
+
+        # Prepare response
+        response = HttpResponse(content_type='text/csv')
+        response['Content-Disposition'] = f'attachment; filename="user_data_{user_id}.csv"'
+
+        writer = csv.writer(response)
+        # writer.writerow(['User ID', 'Email', 'Total Interviews', 'Total Interview Time', 'Interview Date', 'Interview Module'])
+        writer.writerow(['User ID', 'Email', 'Total Interviews', 'Total Interview Time'])
+        
+
+        total_time = 0
+        for interview in interviews:
+            total_time += interview.interviewlength.total_seconds()
+
+        hours, remainder = divmod(int(total_time), 3600)
+        minutes, seconds = divmod(remainder, 60)
+        total_time_formatted = f"\t{hours:02}:{minutes:02}:{seconds:02}"
+
+        if interviews.exists():
+            writer.writerow([user.userid, user.email, len(interviews), total_time_formatted])
+        writer.writerow('')
+        writer.writerow(['Interview Date','Interview Module','Interview Length'])
+        for interview in interviews:
+            interview_date_formatted = interview.dateactive.strftime("\t%Y-%m-%d")
+            writer.writerow([interview_date_formatted, interview.moduleid,interview.interviewlength])
+        
+
+        return response
+
+    except Users.DoesNotExist:
+        return Response({'error': 'User not found'}, status=404)
+
+    except Exception as e:
+        logger.error(f"Error: {str(e)}")
+        return Response({'error': str(e)}, status=500)
+
+
+from django.contrib.auth import update_session_auth_hash
+@api_view(['POST'])
+def change_password(request):
+    user = request.user
+    current_password = request.data.get('current_password')
+    new_password = request.data.get('new_password')
+    logger.debug(f'user: {request.user},{request.user.is_authenticated},{request.user.is_superuser}')
+    logger.debug(f'Session: {request.session.items()}')
+    # Check if current password is correct
+    if not user.check_password(current_password):
+        return Response({'error': 'Current password is incorrect.'}, status=status.HTTP_400_BAD_REQUEST)
+
+    # Update password
+    user.set_password(new_password)
+    user.save()
+
+    # Update session user (for logged in users)
+    update_session_auth_hash(request, user)
+
+    return Response({'success': 'Password changed successfully.'}, status=status.HTTP_200_OK)
+
+from django.db import IntegrityError
+@api_view(['DELETE'])
+def delete_module(request, module_id):
+    if request.method == 'DELETE':
+        try:
+            module = Module.objects.get(moduleid=module_id)
+            module.delete()
+            return JsonResponse({'message': 'Module deleted successfully'}, status=204)
+        except Module.DoesNotExist:
+            return JsonResponse({'error': 'Module not found'}, status=404)
+        except IntegrityError:
+            # Return a 400 Bad Request response with a specific error message
+            return JsonResponse(
+                {'error': 'Module cannot be deleted as it is associated with existing interviews.'},
+                status=400
+            )
+        except Exception as e:
+            logger.error(f"Error: {str(e)}")
+            return JsonResponse({'error': str(e)}, status=500)
+    logger.info(f"Received request: {request.method} for module_id: {module_id}")
+    return JsonResponse({'error': 'Invalid request method'}, status=405)

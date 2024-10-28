@@ -3,6 +3,8 @@ import { useParams,useNavigate } from "react-router-dom";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faBars } from '@fortawesome/free-solid-svg-icons';
 import { VITE_API_BASE_URL_LOCAL, VITE_API_BASE_URL_PROD } from "../constants";
+import Cookies from 'js-cookie';
+import ChangePasswordModal from './ChangePasswordModal';
 
 const InterviewHistory = () => {
   const [interviews, setInterviews] = useState([]);
@@ -14,7 +16,10 @@ const InterviewHistory = () => {
   const [iconColor, setIconColor] = useState("black");
   const isAdmin = sessionStorage.getItem('isSuperUser') === 'true';
 
+  const [isChangePasswordOpen, setChangePasswordOpen] = useState(false);
+
   const backendUrl = baseUrl;
+  const csrfToken = Cookies.get('csrftoken');
 
   const checkIfLoggedIn = () => {
     const storedUserId = sessionStorage.getItem("userId"); // Get userid from sessionStorage
@@ -94,6 +99,39 @@ const InterviewHistory = () => {
     navigate("/admin/module-list"); // Replace with the actual admin route
   };
 
+  const toggleChangePasswordModal = () => {
+    setChangePasswordOpen(!isChangePasswordOpen);
+  };
+
+  // Function to handle password change
+  const handleChangePassword = async (currentPassword, newPassword) => {
+    try {
+      const response = await fetch(`${backendUrl}/api/change-password/`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          'X-CSRFToken': csrfToken
+        },
+        credentials: 'include',
+        body: JSON.stringify({
+          current_password: currentPassword,
+          new_password: newPassword,
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to change password");
+      }
+
+      alert("Password changed successfully!");
+      setChangePasswordOpen(false);
+    } catch (error) {
+      console.error("Error changing password:", error);
+      alert("Failed to change password. Please try again.");
+    }
+  };
+
+
   return (
     <div className="interview-history">
       <header>
@@ -104,7 +142,7 @@ const InterviewHistory = () => {
           <ul className={`nav-menu ${menuOpen ? "show" : ""}`}>
             {/* <li onClick={() => navigate(`/interview-history/${userid}`)}>Interview History</li> */}
             <li onClick={() => navigate("/module")}>Select Module</li>
-            <li onClick={() => navigate("/reset-password")}>Reset Password</li>
+            <li onClick={toggleChangePasswordModal}>Change Password</li>
             {isAdmin && ( // This line ensures the "Switch to Admin" item is shown only to admin users
                 <li onClick={handleSwitchToAdmin}>Switch to Admin</li>
             )}
@@ -145,6 +183,11 @@ const InterviewHistory = () => {
           </tbody>
         </table>
       )}
+      <ChangePasswordModal
+        isOpen={isChangePasswordOpen}
+        onClose={toggleChangePasswordModal}
+        onChangePassword={handleChangePassword}
+      />
     </div>
   );
 };

@@ -5,6 +5,7 @@ import { faBars } from '@fortawesome/free-solid-svg-icons';
 import Sidebar from './Sidebar';
 import './ModuleAdmin.css';
 import Cookies from 'js-cookie';
+import ChangePasswordModal from './ChangePasswordModal';
 import { VITE_API_BASE_URL_LOCAL, VITE_API_BASE_URL_PROD } from '../constants';
 
 const AdminModuleList = () => {
@@ -17,6 +18,8 @@ const AdminModuleList = () => {
     const backendUrl = baseUrl;
     const csrfToken = Cookies.get('csrftoken');
     const hasCheckedSuperuser = useRef(false);
+
+    const [isChangePasswordOpen, setChangePasswordOpen] = useState(false);
 
     const checkSuperuser = () => {
         const storedIsSuperuser = sessionStorage.getItem("isSuperUser");
@@ -69,6 +72,64 @@ const AdminModuleList = () => {
         });
       };
 
+
+      const toggleChangePasswordModal = () => {
+        setChangePasswordOpen(!isChangePasswordOpen);
+      };
+    
+      // Function to handle password change
+      const handleChangePassword = async (currentPassword, newPassword) => {
+        try {
+          const response = await fetch(`${backendUrl}/api/change-password/`, {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              'X-CSRFToken': csrfToken
+            },
+            credentials: 'include',
+            body: JSON.stringify({
+              current_password: currentPassword,
+              new_password: newPassword,
+            }),
+          });
+    
+          if (!response.ok) {
+            throw new Error("Failed to change password");
+          }
+    
+          alert("Password changed successfully!");
+          setChangePasswordOpen(false);
+        } catch (error) {
+          console.error("Error changing password:", error);
+          alert("Failed to change password. Please try again.");
+        }
+      };
+
+      const handleDelete = async (moduleId) => {
+        if (window.confirm("Are you sure you want to delete this module?")) {
+            try {
+                const response = await fetch(`${backendUrl}/api/modules/${moduleId}/`, {
+                    method: 'DELETE',
+                    headers: {
+                        'X-CSRFToken': csrfToken,
+                        'Content-Type': 'application/json',
+                    },
+                    credentials: 'include',
+                });
+    
+                if (!response.ok) {
+                    throw new Error('Failed to delete module');
+                }
+    
+                setModules((prevModules) => prevModules.filter((module) => module.moduleid !== moduleId));
+                alert("Module deleted successfully!");
+            } catch (error) {
+                console.error("Error deleting module:", error);
+                alert("Failed to delete module. Please try again.");
+            }
+        }
+    };
+
     return (
         <div className="admin-container">
             <header>
@@ -80,7 +141,7 @@ const AdminModuleList = () => {
                     <li onClick={() => navigate('/admin/module-list')}>Modules</li>
                     <li onClick={() => navigate('/admin/user-logs')}>User Logs</li>
                     <li onClick={() => navigate(`/module`)}>Switch to user</li>
-                    <li onClick={() => navigate("/reset-password")}>Reset Password</li>
+                    <li onClick={toggleChangePasswordModal}>Change Password</li>
                     <li onClick={handleLogout}>Logout</li>
                 </ul>
                 </nav>
@@ -111,6 +172,7 @@ const AdminModuleList = () => {
                                 <td>{module.modulename}</td>
                                 <td>
                                     <button onClick={() => handleEdit(module.moduleid)}>Edit</button>
+                                    <button className="btndelete" onClick={() => handleDelete(module.moduleid)}>Delete</button>
                                 </td>
                             </tr>
                         ))}
@@ -118,6 +180,11 @@ const AdminModuleList = () => {
                 </table>
                 </div>
             </div>
+            <ChangePasswordModal
+                isOpen={isChangePasswordOpen}
+                onClose={toggleChangePasswordModal}
+                onChangePassword={handleChangePassword}
+            />
         </div>
     );
 };

@@ -3,6 +3,8 @@ import { useNavigate } from 'react-router-dom';
 import './UserAdmin.css';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faBars } from '@fortawesome/free-solid-svg-icons';
+import Cookies from 'js-cookie';
+import ChangePasswordModal from './ChangePasswordModal';
 import { VITE_API_BASE_URL_LOCAL, VITE_API_BASE_URL_PROD } from "../constants";
 
 const UserAdmin = () => {
@@ -14,6 +16,8 @@ const UserAdmin = () => {
   const isDevelopment = import.meta.env.MODE === "development";
   const baseUrl = isDevelopment ? VITE_API_BASE_URL_LOCAL : VITE_API_BASE_URL_PROD;
   const backendUrl = baseUrl;
+  const csrfToken = Cookies.get('csrftoken');
+  const [isChangePasswordOpen, setChangePasswordOpen] = useState(false);
 
   const hasCheckedSuperuser = useRef(false);
 
@@ -37,7 +41,14 @@ const UserAdmin = () => {
 
     const fetchUsers = async () => {
       try {
-        const response = await fetch(`${backendUrl}/api/admin/users/`);
+        const response = await fetch(`${backendUrl}/api/admin/users/`,{
+          method: 'GET',
+          headers: {
+              'Content-Type': 'application/json',
+              'X-CSRFToken': csrfToken,
+          },
+          credentials: 'include',
+      });
         if (!response.ok) {
           throw new Error("Failed to fetch users");
         }
@@ -153,6 +164,38 @@ const UserAdmin = () => {
     setSearchTerm("");
   };
 
+  const toggleChangePasswordModal = () => {
+    setChangePasswordOpen(!isChangePasswordOpen);
+  };
+
+  // Function to handle password change
+  const handleChangePassword = async (currentPassword, newPassword) => {
+    try {
+      const response = await fetch(`${backendUrl}/api/change-password/`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          'X-CSRFToken': csrfToken
+        },
+        credentials: 'include',
+        body: JSON.stringify({
+          current_password: currentPassword,
+          new_password: newPassword,
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to change password");
+      }
+
+      alert("Password changed successfully!");
+      setChangePasswordOpen(false);
+    } catch (error) {
+      console.error("Error changing password:", error);
+      alert("Failed to change password. Please try again.");
+    }
+  };
+
   return (
     <div className="user-admin">
       <header>
@@ -164,7 +207,7 @@ const UserAdmin = () => {
             <li onClick={() => navigate('/admin/module-list')}>Modules</li>
             <li onClick={() => navigate('/admin/user-logs')}>User Logs</li>
             <li onClick={() => navigate('/module')}>Switch to user</li>
-            <li onClick={() => navigate("/reset-password")}>Reset Password</li>
+            <li onClick={toggleChangePasswordModal}>Change Password</li>
             <li onClick={handleLogout}>Logout</li>
           </ul>
         </nav>
@@ -248,7 +291,11 @@ const UserAdmin = () => {
 
           
   
- 
+        <ChangePasswordModal
+        isOpen={isChangePasswordOpen}
+        onClose={toggleChangePasswordModal}
+        onChangePassword={handleChangePassword}
+      />
     </div>
   );
 };

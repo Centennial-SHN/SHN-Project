@@ -147,6 +147,11 @@ button[type="button"] {
 button[type="button"]:hover {
     background-color: #5a6268;
 }
+
+.btndelete{
+  background-color: #c0392b;
+  margin-left:20px;
+}
 /* File upload input styling */
 .file-input {
   display: block;

@@ -1,0 +1,46 @@
+
+.nav-menu {
+    display: none; /* Initially hide the menu */
+  }
+  
+  .nav-menu.show {
+    display: block; /* Show the menu when 'show' class is applied */
+  } 
+  
+  
+  /* Additional styles for nav-menu */
+  .nav-menu {
+    list-style-type: none;
+    padding: 10px;
+    background-color: #f0f0f0;
+    position: absolute;
+    top: 60px; /* Adjust position as needed */
+    right: 40px; /* Adjust position as needed */
+    z-index: 100;
+    border: 1px solid #ccc;
+  } 
+  
+  /* Styling the menu items */
+  .nav-menu li {
+    margin: 10px 0;
+    cursor: pointer;
+    color: black;
+  }
+  
+  .nav-menu :last-child{
+    color:#4DBDB1;
+  }
+  
+  .nav-menu li:hover {
+    background-color: rgba(73, 198, 185, 0.1); 
+  }
+  
+  /* Hamburger icon styling */
+  .hamburger {
+    cursor: pointer;
+    margin: 20px;
+    position: absolute;
+    top: 0px; /* Adjust position as needed */
+    right: 20px; /* Adjust position as needed */
+    z-index: 100;
+  }
