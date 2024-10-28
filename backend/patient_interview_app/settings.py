@@ -16,7 +16,7 @@ SECRET_KEY = "django-insecure-v+zg51(dy2p^xxng4fc!0mzh$fnd3uaxy99avyq(=901-weqd-
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ["*"]
+# ALLOWED_HOSTS = ["*"]
 
 
 # Application definition
@@ -49,6 +49,25 @@ CORS_ALLOWED_ORIGINS = [
     "https://ashy-stone-000b7c90f.5.azurestaticapps.net"
 ]
 
+CORS_ALLOW_CREDENTIALS = True
+CORS_ALLOW_HEADERS = [ "accept", "referer", "accept-encoding", "authorization", "content-type", "dnt", "origin", "user-agent", "x-csrftoken", "x-sessionid", "x-requested-with"]
+CORS_EXPOSE_HEADERS = ['Set-Cookie']
+
+CSRF_TRUSTED_ORIGINS = [
+    'http://localhost:5173',
+    "https://ashy-stone-000b7c90f.5.azurestaticapps.net"
+]
+
+SESSION_ENGINE = 'django.contrib.sessions.backends.db'
+
+ALLOWED_HOSTS = ['localhost','ashy-stone-000b7c90f.5.azurestaticapps.net']
+
+SESSION_COOKIE_SAMESITE = 'None'
+SESSION_COOKIE_SECURE = True  # Set to True for HTTPS, False for local testing
+CSRF_COOKIE_SAMESITE = 'None'  # Same as above for CSRF
+CSRF_COOKIE_SECURE = True
+SESSION_COOKIE_AGE = 1209600
+SESSION_EXPIRE_AT_BROWSER_CLOSE = True
 
 
 ROOT_URLCONF = "patient_interview_app.urls"

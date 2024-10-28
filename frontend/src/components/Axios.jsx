@@ -13,7 +13,9 @@ const AxiosInstance = axios.create({
     headers: {
         'Content-Type': 'application/json',
         accept: 'application/json',
-    }
+    },
+    xsrfCookieName: 'csrftoken', // This matches Django's default CSRF cookie name
+    xsrfHeaderName: 'X-CSRFToken',
 });
 
 export default AxiosInstance;
