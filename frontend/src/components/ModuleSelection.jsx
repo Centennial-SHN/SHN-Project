@@ -1,11 +1,8 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faBars } from '@fortawesome/free-solid-svg-icons';
 import { VITE_API_BASE_URL_LOCAL, VITE_API_BASE_URL_PROD } from "../constants";
 import NavBar from "./NavBar";
 import { Button, Typography, Layout, Space, Select } from 'antd';
-import logo from '../assets/logo-alt.svg';
 
 const { Title, Text } = Typography;
 const { Content } = Layout;
