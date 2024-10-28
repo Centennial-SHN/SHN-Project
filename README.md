@@ -46,6 +46,7 @@ frontend
 - npm install react-router-dom
 - npm install @fortawesome/react-fontawesome @fortawesome/free-solid-svg-icons
 - npm install antd --save
+- npm install js-cookie
 ```
 
 2. Add the .env file in the root directory under the 'frontend' directory
