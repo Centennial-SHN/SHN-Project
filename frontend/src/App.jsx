@@ -10,6 +10,7 @@ import InterviewHistory from './components/InterviewHistory';
 import 'antd/dist/reset.css';
 import { ThemeProvider } from './themeConfig';
 import UserAdmin from './components/UserAdmin';
+import UserManagement from './components/UserManagement';
 
 function App() {
   return (
@@ -26,6 +27,7 @@ function App() {
             <Route path="/admin/modules/add" element={<AddModule />} />
             <Route path="/admin/modules/edit/:moduleid" element={<EditModule />} />
             <Route path="/admin/user-logs" element={<UserAdmin />} />
+            <Route path="/admin/manage-user/:userId" element={<UserManagement />} />
         </Routes>
         </div>
       </Router>
