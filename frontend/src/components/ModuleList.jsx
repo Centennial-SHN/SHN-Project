@@ -108,7 +108,7 @@ const AdminModuleList = () => {
       const handleDelete = async (moduleId) => {
         if (window.confirm("Are you sure you want to delete this module?")) {
             try {
-                const response = await fetch(`${backendUrl}/api/modules/${moduleId}/`, {
+                const response = await fetch(`${backendUrl}/api/modules/delete/${moduleId}/`, {
                     method: 'DELETE',
                     headers: {
                         'X-CSRFToken': csrfToken,
