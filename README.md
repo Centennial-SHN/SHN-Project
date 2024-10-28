@@ -18,6 +18,7 @@ backend (Python 3.12)
 ```
 
 2. Add the .env file to the 'backend' directory (at the same level as the manage.py file). In the .env file, include the followings
+```
 - OPENAI_API_KEY=''
 - USE_AZURE_BLOB_STORAGE=True 
 - AZURE_STORAGE_CONNECTION_STRING=''
@@ -28,6 +29,7 @@ backend (Python 3.12)
 - DB_HOST=''
 - DB_PORT=''
 - MODULE_ATTACHMENTS_BLOB_CONTAINER=module-attachments
+```
 
 3. Navigate to the root folder of the project and run the following commands to set up and start the server
 - python manage.py migrate
@@ -37,11 +39,12 @@ backend (Python 3.12)
 
 frontend
 1. Install the necessary packages (make sure your under frontend/virtual-patient-interview directory)
+```
 - npm install
 - npm install react-router-dom
 - npm install @fortawesome/react-fontawesome @fortawesome/free-solid-svg-icons
 - npm install antd --save
-
+```
 
 2. Add the .env file in the root directory under the 'frontend' directory
 - VITE_API_BASE_URL_LOCAL = 'http://localhost:8000'
