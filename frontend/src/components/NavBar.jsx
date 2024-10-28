@@ -8,20 +8,28 @@ const { Text } = Typography;
 const { Header } = Layout;
 
 
-const NavBar = () => {
+const NavBar = ({onNavigateAway}) => {
     const navigate = useNavigate();
     const isAdmin = sessionStorage.getItem('isSuperUser') === 'true';
+
+    const handleNavigate = (navigationCallback) => {
+        if (onNavigateAway) {
+            onNavigateAway(navigationCallback); 
+        } else {
+            navigationCallback();
+        }
+    };
 
     const items = [
         {
             key: '1',
             label: (
-                <a onClick={() => {
+                <a onClick={() => handleNavigate(() => {
                     const userId = sessionStorage.getItem('userId');
                     if (userId) {
                         navigate(`/interview-history/${userId}`);
                     }
-                }}>
+                })}>
                     Interview History
                 </a>
             ),
@@ -30,7 +38,7 @@ const NavBar = () => {
             //need to update reset password link
             key: '2',
             label: (
-                <a onClick={() => navigate("/")}>
+                <a onClick={() => handleNavigate(() => navigate("/"))}>
                     Reset Password
                 </a>
             ),
@@ -38,7 +46,7 @@ const NavBar = () => {
         isAdmin && {
             key: '3',
             label: (
-                <a onClick={() => navigate("/admin/module-list")}>
+                <a onClick={() => handleNavigate(() => navigate("/admin/module-list"))}>
                     Switch to Admin
                 </a>
             ),
@@ -46,10 +54,10 @@ const NavBar = () => {
         {
             key: '4',
             label: (
-                <a onClick={() => {
+                <a onClick={() => handleNavigate(() => {
                     sessionStorage.removeItem("userId");
                     navigate("/");
-                }}>
+                })}>
                     Logout
                 </a>
             ),

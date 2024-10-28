@@ -4,7 +4,7 @@ import { useParams, useNavigate, useLocation } from "react-router-dom";
 import castroImage from '../assets/castro.png';
 import { VITE_API_BASE_URL_LOCAL, VITE_API_BASE_URL_PROD } from "../constants";
 import NavBar from "./NavBar";
-import { Button, Typography, Layout, Space, Card, Row, Col, Divider, Drawer } from 'antd';
+import { Button, Typography, Layout, Space, Card, Row, Col, Divider, Drawer, Modal } from 'antd';
 import { UserOutlined, PlayCircleOutlined, CloseCircleOutlined, PaperClipOutlined, DownloadOutlined } from '@ant-design/icons';
 
 const { Title, Text } = Typography;
@@ -20,6 +20,8 @@ const Interview = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [isPlaying, setIsPlaying] = useState(false);
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [pendingNavigation, setPendingNavigation] = useState(null);
   const [status, setStatus] = useState("Idle");
   const mediaRecorderRef = useRef(null);
   const audioChunksRef = useRef([]);
@@ -285,10 +287,6 @@ const Interview = () => {
     }
   };
 
-  const toggleSidebar = () => {
-    setIsSidebarOpen(!isSidebarOpen);
-  };
-
   const handleDownload = async (fileUrl, fileName) => {
     try {
       const response = await fetch(fileUrl);
@@ -312,9 +310,30 @@ const Interview = () => {
     }
   };
 
+  const showModal = (navigationCallback) => {
+    setPendingNavigation(() => navigationCallback);
+    setIsModalOpen(true);
+  };
+
+  const handleOk = () => {
+    setIsModalOpen(false);
+    if (pendingNavigation) {
+      pendingNavigation();
+      setPendingNavigation(null);
+    }
+  };
+
+  const handleCancel = () => {
+    setIsModalOpen(false);
+  };
+
+  const toggleSidebar = () => {
+    setIsSidebarOpen(!isSidebarOpen);
+  };
+
   return (
     <Layout className="layoutInterview">
-      <NavBar />
+      <NavBar onNavigateAway={(navigateCallback) => showModal(navigateCallback)} />
       <Content className="layoutInterviewContent">
         <Card bordered={false}>
           <Row>
@@ -350,7 +369,7 @@ const Interview = () => {
                     <a
                       key={index}
                       onClick={toggleSidebar}
-                      // className="attachment-link"
+                    // className="attachment-link"
                     >
                       {fileName}
                     </a>
@@ -406,7 +425,11 @@ const Interview = () => {
             )}
 
           </Space>
-          <Title level={5} style={{ color: "#A6A8B9", marginBottom: '0px' }}>Tip: You can press or hold the spacebar to start the interview or start speaking</Title>
+          <Title level={5} style={{ color: "#A6A8B9", marginBottom: '0px' }}>
+            Tips:<br />
+            You can press or hold the spacebar to start the interview or start speaking.<br />
+            To end the interview and save your transcript, click on the "Exit Interview" button.
+          </Title>
         </Space>
 
 
@@ -434,19 +457,31 @@ const Interview = () => {
           open={isSidebarOpen}
         >
           {Object.entries(files).map(([fileName, fileUrl], index) => (
-            
+
             <a
               key={index}
               onClick={() => handleDownload(fileUrl, fileName)}
             >
               <Space direction="horizontal" className="attachment-link">
-              {fileName}
-              <DownloadOutlined />
+                {fileName}
+                <DownloadOutlined />
               </Space>
             </a>
-            
+
           ))}
         </Drawer>
+
+        <Modal
+          title="Warning— your transcript won't be saved"
+          open={isModalOpen}
+          onOk={handleOk}
+          onCancel={handleCancel}
+          okText="Yes, Leave Page"
+          cancelText="Cancel"
+        >
+          <p>Are you sure you want to navigate away from this page?<br />
+            Without clicking the Exit Interview button, the interview transcript won't be saved.</p>
+        </Modal>
 
       </Content>
     </Layout>
