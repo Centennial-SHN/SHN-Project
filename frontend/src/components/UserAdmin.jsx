@@ -124,7 +124,7 @@ const UserAdmin = () => {
       const url = window.URL.createObjectURL(blob);
       const link = document.createElement("a");
       link.href = url;
-      link.setAttribute("download", `transcript_${interviewId}.txt`);
+      link.setAttribute("download", `transcript_${interviewId}.csv`);
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
