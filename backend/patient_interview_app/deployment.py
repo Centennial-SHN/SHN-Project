@@ -24,6 +24,30 @@ CORS_ALLOWED_ORIGINS = [
     "https://ashy-stone-000b7c90f.5.azurestaticapps.net",
 ]
 
+CORS_ALLOW_METHODS = [
+    "GET",
+    "POST",
+    "PUT",
+    "PATCH",
+    "DELETE",
+    "OPTIONS",
+]
+
+CORS_ALLOW_CREDENTIALS = True
+
+CSRF_TRUSTED_ORIGINS = [
+    "https://ashy-stone-000b7c90f.5.azurestaticapps.net"
+]
+
+SESSION_ENGINE = 'django.contrib.sessions.backends.db'
+
+SESSION_COOKIE_SAMESITE = 'None'
+SESSION_COOKIE_SECURE = True  # Set to True for HTTPS, False for local testing
+CSRF_COOKIE_SAMESITE = 'None'  # Same as above for CSRF
+CSRF_COOKIE_SECURE = True
+SESSION_COOKIE_AGE = 1209600
+SESSION_EXPIRE_AT_BROWSER_CLOSE = True
+
 STORAGES = {
     "default": {
         "BACKEND": "django.core.files.storage.FileSystemStorage",
