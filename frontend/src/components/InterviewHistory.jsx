@@ -1,10 +1,12 @@
 import React, { useEffect, useState } from "react";
-import { useParams,useNavigate } from "react-router-dom";
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faBars } from '@fortawesome/free-solid-svg-icons';
+import { useParams, useNavigate } from "react-router-dom";
 import { VITE_API_BASE_URL_LOCAL, VITE_API_BASE_URL_PROD } from "../constants";
 import Cookies from 'js-cookie';
-import ChangePasswordModal from './ChangePasswordModal';
+import NavBar from "./NavBar";
+import { Typography, Layout, Table, Pagination } from 'antd';
+
+const { Title } = Typography;
+const { Content } = Layout;
 
 const InterviewHistory = () => {
   const [interviews, setInterviews] = useState([]);
@@ -12,11 +14,13 @@ const InterviewHistory = () => {
   const navigate = useNavigate();
   const isDevelopment = import.meta.env.MODE === "development";
   const baseUrl = isDevelopment ? VITE_API_BASE_URL_LOCAL : VITE_API_BASE_URL_PROD;
-  const [menuOpen, setMenuOpen] = useState(false); // State for toggling the menu
-  const [iconColor, setIconColor] = useState("black");
+  // const [menuOpen, setMenuOpen] = useState(false); // State for toggling the menu
+  // const [iconColor, setIconColor] = useState("black");
   const isAdmin = sessionStorage.getItem('isSuperUser') === 'true';
+  const [pageSize, setPageSize] = useState(10);
 
-  const [isChangePasswordOpen, setChangePasswordOpen] = useState(false);
+
+  // const [isChangePasswordOpen, setChangePasswordOpen] = useState(false);
 
   const backendUrl = baseUrl;
   const csrfToken = Cookies.get('csrftoken');
@@ -83,112 +87,121 @@ const InterviewHistory = () => {
     }
   };
 
-  const handleLogout = () => {
-    sessionStorage.removeItem("userId"); // Clear userId from sessionStorage
-    navigate("/"); // Redirect to login page
-  };
+  const columns = [
+    {
+      title: 'Module Name',
+      dataIndex: 'modulename',
+      key: 'moduleName',
+      width: '25%',
+      sorter: (a, b) => a.modulename.localeCompare(b.modulename),
+    },
+    {
+      title: 'Date',
+      dataIndex: 'dateactive',
+      key: 'date',
+      width: '25%',
+      sorter: (a, b) => new Date(a.dateactive) - new Date(b.dateactive),
+    },
+    {
+      title: 'Interview Length',
+      dataIndex: 'interviewlength',
+      key: 'interviewLength',
+      width: '25%',
+    },
+    {
+      title: 'Transcript',
+      key: 'transcript',
+      width: '25%',
+      render: (_, record) => (
+        <a onClick={() => handleDownloadTranscript(record.interviewid)}>
+          Download
+        </a>
+      ),
+    },
+  ];
 
-  const toggleMenu = () => {
-    setMenuOpen((prev) =>{
-      setIconColor(prev ? "black" : "#4DBDB1");
-      return !prev;
-    });
-  };
+  const dataSource = interviews.map((interview, index) => ({
+    key: index,
+    modulename: interview.modulename,
+    dateactive: interview.dateactive,
+    interviewlength: interview.interviewlength,
+    interviewid: interview.interviewid,
+  }));
 
-  const handleSwitchToAdmin = () => {
-    navigate("/admin/module-list"); // Replace with the actual admin route
-  };
+  // const handleLogout = () => {
+  //   sessionStorage.removeItem("userId"); // Clear userId from sessionStorage
+  //   navigate("/"); // Redirect to login page
+  // };
 
-  const toggleChangePasswordModal = () => {
-    setChangePasswordOpen(!isChangePasswordOpen);
-  };
+  // const toggleMenu = () => {
+  //   setMenuOpen((prev) =>{
+  //     setIconColor(prev ? "black" : "#4DBDB1");
+  //     return !prev;
+  //   });
+  // };
 
-  // Function to handle password change
-  const handleChangePassword = async (currentPassword, newPassword) => {
-    try {
-      const response = await fetch(`${backendUrl}/api/change-password/`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          'X-CSRFToken': csrfToken
-        },
-        credentials: 'include',
-        body: JSON.stringify({
-          current_password: currentPassword,
-          new_password: newPassword,
-        }),
-      });
+  // const handleSwitchToAdmin = () => {
+  //   navigate("/admin/module-list"); // Replace with the actual admin route
+  // };
 
-      if (!response.ok) {
-        throw new Error("Failed to change password");
-      }
+  // const toggleChangePasswordModal = () => {
+  //   setChangePasswordOpen(!isChangePasswordOpen);
+  // };
 
-      alert("Password changed successfully!");
-      setChangePasswordOpen(false);
-    } catch (error) {
-      console.error("Error changing password:", error);
-      alert("Failed to change password. Please try again.");
-    }
-  };
+  // // Function to handle password change
+  // const handleChangePassword = async (currentPassword, newPassword) => {
+  //   try {
+  //     const response = await fetch(`${backendUrl}/api/change-password/`, {
+  //       method: "POST",
+  //       headers: {
+  //         "Content-Type": "application/json",
+  //         'X-CSRFToken': csrfToken
+  //       },
+  //       credentials: 'include',
+  //       body: JSON.stringify({
+  //         current_password: currentPassword,
+  //         new_password: newPassword,
+  //       }),
+  //     });
+
+  //     if (!response.ok) {
+  //       throw new Error("Failed to change password");
+  //     }
+
+  //     alert("Password changed successfully!");
+  //     setChangePasswordOpen(false);
+  //   } catch (error) {
+  //     console.error("Error changing password:", error);
+  //     alert("Failed to change password. Please try again.");
+  //   }
+  // };
 
 
   return (
-    <div className="interview-history">
-      <header>
-        <nav>
-          <div className="hamburger" onClick={toggleMenu}>
-            <FontAwesomeIcon icon={faBars} size="2x" color={iconColor} /> {/* Use iconColor state */}
-          </div>
-          <ul className={`nav-menu ${menuOpen ? "show" : ""}`}>
-            {/* <li onClick={() => navigate(`/interview-history/${userid}`)}>Interview History</li> */}
-            <li onClick={() => navigate("/module")}>Select Module</li>
-            <li onClick={toggleChangePasswordModal}>Change Password</li>
-            {isAdmin && ( // This line ensures the "Switch to Admin" item is shown only to admin users
-                <li onClick={handleSwitchToAdmin}>Switch to Admin</li>
-            )}
-            <li onClick={handleLogout}>Logout</li>
-          </ul>
-        </nav>
-      </header>
-      <h1>Your Interview History</h1>
-      {interviews.length === 0 ? (
-        <p>No interviews found.</p>
-      ) : (
-        <table>
-          <thead>
-            <tr>
-              <th>Date</th>
-              <th>Module Name</th>
-              <th>Interview Length</th>
-              <th>Transcript</th>
-            </tr>
-          </thead>
-          <tbody>
-            {interviews.map((interview, index) => (
-              <tr key={index}>
-                <td>{interview.dateactive}</td>
-                <td>{interview.modulename}</td>
-                <td>{interview.interviewlength}</td>
-                <td>
-                  <button
-                    onClick={() =>
-                      handleDownloadTranscript(interview.interviewid)
-                    }
-                  >
-                    Download
-                  </button>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      )}
-      <ChangePasswordModal
-        isOpen={isChangePasswordOpen}
-        onClose={toggleChangePasswordModal}
-        onChangePassword={handleChangePassword}
-      />
-    </div>
+    <Layout className="layoutInterviewHist">
+      <NavBar isAdmin={isAdmin} />
+      <Content className="layoutIntHistContent">
+        <Title level={3} style={{ color: "#191E72" }}>Interview History</Title>
+        {interviews.length === 0 ? (
+          <p>No interviews found.</p>
+        ) : (
+          <Table
+            dataSource={dataSource}
+            columns={columns}
+            size="large"
+            pagination={dataSource.length > 10 ? {
+              pageSize: pageSize,
+              showSizeChanger: true,
+              onShowSizeChange: (current, size) => setPageSize(size),
+              pageSizeOptions: ['10', '20', '30', '50'],
+            } : false}
+            showSorterTooltip={{
+              target: 'sorter-icon',
+            }}
+          />
+        )}
+      </Content>
+    </Layout>
   );
 };
 export default InterviewHistory;

@@ -443,7 +443,7 @@ const Interview = () => {
           <Title level={5} style={{ color: "#A6A8B9", marginBottom: '0px' }}>
             Tips:<br />
             You can press or hold the spacebar to start the interview or start speaking.<br />
-            To end the interview and save your transcript, click on the "Exit Interview" button.
+            To end the interview and save your transcript, click on the "End Interview" button.
           </Title>
         </Space>
 

@@ -1,7 +1,9 @@
 // ChangePasswordModal.jsx
-
 import React, { useState } from "react";
-import './ChangePasswordModal.css';
+// import './ChangePasswordModal.css';
+import { Form, Input, Button, Typography, Modal } from 'antd';
+
+const { Title, Text } = Typography;
 
 const ChangePasswordModal = ({ isOpen, onClose, onChangePassword }) => {
   const [currentPassword, setCurrentPassword] = useState("");
@@ -21,51 +23,46 @@ const ChangePasswordModal = ({ isOpen, onClose, onChangePassword }) => {
     onChangePassword(currentPassword, newPassword);
   };
 
-  if (!isOpen) return null;
-
   return (
-    <div className="modal">
-      {/* <div className="modal-content"> */}
-        <form className="change-password" onSubmit={handleSubmit}>
-            <h2>Change Password</h2>
-          <div className="password">
-            <label>Current Password</label>
-            <input
-              type="password"
-              value={currentPassword}
-              onChange={(e) => setCurrentPassword(e.target.value)}
-              placeholder="current password"
-              required
-            />
-          </div>
-          <div className="password">
-            <label>New Password</label>
-            <input
-              type="password"
-              value={newPassword}
-              onChange={(e) => setNewPassword(e.target.value)}
-              placeholder="enter new password"
-              required
-            />
-          </div>
-          <div className="password">
-            <label>Confirm New Password</label>
-            <input
-              type="password"
-              value={confirmPassword}
-              onChange={(e) => setConfirmPassword(e.target.value)}
-              placeholder="confirm new password"
-              required
-            />
-          </div>
-          {error && <p className="error">{error}</p>}
-          <div className="buttons">
-            <button className="btnchange-password" type="submit">Submit</button>
-            <button className="btnchange-password" type="button" onClick={onClose}>Cancel</button>
-          </div>
-        </form>
-      {/* </div> */}
-    </div>
+    <Modal
+      open={isOpen}
+      onOk={handleSubmit}
+      onCancel={onClose}
+      footer={[
+        <Button key="cancel" onClick={onClose}>
+          Cancel
+        </Button>,
+        <Button key="submit" type="primary" onClick={handleSubmit}>
+          Submit
+        </Button>,
+      ]}
+    >
+      <Title level={4} style={{marginBottom:"24px"}}>Change Password</Title>
+      <Form layout="vertical" onFinish={handleSubmit}>
+        <Form.Item label="Current Password" required>
+          <Input.Password
+            value={currentPassword}
+            onChange={(e) => setCurrentPassword(e.target.value)}
+            placeholder="Enter current password"
+          />
+        </Form.Item>
+        <Form.Item label="New Password" required>
+          <Input.Password
+            value={newPassword}
+            onChange={(e) => setNewPassword(e.target.value)}
+            placeholder="Enter new password"
+          />
+        </Form.Item>
+        <Form.Item label="Confirm New Password" required>
+          <Input.Password
+            value={confirmPassword}
+            onChange={(e) => setConfirmPassword(e.target.value)}
+            placeholder="Confirm new password"
+          />
+        </Form.Item>
+        {error && <Text type="danger">{error}</Text>}
+      </Form>
+    </Modal>
   );
 };
 

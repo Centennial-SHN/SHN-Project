@@ -21,9 +21,9 @@ const InterviewComplete = () => {
 
     return (
 
-        <Layout className="layoutModuleSelect">
+        <Layout className="layoutInterviewComplete">
             <NavBar isAdmin={isAdmin} />
-            <Content className="layoutModSelContent">
+            <Content className="layoutIntCompContent">
                 <Space direction="vertical" size="small">
                     <Title level={3} style={{ color: '#191e72', }}>Interview completed</Title>
                     <Text>A copy of your transcript has been saved in your records.</Text>
