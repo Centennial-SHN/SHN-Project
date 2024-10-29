@@ -357,7 +357,9 @@ padding: 48px 24px;
 }
 
 /*Module Selection Layout*/
-.layoutModuleSelect{
+.layoutModuleSelect,
+.layoutInterviewComplete
+{
   width:100vw;
   height:100vh;
   background: linear-gradient(
@@ -369,7 +371,9 @@ padding: 48px 24px;
   overflow: hidden;
 }
 
-.layoutModSelContent {
+.layoutModSelContent,
+.layoutIntCompContent
+{
   max-width: 450px;
   margin:auto;
   display: flex;
@@ -385,7 +389,9 @@ padding: 48px 24px;
 }
 
 /*Module Interview Layout*/
-.layoutInterview{
+.layoutInterview,
+.layoutInterviewHist
+{
   width:calc(100vw - 16px);
   background: var(--global-white);
   display: flex;
@@ -394,12 +400,14 @@ padding: 48px 24px;
   overflow-x: hidden;
 }
 
-.layoutInterviewContent {
+.layoutInterviewContent,
+.layoutIntHistContent
+{
   /* margin:auto; */
   display: flex;
   flex-direction: column;
   justify-content: flex-start;
-  align-items: center;
+  align-items: flex-start;
   text-align: center;
   padding: 48px 62.5px;
   gap: 24px;
