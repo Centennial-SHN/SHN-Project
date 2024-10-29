@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { MenuOutlined } from '@ant-design/icons';
 import { Typography, Layout, Space, Divider, Dropdown, Menu, Button } from 'antd';
+import Cookies from 'js-cookie';
 import logo from '../assets/logo-alt.svg';
 import ChangePasswordModal from './ChangePasswordModal';
 
@@ -13,6 +14,7 @@ const NavBar = ({ onNavigateAway }) => {
     const navigate = useNavigate();
     const isAdmin = sessionStorage.getItem('isSuperUser') === 'true';
     const [isChangePasswordOpen, setChangePasswordOpen] = useState(false);
+    const csrfToken = Cookies.get('csrftoken');
 
     const handleNavigate = (navigationCallback) => {
         if (onNavigateAway) {
