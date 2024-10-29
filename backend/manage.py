@@ -4,10 +4,8 @@ import os
 import sys
 
 from dotenv import load_dotenv
-import logging
 
 load_dotenv()
-logging.basicConfig(level=logging.DEBUG)
 
 def main():
     """Run administrative tasks."""
