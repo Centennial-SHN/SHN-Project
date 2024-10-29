@@ -33,6 +33,7 @@ const Interview = () => {
   const recordingTimeoutRef = useRef(null);
   const debounceTimeoutRef = useRef(null);
   const isDevelopment = import.meta.env.MODE === "development";
+  const isAdmin = sessionStorage.getItem('isSuperUser') === 'true';
   const baseUrl = isDevelopment ? VITE_API_BASE_URL_LOCAL : VITE_API_BASE_URL_PROD;
 
   const backendUrl = baseUrl;
@@ -287,7 +288,7 @@ const Interview = () => {
         }),
       });
 
-      navigate("/module");
+      navigate('/interview-complete', { state: { userId: userId } });
     } catch (error) {
       console.error("Error during exit:", error);
     }
@@ -347,7 +348,7 @@ const Interview = () => {
 
   return (
     <Layout className="layoutInterview">
-      <NavBar onNavigateAway={(navigateCallback) => showModal(navigateCallback)} />
+      <NavBar isAdmin={isAdmin} onNavigateAway={(navigateCallback) => showModal(navigateCallback)} />
       <Content className="layoutInterviewContent">
         <Card bordered={false}>
           <Row>
