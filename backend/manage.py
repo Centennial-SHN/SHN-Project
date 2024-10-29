@@ -4,13 +4,16 @@ import os
 import sys
 
 from dotenv import load_dotenv
+import logging
 
 load_dotenv()
+logging.basicConfig(level=logging.DEBUG)
 
 def main():
     """Run administrative tasks."""
     settings_module = 'patient_interview_app.deployment' if 'WEBSITE_HOSTNAME' in os.environ else 'patient_interview_app.settings'
     os.environ.setdefault("DJANGO_SETTINGS_MODULE", settings_module)
+
 
     try:
         from django.core.management import execute_from_command_line

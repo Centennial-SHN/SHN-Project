@@ -148,7 +148,7 @@ const Interview = () => {
 
       recordingTimeoutRef.current = setTimeout(() => {
         stopRecording();
-      }, 20000); // Automatically stop recording after 20 seconds
+      }, 600000); // Automatically stop recording after 10 minutes
     } catch (error) {
       console.error("Error accessing microphone:", error);
     }

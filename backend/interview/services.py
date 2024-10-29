@@ -38,18 +38,20 @@ def process_audio_file(audio_file):
 def generate_text_from_prompt(conversation_history, system_prompt, prompt, model):
     start_time = time.time()
 
+    system_prompt = f"{system_prompt} {prompt}"
     conversation = [
         {'role': 'system', 'content': system_prompt},
-        {'role': 'user', 'content': prompt},
     ]
 
     conversation.extend(conversation_history)
+
+    logging.info(f"Conversation: {conversation}")
 
     try:
         response = openai.chat.completions.create(
             model=model,
             messages=conversation,
-            max_tokens=500,
+            max_tokens=1000,
             temperature=0.7
         )
         generation_duration = time.time() - start_time
