@@ -22,6 +22,7 @@ const Interview = () => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [pendingNavigation, setPendingNavigation] = useState(null);
+  const [isExitModalOpen, setIsExitModalOpen] = useState(false);
   const [status, setStatus] = useState("Idle");
   const mediaRecorderRef = useRef(null);
   const audioChunksRef = useRef([]);
@@ -32,6 +33,7 @@ const Interview = () => {
   const recordingTimeoutRef = useRef(null);
   const debounceTimeoutRef = useRef(null);
   const isDevelopment = import.meta.env.MODE === "development";
+  const isAdmin = sessionStorage.getItem('isSuperUser') === 'true';
   const baseUrl = isDevelopment ? VITE_API_BASE_URL_LOCAL : VITE_API_BASE_URL_PROD;
 
   const backendUrl = baseUrl;
@@ -262,11 +264,16 @@ const Interview = () => {
     }
   };
 
-  const handleExit = async () => {
-    const userConfirmed = window.confirm(
-      "Are you sure you want to exit the interview?"
-    );
-    if (!userConfirmed) return;
+  const showExitModal = () => {
+    setIsExitModalOpen(true);
+  };
+
+  const handleExitOk = async () => {
+    // const userConfirmed = window.confirm(
+    //   "Are you sure you want to exit the interview?"
+    // );
+    // if (!userConfirmed) return;
+    setIsExitModalOpen(false);
 
     console.log("Interview ID:", interviewId);
 
@@ -281,11 +288,19 @@ const Interview = () => {
         }),
       });
 
-      navigate("/module");
+      navigate('/interview-complete', { state: { userId: userId } });
     } catch (error) {
       console.error("Error during exit:", error);
     }
   };
+
+  const handleExitCancel = () => {
+    setIsExitModalOpen(false);
+  }
+
+  const handleExit = () => {
+    showExitModal();
+  }
 
   const handleDownload = async (fileUrl, fileName) => {
     try {
@@ -333,7 +348,7 @@ const Interview = () => {
 
   return (
     <Layout className="layoutInterview">
-      <NavBar onNavigateAway={(navigateCallback) => showModal(navigateCallback)} />
+      <NavBar isAdmin={isAdmin} onNavigateAway={(navigateCallback) => showModal(navigateCallback)} />
       <Content className="layoutInterviewContent">
         <Card bordered={false}>
           <Row>
@@ -481,6 +496,18 @@ const Interview = () => {
         >
           <p>Are you sure you want to navigate away from this page?<br />
             Without clicking the Exit Interview button, the interview transcript won't be saved.</p>
+        </Modal>
+
+        <Modal
+          title="End Interview?"
+          open={isExitModalOpen}
+          onOk={handleExitOk}
+          onCancel={handleExitCancel}
+          okText="End"
+          cancelText="Cancel"
+        >
+          <p>Are you sure you want to end the interview? <br/>
+            Your transcript will be saved and will be accessible on the Interview History page.</p>
         </Modal>
 
       </Content>
