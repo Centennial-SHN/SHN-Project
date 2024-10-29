@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from "react";
-import { useParams,useNavigate } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import { VITE_API_BASE_URL_LOCAL, VITE_API_BASE_URL_PROD } from "../constants";
 import Cookies from 'js-cookie';
 import NavBar from "./NavBar";
-import { Typography, Layout, Space } from 'antd';
+import { Typography, Layout, Table, Pagination } from 'antd';
 
 const { Title } = Typography;
 const { Content } = Layout;
@@ -17,6 +17,8 @@ const InterviewHistory = () => {
   // const [menuOpen, setMenuOpen] = useState(false); // State for toggling the menu
   // const [iconColor, setIconColor] = useState("black");
   const isAdmin = sessionStorage.getItem('isSuperUser') === 'true';
+  const [pageSize, setPageSize] = useState(10);
+
 
   // const [isChangePasswordOpen, setChangePasswordOpen] = useState(false);
 
@@ -85,6 +87,47 @@ const InterviewHistory = () => {
     }
   };
 
+  const columns = [
+    {
+      title: 'Module Name',
+      dataIndex: 'modulename',
+      key: 'moduleName',
+      width: '25%',
+      sorter: (a, b) => a.modulename.localeCompare(b.modulename),
+    },
+    {
+      title: 'Date',
+      dataIndex: 'dateactive',
+      key: 'date',
+      width: '25%',
+      sorter: (a, b) => new Date(a.dateactive) - new Date(b.dateactive),
+    },
+    {
+      title: 'Interview Length',
+      dataIndex: 'interviewlength',
+      key: 'interviewLength',
+      width: '25%',
+    },
+    {
+      title: 'Transcript',
+      key: 'transcript',
+      width: '25%',
+      render: (_, record) => (
+        <a onClick={() => handleDownloadTranscript(record.interviewid)}>
+          Download
+        </a>
+      ),
+    },
+  ];
+
+  const dataSource = interviews.map((interview, index) => ({
+    key: index,
+    modulename: interview.modulename,
+    dateactive: interview.dateactive,
+    interviewlength: interview.interviewlength,
+    interviewid: interview.interviewid,
+  }));
+
   // const handleLogout = () => {
   //   sessionStorage.removeItem("userId"); // Clear userId from sessionStorage
   //   navigate("/"); // Redirect to login page
@@ -138,41 +181,27 @@ const InterviewHistory = () => {
     <Layout className="layoutInterviewHist">
       <NavBar isAdmin={isAdmin} />
       <Content className="layoutIntHistContent">
-      <h1>Your Interview History</h1>
-      {interviews.length === 0 ? (
-        <p>No interviews found.</p>
-      ) : (
-        <table>
-          <thead>
-            <tr>
-              <th>Date</th>
-              <th>Module Name</th>
-              <th>Interview Length</th>
-              <th>Transcript</th>
-            </tr>
-          </thead>
-          <tbody>
-            {interviews.map((interview, index) => (
-              <tr key={index}>
-                <td>{interview.dateactive}</td>
-                <td>{interview.modulename}</td>
-                <td>{interview.interviewlength}</td>
-                <td>
-                  <button
-                    onClick={() =>
-                      handleDownloadTranscript(interview.interviewid)
-                    }
-                  >
-                    Download
-                  </button>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      )}
+        <Title level={3} style={{ color: "#191E72" }}>Interview History</Title>
+        {interviews.length === 0 ? (
+          <p>No interviews found.</p>
+        ) : (
+          <Table
+            dataSource={dataSource}
+            columns={columns}
+            size="large"
+            pagination={dataSource.length > 10 ? {
+              pageSize: pageSize,
+              showSizeChanger: true,
+              onShowSizeChange: (current, size) => setPageSize(size),
+              pageSizeOptions: ['10', '20', '30', '50'],
+            } : false}
+            showSorterTooltip={{
+              target: 'sorter-icon',
+            }}
+          />
+        )}
       </Content>
-      </Layout>
+    </Layout>
   );
 };
 export default InterviewHistory;
