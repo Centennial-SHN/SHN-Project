@@ -68,12 +68,13 @@ def process_audio(request):
             return JsonResponse({"error": "Failed to transcribe audio"}, status=500)
 
         conversation_history.append({'role': 'user', 'content': transcribed_text})
-
         generated_text = generate_text_from_prompt(conversation_history, module_system_prompt, module_prompt, module_model)
+        cleaned_text = generated_text.replace('\n', ' ').strip()
 
-        conversation_history.append({'role': 'assistant', 'content': generated_text})
+        conversation_history.append({'role': 'assistant', 'content': cleaned_text})
 
         interview.transcript = "\n".join([f"{msg['role']}: {msg['content']}" for msg in conversation_history])
+
         interview.dateactive = date_active
         interview.save()
 
