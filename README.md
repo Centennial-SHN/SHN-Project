@@ -29,6 +29,10 @@ backend (Python 3.12)
 - DB_HOST=''
 - DB_PORT=''
 - MODULE_ATTACHMENTS_BLOB_CONTAINER=module-attachments
+- SMTP_EMAIL_HOST=''
+- SMTP_EMAIL_PORT=''
+- SMTP_HOST_USER=''
+- SMTP_HOST_PASSWORD=''
 ```
 
 3. Navigate to the root folder of the project and run the following commands to set up and start the server
