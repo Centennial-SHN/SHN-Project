@@ -197,7 +197,36 @@ const UserAdmin = () => {
       alert("Failed to change password. Please try again.");
     }
   };
+  const handleDeleteInterview = async (interviewId, userId) => {
+    try {
 
+      const response = await fetch(`${backendUrl}/api/admin/interview/${interviewId}/delete/`, {
+        method: "DELETE",
+        headers: {
+          'X-CSRFToken': csrfToken,  // Add CSRF token if required
+        },
+        credentials: 'include',
+      });
+  
+      if (!response.ok) {
+        throw new Error("Failed to delete interview");
+      }
+  
+      setUsers(prevUsers =>
+        prevUsers.map(user =>
+          user.userid === userId
+            ? { ...user, interviews: user.interviews.filter(interview => interview.interviewid !== interviewId) }
+            : user
+        )
+      );
+  
+      alert("Interview deleted successfully!");
+    } catch (error) {
+      console.error("Error deleting interview:", error);
+      alert("Failed to delete interview. Please try again.");
+    }
+  };
+  
   return (
     <div className="user-admin">
       <header>
@@ -236,6 +265,7 @@ const UserAdmin = () => {
               <th>Date</th>
               <th>Module</th>
               <th>Interview Logs</th>
+              <th>Delete</th>
             </tr>
           </thead>
 
@@ -257,10 +287,11 @@ const UserAdmin = () => {
                           {user.email}
                         </a>
                       </td>
-                      <td>{user.name}</td>
+                      
                       <td>{totalInterviews}</td>
                       <td>{formatTime(totalTime)}</td> {/* Total Interview Time */}
                       {/* Blank cells for Date, Module, and Logs */}
+                      <td></td>
                       <td></td>
                       <td></td>
                       <td></td>
@@ -281,7 +312,11 @@ const UserAdmin = () => {
                           <button onClick={() => handleDownloadTranscript(interview.interviewid)}>
                             Download Transcript
                           </button>
+                          
                         </td>
+                        <td><button onClick={() => handleDeleteInterview(interview.interviewid, user.userid)}>
+                          Delete
+                        </button></td>
                       </tr>
                     );
                   })}
