@@ -4,7 +4,11 @@
         "route": "/*",
         "serve": "/index.html",
         "statusCode": 200
-      }
+      },{
+        "route":"/src/components/*",
+        "methods": ["GET","POST","PATCH","DELETE"],
+        "allowedroles":["authenticated"]
+        }
     ]
   }
   
