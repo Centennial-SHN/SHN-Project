@@ -1,4 +1,10 @@
 {
+    "trailingslash":"auto",
+    "routes":[{
+      "route":"/api/*",
+      "allowedroles":["authenticated"]
+      }
+    ],
     "navigationFallback": {
       "rewrite": "/index.html",
       "exclude": ["/images/*.{png,jpg,gif}", "/css/*"]

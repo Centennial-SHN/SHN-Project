@@ -89,6 +89,8 @@ def process_audio(request):
 
 @api_view(['GET'])
 def get_modules(request):
+    logger.debug(f'Session: {request.session.items()}')
+    logger.debug(f'User in module selection: {request.user}, is_authenticated: {request.user.is_authenticated}')
     modules = Module.objects.all()
     serializer = ModuleSerializer(modules, many=True)
     return Response(serializer.data)
