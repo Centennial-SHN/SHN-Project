@@ -704,10 +704,11 @@ def download_user_data(request, user_id):
         if interviews.exists():
             writer.writerow([user.userid, user.email, len(interviews), total_time_formatted])
         writer.writerow('')
-        writer.writerow(['Interview Date','Interview Module','Interview Length'])
+        writer.writerow(['Interview Date','Interview Module','Module Name','Interview Length'])
         for interview in interviews:
             interview_date_formatted = interview.dateactive.strftime("\t%Y-%m-%d")
-            writer.writerow([interview_date_formatted, interview.moduleid,interview.interviewlength])
+            module_name = interview.moduleid.modulename if interview.moduleid else 'N/A'
+            writer.writerow([interview_date_formatted, interview.moduleid,module_name,interview.interviewlength])
         
 
         return response
