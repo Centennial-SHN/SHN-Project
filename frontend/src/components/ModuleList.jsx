@@ -17,9 +17,9 @@ import {
   Col,
   Row,
   Space,
-  Modal
+  Modal,
 } from "antd";
-import { EditOutlined, DeleteOutlined } from '@ant-design/icons';
+import { EditOutlined, DeleteOutlined } from "@ant-design/icons";
 
 const { Content } = Layout;
 const { Title } = Typography;
@@ -29,7 +29,7 @@ const AdminModuleList = () => {
   const [menuOpen, setMenuOpen] = useState(false); // State for toggling the menu
   const [iconColor, setIconColor] = useState("black");
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [selectedModuleId, setSelectedModuleId] = useState(null); 
+  const [selectedModuleId, setSelectedModuleId] = useState(null);
   const navigate = useNavigate();
   const isDevelopment = import.meta.env.MODE === "development";
   const baseUrl = isDevelopment
@@ -129,13 +129,11 @@ const AdminModuleList = () => {
     setIsModalOpen(true);
   };
 
-
-
   const handleDeleteOk = async () => {
     setIsModalOpen(false);
     try {
       const response = await fetch(
-        `${backendUrl}/api/modules/delete/${selectedModuleId}/`, 
+        `${backendUrl}/api/modules/delete/${selectedModuleId}/`,
         {
           method: "DELETE",
           headers: {
@@ -145,20 +143,19 @@ const AdminModuleList = () => {
           credentials: "include",
         }
       );
-  
+
       if (!response.ok) {
         throw new Error("Failed to delete module");
       }
-  
+
       setModules((prevModules) =>
         prevModules.filter((module) => module.moduleid !== selectedModuleId)
       );
     } catch (error) {
       console.error("Error deleting module:", error);
     }
-    setSelectedModuleId(null); 
+    setSelectedModuleId(null);
   };
-  
 
   const handleDeleteCancel = () => {
     setIsModalOpen(false);
@@ -188,24 +185,27 @@ const AdminModuleList = () => {
       key: "action",
       width: "33%",
       render: (_, record) => (
-        <Space style={{ display: "flex", justifyContent: "center" }} size={0}>
-          <Button type="primary" icon={<EditOutlined />} onClick={() => handleEdit(record.moduleid)} style={{ minWidth: "auto" }}>
-            Edit
-          </Button>
-          <Button
-            type="primary"
-            icon={<DeleteOutlined />}
-            className="delete-button"
-            onClick={() => {
-                showDeleteModal(record.moduleid);
-              }
-            }
-            style={{ minWidth: "auto", marginLeft: 4 }}
-
-          >
-            Delete
-          </Button>
-        </Space>
+        <Row justify="center">
+          <Col>
+            <Button
+              type="primary"
+              icon={<EditOutlined />}
+              onClick={() => handleEdit(record.moduleid)}
+            >
+              Edit
+            </Button>
+          </Col>
+          <Col style={{ marginLeft: "8px" }}>
+            <Button
+              type="primary"
+              icon={<DeleteOutlined />}
+              className="delete-button"
+              onClick={() => showDeleteModal(record.moduleid)}
+            >
+              Delete
+            </Button>
+          </Col>
+        </Row>
       ),
     },
   ];
@@ -259,7 +259,9 @@ const AdminModuleList = () => {
           cancelText="Cancel"
           okButtonProps={{ className: "delete-button" }}
         >
-          <p><strong>Are you sure you want to delete this module?</strong></p>
+          <p>
+            <strong>Are you sure you want to delete this module?</strong>
+          </p>
         </Modal>
 
         <ChangePasswordModal
