@@ -1,4 +1,12 @@
 {
+    "trailingslash":"auto",
+    "routes":[
+      {
+        "route":"/src/components/*",
+        "methods": ["GET","POST","PATCH","DELETE"],
+        "allowedRoles":["authenticated"]
+        }
+    ],
     "navigationFallback": {
       "rewrite": "/index.html",
       "exclude": ["/images/*.{png,jpg,gif}", "/css/*"]

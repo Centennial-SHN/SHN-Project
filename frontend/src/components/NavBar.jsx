@@ -4,6 +4,7 @@ import { MenuOutlined } from '@ant-design/icons';
 import { Typography, Layout, Space, Divider, Dropdown, Menu, Button } from 'antd';
 import Cookies from 'js-cookie';
 import logo from '../assets/logo-alt.svg';
+import { VITE_API_BASE_URL_LOCAL, VITE_API_BASE_URL_PROD } from "../constants";
 import ChangePasswordModal from './ChangePasswordModal';
 
 const { Text } = Typography;
@@ -14,6 +15,9 @@ const NavBar = ({ onNavigateAway }) => {
     const navigate = useNavigate();
     const isAdmin = sessionStorage.getItem('isSuperUser') === 'true';
     const [isChangePasswordOpen, setChangePasswordOpen] = useState(false);
+    const isDevelopment = import.meta.env.MODE === "development";
+    const baseUrl = isDevelopment ? VITE_API_BASE_URL_LOCAL : VITE_API_BASE_URL_PROD;
+    const backendUrl = baseUrl;
     const csrfToken = Cookies.get('csrftoken');
 
     const handleNavigate = (navigationCallback) => {

@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { VITE_API_BASE_URL_LOCAL, VITE_API_BASE_URL_PROD } from "../constants";
 import NavBar from "./NavBar";
+import Cookies from 'js-cookie';
 import { Button, Typography, Layout, Space, Select } from 'antd';
 
 const { Title, Text } = Typography;
@@ -19,6 +20,7 @@ const ModuleSelection = () => {
   const baseUrl = isDevelopment ? VITE_API_BASE_URL_LOCAL : VITE_API_BASE_URL_PROD;
 
   const backendUrl = baseUrl;
+  const csrfToken = Cookies.get('csrftoken');
 
   useEffect(() => {
     if (!userId) {
@@ -28,7 +30,14 @@ const ModuleSelection = () => {
 
     const fetchModules = async () => {
       try {
-        const response = await fetch(`${backendUrl}/api/modules/`);
+        const response = await fetch(`${backendUrl}/api/modules/`, {
+                    method: 'GET',
+                    headers: {
+                      'Content-Type': 'application/json',
+                      'X-CSRFToken': csrfToken,
+                    },
+                    credentials: 'include',
+                });
         const data = await response.json();
         setModules(data);
       } catch (error) {
