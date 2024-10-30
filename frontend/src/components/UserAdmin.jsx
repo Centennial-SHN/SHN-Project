@@ -1,11 +1,12 @@
 import React, { useEffect, useState, useRef } from "react";
 import { useNavigate } from 'react-router-dom';
-import './UserAdmin.css';
+// import './UserAdmin.css';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faBars } from '@fortawesome/free-solid-svg-icons';
 import Cookies from 'js-cookie';
 import ChangePasswordModal from './ChangePasswordModal';
 import { VITE_API_BASE_URL_LOCAL, VITE_API_BASE_URL_PROD } from "../constants";
+import NavBar from "./NavBar";
 
 const UserAdmin = () => {
   const [users, setUsers] = useState([]);
@@ -18,6 +19,7 @@ const UserAdmin = () => {
   const backendUrl = baseUrl;
   const csrfToken = Cookies.get('csrftoken');
   const [isChangePasswordOpen, setChangePasswordOpen] = useState(false);
+  const isAdmin = sessionStorage.getItem('isSuperUser') === 'true';
 
   const hasCheckedSuperuser = useRef(false);
 
@@ -199,7 +201,9 @@ const UserAdmin = () => {
   return (
     <div className="user-admin">
       <header>
-        <nav>
+
+      <NavBar isAdmin={isAdmin} />
+        {/* <nav>
           <div className="hamburger" onClick={toggleMenu}>
             <FontAwesomeIcon icon={faBars} size="2x" color={iconColor} />
           </div>
@@ -210,7 +214,7 @@ const UserAdmin = () => {
             <li onClick={toggleChangePasswordModal}>Change Password</li>
             <li onClick={handleLogout}>Logout</li>
           </ul>
-        </nav>
+        </nav> */}
       </header>
       <h2>User Admin Page</h2>
       <div className="search-container">

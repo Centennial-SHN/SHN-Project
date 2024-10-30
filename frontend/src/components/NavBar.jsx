@@ -1,5 +1,5 @@
-import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import React, { useState, useEffect } from "react";
+import { useNavigate, useLocation } from "react-router-dom";
 import { MenuOutlined } from '@ant-design/icons';
 import { Typography, Layout, Space, Divider, Dropdown, Menu, Button } from 'antd';
 import Cookies from 'js-cookie';
@@ -9,12 +9,19 @@ import ChangePasswordModal from './ChangePasswordModal';
 const { Text } = Typography;
 const { Header } = Layout;
 
-
 const NavBar = ({ onNavigateAway }) => {
     const navigate = useNavigate();
+    const location = useLocation();
     const isAdmin = sessionStorage.getItem('isSuperUser') === 'true';
     const [isChangePasswordOpen, setChangePasswordOpen] = useState(false);
     const csrfToken = Cookies.get('csrftoken');
+    const [viewAsAdmin, setViewAsAdmin] = useState(isAdmin);
+
+    useEffect(() => {
+        if (location.pathname === '/module') {
+            setViewAsAdmin(false);
+        }
+    }, [location.pathname]);
 
     const handleNavigate = (navigationCallback) => {
         if (onNavigateAway) {
@@ -59,56 +66,109 @@ const NavBar = ({ onNavigateAway }) => {
         }
     };
 
-    const items = [
-        {
-            key: '1',
-            label: (
-                <a onClick={() => handleNavigate(handleRedirectModule)}>
-                    Select Module
-                </a>
-            ),
-        },
-        {
-            key: '2',
-            label: (
-                <a onClick={() => handleNavigate(() => {
-                    const userId = sessionStorage.getItem('userId');
-                    if (userId) {
-                        navigate(`/interview-history/${userId}`);
-                    }
-                })}>
-                    Interview History
-                </a>
-            ),
-        },
-        {
-            key: '3',
-            label: (
-                <a onClick={() => handleNavigate(toggleChangePasswordModal)}>
-                    Change Password
-                </a>
-            ),
-        },
-        isAdmin && {
-            key: '4',
-            label: (
-                <a onClick={() => handleNavigate(() => navigate("/admin/module-list"))}>
-                    Switch to Admin
-                </a>
-            ),
-        },
-        {
-            key: '5',
-            label: (
-                <a onClick={() => handleNavigate(() => {
-                    sessionStorage.removeItem("userId");
-                    navigate("/");
-                })}>
-                    Logout
-                </a>
-            ),
-        },
-    ].filter(Boolean);
+    const toggleViewMode = () => {
+        setViewAsAdmin(false);
+        navigate('/module', { replace: true });
+    };
+
+    const adminItems = [
+            {
+                key: '1',
+                label: (
+                    <a onClick={() => handleNavigate(() => navigate("/admin/module-list"))}>
+                        Module List
+                    </a>
+                ),
+            },
+            {
+                key: '2',
+                label: (
+                    <a onClick={() => handleNavigate(() => navigate("/admin/user-logs"))}>
+                        User Logs
+                    </a>
+                ),
+            },
+            isAdmin && {
+                key: '3',
+                label: (
+                    <a onClick={toggleViewMode}>
+                        Switch to User
+                    </a>
+                ),
+            },
+            {
+                key: '4',
+                label: (
+                    <a onClick={() => handleNavigate(toggleChangePasswordModal)}>
+                        Change Password
+                    </a>
+                ),
+            },
+            {
+                key: '5',
+                label: (
+                    <a onClick={() => handleNavigate(() => {
+                        sessionStorage.removeItem("userId");
+                        navigate("/");
+                    })}>
+                        Logout
+                    </a>
+                ),
+            },
+        ].filter(Boolean);
+
+    const userItems = [
+            {
+                key: '1',
+                label: (
+                    <a onClick={() => handleNavigate(handleRedirectModule)}>
+                        Select Module
+                    </a>
+                ),
+            },
+            {
+                key: '2',
+                label: (
+                    <a onClick={() => handleNavigate(() => {
+                        const userId = sessionStorage.getItem('userId');
+                        if (userId) {
+                            navigate(`/interview-history/${userId}`);
+                        }
+                    })}>
+                        Interview History
+                    </a>
+                ),
+            },
+            isAdmin && {
+                key: '3',
+                label: (
+                    <a onClick={() => handleNavigate(() => navigate("/admin/module-list"))}>
+                        Switch to Admin
+                    </a>
+                ),
+            },
+            {
+                key: '4',
+                label: (
+                    <a onClick={() => handleNavigate(toggleChangePasswordModal)}>
+                        Change Password
+                    </a>
+                ),
+            },
+            {
+                key: '5',
+                label: (
+                    <a onClick={() => handleNavigate(() => {
+                        sessionStorage.removeItem("userId");
+                        navigate("/");
+                    })}>
+                        Logout
+                    </a>
+                ),
+            },
+        ].filter(Boolean);
+
+        const items = viewAsAdmin ? adminItems : userItems;
 
     return (
         <Header className="navBar">
