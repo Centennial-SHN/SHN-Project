@@ -591,3 +591,44 @@ padding: 48px 24px;
 .attachment-link:hover .anticon{
   color: var(--primary-teal);
 }
+
+
+/*Module List Layout*/
+.layoutModuleList
+{
+  width:calc(100vw - 16px);
+  background: var(--global-white);
+  display: flex;
+  justify-content: flex-start;
+  flex-direction: column;
+  overflow-x: hidden;
+}
+
+.layoutModuleListContent
+{
+  /* margin:auto; */
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: flex-start;
+  text-align: center;
+  padding: 48px 62.5px;
+  gap: 24px;
+}
+
+.delete-button {
+  background-color: var(--secondary-coral) !important; 
+  border-color: var(--secondary-coral) !important;
+}
+
+.delete-button:hover {
+  background-color: #fb757a !important;
+}
+
+.delete-button:focus {
+  background-color: var(--secondary-coral);
+}
+
+.delete-button:active {
+  background-color: var(--secondary-coral);
+}
