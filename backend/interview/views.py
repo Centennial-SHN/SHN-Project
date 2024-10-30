@@ -763,3 +763,15 @@ def delete_module(request, module_id):
             return JsonResponse({'error': str(e)}, status=500)
     logger.info(f"Received request: {request.method} for module_id: {module_id}")
     return JsonResponse({'error': 'Invalid request method'}, status=405)
+
+@api_view(['DELETE'])
+def delete_interview(request, interview_id):
+    try:
+        # Update this line
+        interview = Interview.objects.get(interviewid=interview_id)  # Use interviewid instead of id
+        interview.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
+    except Interview.DoesNotExist:
+        return Response({"error": "Interview not found"}, status=status.HTTP_404_NOT_FOUND)
+    except Exception as e:
+        return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
