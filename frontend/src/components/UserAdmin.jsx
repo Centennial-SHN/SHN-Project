@@ -1,12 +1,16 @@
 import React, { useEffect, useState, useRef } from "react";
 import { useNavigate } from 'react-router-dom';
 // import './UserAdmin.css';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faBars } from '@fortawesome/free-solid-svg-icons';
 import Cookies from 'js-cookie';
 import ChangePasswordModal from './ChangePasswordModal';
 import { VITE_API_BASE_URL_LOCAL, VITE_API_BASE_URL_PROD } from "../constants";
 import NavBar from "./NavBar";
+import { Typography, Layout, Table, Pagination, Space, Tooltip, Input, Button } from 'antd';
+import { EditOutlined } from "@ant-design/icons";
+
+const { Title, Link } = Typography;
+const { Content } = Layout;
+const { Search } = Input;
 
 const UserAdmin = () => {
   const [users, setUsers] = useState([]);
@@ -20,6 +24,8 @@ const UserAdmin = () => {
   const csrfToken = Cookies.get('csrftoken');
   const [isChangePasswordOpen, setChangePasswordOpen] = useState(false);
   const isAdmin = sessionStorage.getItem('isSuperUser') === 'true';
+  const [currentPage, setCurrentPage] = useState(1);
+  const [pageSize, setPageSize] = useState(10);
 
   const hasCheckedSuperuser = useRef(false);
 
@@ -43,28 +49,28 @@ const UserAdmin = () => {
 
     const fetchUsers = async () => {
       try {
-        const response = await fetch(`${backendUrl}/api/admin/users/`,{
+        const response = await fetch(`${backendUrl}/api/admin/users/`, {
           method: 'GET',
           headers: {
-              'Content-Type': 'application/json',
-              'X-CSRFToken': csrfToken,
+            'Content-Type': 'application/json',
+            'X-CSRFToken': csrfToken,
           },
           credentials: 'include',
-      });
+        });
         if (!response.ok) {
           throw new Error("Failed to fetch users");
         }
         const data = await response.json();
         // Log the users data to verify structure
-        
-       
+
+
         const usersWithInterviews = await Promise.all(
           data.map(async (user) => {
             // Log user data to verify user.id
-            
+
 
             if (!user.userid) {
-              
+
               return user;
             }
 
@@ -75,14 +81,14 @@ const UserAdmin = () => {
             }
             const interviews = await interviewsResponse.json();
             // Log interviews for each user
-            
+
             const filteredInterviews = interviews.filter(
-                (interview) => interview.interviewlength !== "0:00:00" // Assuming interview_length is in seconds
-              );
+              (interview) => interview.interviewlength !== "0:00:00" // Assuming interview_length is in seconds
+            );
             return { ...user, interviews: filteredInterviews }; // Attach interviews to each user object
           })
         );
-       
+
         setUsers(usersWithInterviews);
       } catch (error) {
         console.error("Error fetching users or interviews:", error);
@@ -109,7 +115,7 @@ const UserAdmin = () => {
   );
 
   const handleDownloadTranscript = async (interviewId) => {
-    
+
     try {
       const response = await fetch(
         `${backendUrl}/api/download_transcript/${interviewId}/`,
@@ -207,11 +213,11 @@ const UserAdmin = () => {
         },
         credentials: 'include',
       });
-  
+
       if (!response.ok) {
         throw new Error("Failed to delete interview");
       }
-  
+
       setUsers(prevUsers =>
         prevUsers.map(user =>
           user.userid === userId
@@ -219,7 +225,7 @@ const UserAdmin = () => {
             : user
         )
       );
-  
+
       alert("Interview deleted successfully!");
     } catch (error) {
       console.error("Error deleting interview:", error);
@@ -240,53 +246,197 @@ const UserAdmin = () => {
       if (!response.ok) {
         throw new Error(data.error || "Failed to clear blob storage");
       }
-  
+
 
       if (data.files_deleted > 0) {
         alert(`${data.files_deleted} files have been deleted from the container.`);
       } else {
         alert("The container is already empty.");
       }
-  
+
     } catch (error) {
       console.error("Error clearing blob storage:", error);
       alert("Failed to clear blob storage. Please try again.");
     }
   };
-  
-  return (
-    <div className="user-admin">
-      <header>
 
+  const handlePageChange = (page, pageSize) => {
+    setCurrentPage(page);
+    setPageSize(pageSize);
+  };
+
+  const startIndex = (currentPage - 1) * pageSize;
+  const paginatedUsers = users.slice((currentPage - 1) * pageSize, currentPage * pageSize);
+
+  const columns = [
+    {
+      title: 'Email',
+      dataIndex: 'email',
+      key: 'email',
+      // fixed: 'left',
+      width:300,
+      sorter: (a, b) => a.email.localeCompare(b.email),
+    },
+    {
+      title: 'Total Interviews',
+      dataIndex: 'totalInterviews',
+      key: 'totalInterviews',
+      width:200,
+      render: (_, record) => record.interviews.length,
+    },
+    {
+      title: 'Total Interview Time',
+      dataIndex: 'totalInterviewTime',
+      key: 'totalInterviewTime',
+      width:200,
+      render: (_, record) => {
+        const totalSeconds = record.interviews.reduce((acc, interview) => {
+          const [hours, minutes, seconds] = interview.interviewlength.split(":").map(Number);
+          return acc + hours * 3600 + minutes * 60 + seconds;
+        }, 0);
+
+        const hours = Math.floor(totalSeconds / 3600).toString().padStart(2, '0');
+        const minutes = Math.floor((totalSeconds % 3600) / 60).toString().padStart(2, '0');
+        const seconds = (totalSeconds % 60).toString().padStart(2, '0');
+
+        return `${hours}:${minutes}:${seconds}`;
+      },
+    },
+    {
+      title: 'Date',
+      dataIndex: 'date',
+      key: 'date',
+      width:120,
+      render: (_, record) => record.interviews.length === 1 ? record.interviews[0].dateactive : "",
+    },
+    {
+      title: 'Module',
+      dataIndex: 'module',
+      key: 'module',
+      width:300,
+      render: (_, record) => record.interviews.length === 1 ? record.interviews[0].modulename : "",
+    },
+    {
+      title: 'Interview Logs',
+      dataIndex: 'interviewLogs',
+      key: 'interviewLogs',
+      width:200,
+      render: (_, record) => (
+        record.interviews.length === 1
+          ? <Link onClick={() => handleDownloadTranscript(record.interviews[0].interviewid)}>Download Transcript</Link>
+          : ""
+      ),
+    },
+    {
+      title: 'Delete Log',
+      dataIndex: 'delete',
+      key: 'delete',
+      width:120,
+      render: (_, record) => (
+        record.interviews.length === 1
+          ? <Link onClick={() => handleDeleteInterview(record.interviews[0].interviewid, record.userid)} className="linkDelete">Delete</Link>
+          : ""
+      ),
+    },
+    {
+      title: 'Edit User',
+      dataIndex: 'editUser',
+      key: 'editUser',
+      width:120,
+      render: (_, record) => (
+        <Button
+          type="primary"
+          icon={<EditOutlined />}
+          onClick={() => handleEditUser(record.userid)}
+        />
+      ),
+    },
+  ];
+
+  const expandedRowRender = (record) => (
+    <Table
+      columns={[
+        { title: '', dataIndex: '', key: 'spacer', width:53 },
+        { title: '', dataIndex: '', key: 'spacer2', width:300 },
+        { title: '', dataIndex: '', key: 'spacer3', width:200 },
+        { title: 'Total Interview Time', dataIndex: 'interviewlength', key: 'interviewlength', width:200 },
+        { title: 'Date', dataIndex: 'dateactive', key: 'dateactive', width:120 },
+        { title: 'Module', dataIndex: 'modulename', key: 'modulename', width:300 },
+        {
+          title: 'Interview Logs',
+          key: 'logs',
+          width:200,
+          render: (_, interview) => (
+            <Link onClick={() => handleDownloadTranscript(interview.interviewid)}>Download Transcript</Link>
+          ),
+        },
+        {
+          title: 'Delete Log',
+          key: 'delete',
+          width:120,
+          render: (_, interview) => (
+            <Link onClick={() => handleDeleteInterview(interview.interviewid, record.userid)} className="linkDelete">Delete</Link>
+          ),
+        },
+        { title: '', dataIndex: '', key: 'spacer4', width:120 },
+      ]}
+      dataSource={record.interviews}
+      pagination={false}
+      rowKey="interviewid"
+    />
+  );
+
+
+  return (
+    <Layout className="layoutUserLog">
       <NavBar isAdmin={isAdmin} />
-        {/* <nav>
-          <div className="hamburger" onClick={toggleMenu}>
-            <FontAwesomeIcon icon={faBars} size="2x" color={iconColor} />
-          </div>
-          <ul className={`nav-menu ${menuOpen ? "show" : ""}`}>
-            <li onClick={() => navigate('/admin/module-list')}>Modules</li>
-            <li onClick={() => navigate('/admin/user-logs')}>User Logs</li>
-            <li onClick={() => navigate('/module')}>Switch to user</li>
-            <li onClick={toggleChangePasswordModal}>Change Password</li>
-            <li onClick={handleLogout}>Logout</li>
-          </ul>
-        </nav> */}
-      </header>
-      <h2>User Admin Page</h2>
-      <button onClick={handleClearBlobStorage} className="clear-blob-button">
-        Clear Temporary Audio Files
-      </button>
-      <div className="search-container">
-      <input className="search-bar"
-        type="text"
-        placeholder="Search by email..."
-        value={searchTerm}
-        onChange={(e) => setSearchTerm(e.target.value)}
-      />
-      <button className="all" onClick={handleShowAllUsers}>All</button>
-      </div>
-      <table>
-      
+      <Content className="layoutUserLogContent">
+        <Space direction="horizontal" size="large" className="spaceContentStart">
+          <Title level={3} style={{ color: "#191E72", marginBottom: 0 }}>User Logs</Title>
+          <Tooltip
+            title="This will clear audio files from incomplete interviews in your storage."
+            color="#fff"
+            overlayInnerStyle={{ color: "#5C5E84", padding: "8px 12px" }}
+          >
+            <Link onClick={handleClearBlobStorage}>Clear Temporary Audio Files</Link>
+          </Tooltip>
+        </Space>
+        <Space direction="horizontal" size="large" className="spaceContentBetween">
+          <Search
+            placeholder="Search by email (i.e. johndoe@example.com)"
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+          />
+          <Button type="primary" onClick={handleShowAllUsers}>Show All</Button>
+        </Space>
+
+        <Table
+          columns={columns}
+          dataSource={paginatedUsers}
+          pagination={{
+            current: currentPage,
+            pageSize: pageSize,
+            total: users.length,
+            onChange: handlePageChange,
+            showSizeChanger: true,
+            pageSizeOptions: ['10', '20', '30', '50'],
+          }}
+          scroll={{
+            x: 'max-content',
+          }}
+          showSorterTooltip={{
+            target: 'sorter-icon',
+          }}
+          expandable={{
+            expandedRowRender: (record) => record.interviews.length > 1 && expandedRowRender(record),
+            rowExpandable: (record) => record.interviews.length > 1
+          }}
+          dataSource={users}
+          rowKey="userid"
+        />
+
+        {/* <table>
+
           <thead>
             <tr>
               <th>Email</th>
@@ -313,10 +463,10 @@ const UserAdmin = () => {
                   {(
                     // First row with Email, Total Interviews, Total Interview Time, and blank for Date, Module, Logs
                     <tr>
-                      <td>{user.email}</td>  
+                      <td>{user.email}</td>
                       <td>{totalInterviews}</td>
-                      <td>{formatTime(totalTime)}</td> {/* Total Interview Time */}
-                      {/* Blank cells for Date, Module, and Logs */}
+                      <td>{formatTime(totalTime)}</td> {/* Total Interview Time /}
+                      {/* Blank cells for Date, Module, and Logs /}
                       <td></td>
                       <td></td>
                       <td></td>
@@ -327,21 +477,21 @@ const UserAdmin = () => {
                     </tr>
                   )}
 
-                  {/* Sub-rows for each interview */}
+                  {/* Sub-rows for each interview /}
                   {user.interviews.map((interview, index) => {
                     const moduleName = interview.module_name || interview.modulename || "N/A";
                     return (
                       <tr key={index}>
-                        <td></td> {/* Blank Email column for sub-rows */}
-                        <td></td> {/* Blank Total Interviews column for sub-rows */}
-                        <td>{interview.interviewlength}</td> {/* Interview Length under Total Interview Time */}
+                        <td></td> {/* Blank Email column for sub-rows /}
+                        <td></td> {/* Blank Total Interviews column for sub-rows /}
+                        <td>{interview.interviewlength}</td> {/* Interview Length under Total Interview Time /}
                         <td>{interview.dateactive || "No Date Available"}</td>
                         <td>{moduleName}</td>
                         <td>
                           <button onClick={() => handleDownloadTranscript(interview.interviewid)}>
                             Download Transcript
                           </button>
-                          
+
                         </td>
                         <td><button onClick={() => handleDeleteInterview(interview.interviewid, user.userid)}>
                           Delete
@@ -354,18 +504,16 @@ const UserAdmin = () => {
               );
             })}
           </tbody>
-        </table>
+        </table> */}
+      </Content>
 
-
-
-          
-  
-        <ChangePasswordModal
+      <ChangePasswordModal
         isOpen={isChangePasswordOpen}
         onClose={toggleChangePasswordModal}
         onChangePassword={handleChangePassword}
       />
-    </div>
+
+    </Layout>
   );
 };
 
