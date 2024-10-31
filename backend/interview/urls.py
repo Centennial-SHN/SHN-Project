@@ -27,6 +27,7 @@ urlpatterns = [
     path('delete_tts_file/', views.delete_tts_file, name='delete_tts_file'),
     path('store_interview_length/', views.store_interview_length, name='store_interview_length'),
     path('interview_history/<str:user_id>/', views.interview_history, name='interview_history'),
+    path('clear-blob-storage/', views.clear_temp_audio_blob_storage, name='clear_temp_audio_blob_storage'),
     path('modules/<str:moduleid>/files/<str:filename>/', views.delete_module_file, name='delete_module_file')
     
 

@@ -306,6 +306,24 @@ def interview_history(request, user_id):
         return JsonResponse({'error': 'Internal server error'}, status=500)
 
 
+@api_view(['DELETE'])
+def clear_temp_audio_blob_storage(request):
+    try:
+
+        blob_service_client = BlobServiceClient.from_connection_string(AZURE_STORAGE_CONNECTION_STRING)
+
+        container_client = blob_service_client.get_container_client(AZURE_BLOB_CONTAINER_NAME)
+
+        blobs = container_client.list_blobs()
+        for blob in blobs:
+            container_client.delete_blob(blob.name)
+            logging.info(f"Deleted blob: {blob.name}")
+
+        return JsonResponse({'message': 'All blobs in the container have been deleted successfully.'}, status=204)
+
+    except Exception as e:
+        logging.error(f"Error clearing blob storage: {str(e)}")
+        return JsonResponse({'error': str(e)}, status=500)
 
 
 @api_view(['POST'])
@@ -758,7 +776,9 @@ def delete_module(request, module_id):
             blob_service_client = BlobServiceClient.from_connection_string(AZURE_STORAGE_CONNECTION_STRING)
 
             container_client = blob_service_client.get_container_client(MODULE_ATTACHMENTS_BLOB_CONTAINER)
+
             for filename, fileurl in file_data.items():
+                logging.info(f'file_name {filename}')
                 blob_name = fileurl.split('/')[-1]
                 container_client.delete_blob(blob_name)
                 logger.info(f"Deleted blob: {blob_name}")
