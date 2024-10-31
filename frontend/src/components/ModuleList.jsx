@@ -62,6 +62,7 @@ const AdminModuleList = () => {
     }
 
     const fetchModules = async () => {
+      console.log("csrf token:",csrfToken);
       const response = await fetch(`${backendUrl}/api/modules/`, {
         method: "GET",
         headers: {

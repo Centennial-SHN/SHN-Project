@@ -48,6 +48,7 @@ const UserManagement = () => {
     const fetchUserEmail = async () => {
       try {
         console.log("Fetching user with ID:", userId);
+        console.log("csrf token:",csrfToken);
         const response = await fetch(`${backendUrl}/api/admin/users/${userId}/`,{
           method: 'GET',
           headers: {
