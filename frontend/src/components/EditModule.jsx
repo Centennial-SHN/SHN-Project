@@ -144,11 +144,11 @@ const EditModule = () => {
     );
 
     if (response.ok) {
-      alert("Module updated successfully!");
+      message.success("Module updated successfully!");
       navigate("/admin/module-list"); // Redirect to the module list after saving
     } else {
       const data = await response.json();
-      alert(data.error || "Error updating module.");
+      message.error(data.error || "Error updating module.");
     }
   };
 
