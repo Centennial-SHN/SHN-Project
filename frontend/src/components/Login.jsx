@@ -28,9 +28,9 @@ const Login = () => {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
-                // 'X-CSRFToken': csrfToken
+                'X-CSRFToken': csrfToken
             },
-            // credentials: 'include',
+            credentials: 'include',
             body: JSON.stringify({ email, password }),
         });
 
