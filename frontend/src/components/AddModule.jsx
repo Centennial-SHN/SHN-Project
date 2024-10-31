@@ -127,7 +127,7 @@ const AddModule = () => {
 
             if (response.ok) {
                 const data = await response.json(); // Get response data
-                message.success('Module added successfully!');
+                //message.success('Module added successfully!');
                 // messageApi.open({
                 //     type: 'success',
                 //     content: 'Module added successfully!',
