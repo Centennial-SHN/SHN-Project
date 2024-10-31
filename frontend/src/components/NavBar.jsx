@@ -18,9 +18,18 @@ const NavBar = ({ onNavigateAway }) => {
     const [viewAsAdmin, setViewAsAdmin] = useState(isAdmin);
 
     useEffect(() => {
-        if (location.pathname === '/module') {
-            setViewAsAdmin(false);
-        }
+        const userViewPaths = [
+            '/module',
+            /^\/interview\/[a-zA-Z0-9-]+$/,
+            /^\/interview-history\/[a-zA-Z0-9-]+$/
+        ];
+
+        const isUserViewPath = userViewPaths.some(path =>
+            typeof path === 'string' ? location.pathname === path : path.test(location.pathname)
+        );
+
+        setViewAsAdmin(!isUserViewPath);
+
     }, [location.pathname]);
 
     const handleNavigate = (navigationCallback) => {
