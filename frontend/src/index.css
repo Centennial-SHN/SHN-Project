@@ -421,7 +421,9 @@ padding: 48px 24px;
 .layoutInterview,
 .layoutInterviewHist,
 .layoutAddModule,
-.layoutUserLog
+.layoutEditModule,
+.layoutUserLog,
+.layoutEditUser
 {
   width:calc(100vw - 16px);
   background: var(--global-white);
@@ -435,7 +437,8 @@ padding: 48px 24px;
 .layoutIntHistContent,
 .layoutAddModuleContent,
 .layoutEditModuleContent,
-.layoutUserLogContent
+.layoutUserLogContent,
+.layoutEditUserContent
 {
   /* margin:auto; */
   display: flex;
@@ -712,7 +715,8 @@ padding: 48px 24px;
 
 /*Admin Pages*/
 .layoutAddModuleContent,
-.layoutEditModuleContent
+.layoutEditModuleContent,
+.layoutEditUserContent
 {
   min-width: 600px;
   margin: auto;
@@ -726,9 +730,14 @@ padding: 48px 24px;
 }
 
 .layoutAddModuleContent .ant-card, 
-.layoutAddModuleContent .ant-card 
+.layoutEditModuleContent .ant-card , 
+.layoutEditUserContent .ant-card 
 {
   width:100%;
+}
+
+.layoutEditUserContent .ant-card-body {
+  justify-items: flex-start;
 }
 
 .spaceContentStart {
@@ -749,4 +758,14 @@ padding: 48px 24px;
 
 .linkDelete {
   color: var(--secondary-coral) !important;
+}
+
+.spaceStacked {
+  align-items: flex-start;
+}
+
+.spaceStacked .ant-space-item:nth-child(2),
+.spaceStackedAll .ant-space-item
+{
+  width:auto;
 }

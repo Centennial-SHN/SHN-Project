@@ -277,11 +277,11 @@ const EditModule = () => {
   return (
     <Layout className="layoutEditModule">
       <NavBar isAdmin={isAdmin} />
-      <Content className="layoutAddModuleContent">
+      <Content className="layoutEditModuleContent">
         <Link onClick={() => navigate("/admin/module-list")}>
           Back to Module List
         </Link>
-        <Card>
+        <Card bordered={false}>
           <Title
             level={3}
             style={{
