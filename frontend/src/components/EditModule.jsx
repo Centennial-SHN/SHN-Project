@@ -144,7 +144,7 @@ const EditModule = () => {
     );
 
     if (response.ok) {
-      message.success("Module updated successfully!");
+      //message.success("Module updated successfully!");
       navigate("/admin/module-list"); // Redirect to the module list after saving
     } else {
       const data = await response.json();
@@ -201,7 +201,7 @@ const EditModule = () => {
       if (response.ok) {
         // Update files state to remove deleted file
         setFiles((prevFiles) => prevFiles.filter((f) => f.name !== file.name));
-        message.success("File deleted successfully.");
+        //message.success("File deleted successfully.");
       } else {
         const data = await response.json();
         console.error("Failed to delete the file:", data);
