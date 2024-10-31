@@ -135,8 +135,9 @@ const AddModule = () => {
                 // Navigate to the modules list after successful addition
                 navigate('/admin/module-list'); // Adjust this URL based on your routing setup
             } else {
-                const data = await response.json();
-                message.error(data.error || 'Error adding module.');
+                //const data = await response.json();
+                message.error('Error adding module.');
+                return;
                 // messageApi.open({
                 //     type: 'error',
                 //     content: data.error || 'Error adding module.',
