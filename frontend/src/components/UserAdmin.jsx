@@ -236,10 +236,18 @@ const UserAdmin = () => {
         },
         credentials: 'include',
       });
+      const data = await response.json();
       if (!response.ok) {
-        throw new Error("Failed to clear blob storage");
+        throw new Error(data.error || "Failed to clear blob storage");
       }
-      alert("All blobs in the container have been deleted successfully.");
+  
+
+      if (data.files_deleted > 0) {
+        alert(`${data.files_deleted} files have been deleted from the container.`);
+      } else {
+        alert("The container is already empty.");
+      }
+  
     } catch (error) {
       console.error("Error clearing blob storage:", error);
       alert("Failed to clear blob storage. Please try again.");
