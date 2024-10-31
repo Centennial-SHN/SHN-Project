@@ -21,11 +21,13 @@ urlpatterns = [
     path('modules/', views.get_modules, name='get_modules'),
     path('modules/<str:module_id>/', views.get_module_by_id, name='get_module_by_id'),
     path('create_interview/', views.create_interview, name='create_interview'),
+    path('admin/interview/<int:interview_id>/delete/', views.delete_interview, name='delete_interview'),
     path('download_transcript/<int:interview_id>/', views.download_transcript, name='download_transcript'),
     path('add_timestamp/', views.add_timestamp, name='add_timestamp'),
     path('delete_tts_file/', views.delete_tts_file, name='delete_tts_file'),
     path('store_interview_length/', views.store_interview_length, name='store_interview_length'),
     path('interview_history/<str:user_id>/', views.interview_history, name='interview_history'),
+    path('clear-blob-storage/', views.clear_temp_audio_blob_storage, name='clear_temp_audio_blob_storage'),
     path('modules/<str:moduleid>/files/<str:filename>/', views.delete_module_file, name='delete_module_file')
     
 

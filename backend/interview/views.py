@@ -306,6 +306,24 @@ def interview_history(request, user_id):
         return JsonResponse({'error': 'Internal server error'}, status=500)
 
 
+@api_view(['DELETE'])
+def clear_temp_audio_blob_storage(request):
+    try:
+
+        blob_service_client = BlobServiceClient.from_connection_string(AZURE_STORAGE_CONNECTION_STRING)
+
+        container_client = blob_service_client.get_container_client(AZURE_BLOB_CONTAINER_NAME)
+
+        blobs = container_client.list_blobs()
+        for blob in blobs:
+            container_client.delete_blob(blob.name)
+            logging.info(f"Deleted blob: {blob.name}")
+
+        return JsonResponse({'message': 'All blobs in the container have been deleted successfully.'}, status=204)
+
+    except Exception as e:
+        logging.error(f"Error clearing blob storage: {str(e)}")
+        return JsonResponse({'error': str(e)}, status=500)
 
 
 @api_view(['POST'])
@@ -645,6 +663,9 @@ def delete_user(request, user_id):
                 DELETE FROM interview_users WHERE userid = CAST(%s AS NVARCHAR(255))
             """, [user_id])
         logger.info(f'User {user_id} deleted successfully.')
+
+        
+
         return JsonResponse({"message": "User deleted successfully"}, status=204)
     except Exception as e:
         logger.error(f"Error deleting user: {str(e)}")
@@ -704,10 +725,11 @@ def download_user_data(request, user_id):
         if interviews.exists():
             writer.writerow([user.userid, user.email, len(interviews), total_time_formatted])
         writer.writerow('')
-        writer.writerow(['Interview Date','Interview Module','Interview Length'])
+        writer.writerow(['Interview Date','Interview Module','Module Name','Interview Length'])
         for interview in interviews:
             interview_date_formatted = interview.dateactive.strftime("\t%Y-%m-%d")
-            writer.writerow([interview_date_formatted, interview.moduleid,interview.interviewlength])
+            module_name = interview.moduleid.modulename if interview.moduleid else 'N/A'
+            writer.writerow([interview_date_formatted, interview.moduleid,module_name,interview.interviewlength])
         
 
         return response
@@ -747,6 +769,21 @@ def delete_module(request, module_id):
     if request.method == 'DELETE':
         try:
             module = Module.objects.get(moduleid=module_id)
+            file_data = module.file
+
+            logging.info(file_data)
+
+            blob_service_client = BlobServiceClient.from_connection_string(AZURE_STORAGE_CONNECTION_STRING)
+
+            container_client = blob_service_client.get_container_client(MODULE_ATTACHMENTS_BLOB_CONTAINER)
+
+            for filename, fileurl in file_data.items():
+                logging.info(f'file_name {filename}')
+                blob_name = fileurl.split('/')[-1]
+                container_client.delete_blob(blob_name)
+                logger.info(f"Deleted blob: {blob_name}")
+
+
             module.delete()
             return JsonResponse({'message': 'Module deleted successfully'}, status=204)
         except Module.DoesNotExist:
@@ -762,3 +799,15 @@ def delete_module(request, module_id):
             return JsonResponse({'error': str(e)}, status=500)
     logger.info(f"Received request: {request.method} for module_id: {module_id}")
     return JsonResponse({'error': 'Invalid request method'}, status=405)
+
+@api_view(['DELETE'])
+def delete_interview(request, interview_id):
+    try:
+        # Update this line
+        interview = Interview.objects.get(interviewid=interview_id)  # Use interviewid instead of id
+        interview.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
+    except Interview.DoesNotExist:
+        return Response({"error": "Interview not found"}, status=status.HTTP_404_NOT_FOUND)
+    except Exception as e:
+        return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
