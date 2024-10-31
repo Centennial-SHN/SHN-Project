@@ -205,11 +205,11 @@ const EditModule = () => {
       } else {
         const data = await response.json();
         console.error("Failed to delete the file:", data);
-        message.error("Failed to delete file.");
+        //message.error("Failed to delete file.");
       }
     } catch (error) {
       console.error("Error deleting file:", error);
-      message.error("Error deleting file.");
+      //message.error("Error deleting file.");
     }
   };
 
