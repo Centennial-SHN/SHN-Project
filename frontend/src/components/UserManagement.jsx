@@ -8,7 +8,7 @@ import Cookies from 'js-cookie';
 import ChangePasswordModal from './ChangePasswordModal';
 // import './navbar.css';
 import NavBar from "./NavBar";
-import { Button, Typography, Layout, Space, Card } from 'antd';
+import { Button, Typography, Layout, Space, Card, Modal, Form, Input } from 'antd';
 import { DeleteOutlined } from "@ant-design/icons";
 
 const { Title, Text, Link } = Typography;
@@ -109,6 +109,9 @@ const UserManagement = () => {
       });
 
       if (!response.ok) {
+        const errorText = await response.text();
+        console.error("Error changing email address:", errorText || "Unknown error");
+
         throw new Error("Failed to change email address");
       }
 
@@ -329,30 +332,13 @@ const UserManagement = () => {
             icon={<DeleteOutlined />}
             className="delete-button"
             onClick={handleDeleteUser}
-            style={{marginTop:"32px"}}
+            style={{ marginTop: "32px" }}
           >
             Delete User Account
           </Button>
 
           {/* <button onClick={openModal}>Change Email</button> */}
-          {isModalOpen && (
-            <div className="modal">
-              <div className="modal-content">
-                <h3>Change Email</h3>
-                <input
-                  type="email"
-                  value={newEmail}
-                  onChange={(e) => setNewEmail(e.target.value)}
-                  placeholder="Enter new email"
-                  required
-                />
-                <div className="modal-buttons">
-                  <button onClick={handleChangeEmail}>Submit</button>
-                  <button onClick={closeModal}>Cancel</button>
-                </div>
-              </div>
-            </div>
-          )}
+
           {/* <button onClick={handleResetPassword}>Reset Password</button>
           <br />
           <button onClick={handlePermission}>Change to Admin</button>
@@ -365,6 +351,46 @@ const UserManagement = () => {
           <br /> */}
         </Card>
       </Content>
+
+      {/* {isModalOpen && (
+        <div className="modal">
+          <div className="modal-content">
+            <h3>Change Email</h3>
+            <input
+              type="email"
+              value={newEmail}
+              onChange={(e) => setNewEmail(e.target.value)}
+              placeholder="Enter new email"
+              required
+            />
+            <div className="modal-buttons">
+              <button onClick={handleChangeEmail}>Submit</button>
+              <button onClick={closeModal}>Cancel</button>
+            </div>
+          </div>
+        </div>
+      )} */}
+
+      <Modal
+        open={isModalOpen}
+        onOk={handleChangeEmail}
+        onCancel={closeModal}
+      >
+        <Title level={4} style={{ marginBottom: "24px" }}>Change Email</Title>
+        <Form layout="vertical" onFinish={handleChangeEmail}>
+          <Form.Item required>
+            <Input
+              type="email"
+              value={newEmail}
+              onChange={(e) => setNewEmail(e.target.value)}
+              placeholder="Enter new email"
+            />
+          </Form.Item>
+          {/* {error && <Text type="danger">{error}</Text>} */}
+        </Form>
+
+      </Modal>
+
       <ChangePasswordModal
         isOpen={isChangePasswordOpen}
         onClose={toggleChangePasswordModal}

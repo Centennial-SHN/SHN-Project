@@ -412,15 +412,16 @@ const UserAdmin = () => {
 
         <Table
           columns={columns}
-          dataSource={paginatedUsers}
-          pagination={{
-            current: currentPage,
-            pageSize: pageSize,
-            total: users.length,
-            onChange: handlePageChange,
-            showSizeChanger: true,
-            pageSizeOptions: ['10', '20', '30', '50'],
-          }}
+          // dataSource={paginatedUsers}
+          // pagination={{
+          //   current: currentPage,
+          //   pageSize: pageSize,
+          //   total: users.length,
+          //   onChange: handlePageChange,
+          //   showSizeChanger: true,
+          //   pageSizeOptions: ['10', '20', '30', '50'],
+          // }}
+          pagination={true}
           scroll={{
             x: 'max-content',
           }}
@@ -431,7 +432,7 @@ const UserAdmin = () => {
             expandedRowRender: (record) => record.interviews.length > 1 && expandedRowRender(record),
             rowExpandable: (record) => record.interviews.length > 1
           }}
-          dataSource={users}
+          dataSource={filteredUsers}
           rowKey="userid"
         />
 
