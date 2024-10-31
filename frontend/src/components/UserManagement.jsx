@@ -375,6 +375,14 @@ const UserManagement = () => {
         open={isModalOpen}
         onOk={handleChangeEmail}
         onCancel={closeModal}
+        footer={[
+          <Button key="cancel" onClick={closeModal}>
+            Cancel
+          </Button>,
+          <Button key="submit" type="primary" onClick={handleChangeEmail}>
+            Submit
+          </Button>,
+        ]}
       >
         <Title level={4} style={{ marginBottom: "24px" }}>Change Email</Title>
         <Form layout="vertical" onFinish={handleChangeEmail}>
