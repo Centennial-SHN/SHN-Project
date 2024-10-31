@@ -645,6 +645,9 @@ def delete_user(request, user_id):
                 DELETE FROM interview_users WHERE userid = CAST(%s AS NVARCHAR(255))
             """, [user_id])
         logger.info(f'User {user_id} deleted successfully.')
+
+        
+
         return JsonResponse({"message": "User deleted successfully"}, status=204)
     except Exception as e:
         logger.error(f"Error deleting user: {str(e)}")
@@ -748,6 +751,19 @@ def delete_module(request, module_id):
     if request.method == 'DELETE':
         try:
             module = Module.objects.get(moduleid=module_id)
+            file_data = module.file
+
+            logging.info(file_data)
+
+            blob_service_client = BlobServiceClient.from_connection_string(AZURE_STORAGE_CONNECTION_STRING)
+
+            container_client = blob_service_client.get_container_client(MODULE_ATTACHMENTS_BLOB_CONTAINER)
+            for filename, fileurl in file_data.items():
+                blob_name = fileurl.split('/')[-1]
+                container_client.delete_blob(blob_name)
+                logger.info(f"Deleted blob: {blob_name}")
+
+
             module.delete()
             return JsonResponse({'message': 'Module deleted successfully'}, status=204)
         except Module.DoesNotExist:
