@@ -1,12 +1,18 @@
 import React, { useEffect, useState, useRef } from "react";
 import { useParams, useNavigate } from 'react-router-dom';
 import './UserManagement.css';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faBars } from '@fortawesome/free-solid-svg-icons';
+// import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+// import { faBars } from '@fortawesome/free-solid-svg-icons';
 import { VITE_API_BASE_URL_LOCAL, VITE_API_BASE_URL_PROD } from "../constants";
 import Cookies from 'js-cookie';
 import ChangePasswordModal from './ChangePasswordModal';
-import './navbar.css';
+// import './navbar.css';
+import NavBar from "./NavBar";
+import { Button, Typography, Layout, Space, Card } from 'antd';
+import { DeleteOutlined } from "@ant-design/icons";
+
+const { Title, Text, Link } = Typography;
+const { Content } = Layout;
 
 const UserManagement = () => {
   const { userId } = useParams();
@@ -19,7 +25,8 @@ const UserManagement = () => {
   const isDevelopment = import.meta.env.MODE === "development";
   const baseUrl = isDevelopment ? VITE_API_BASE_URL_LOCAL : VITE_API_BASE_URL_PROD;
   const backendUrl = baseUrl;
-  
+  const isAdmin = sessionStorage.getItem('isSuperUser') === 'true';
+
   const csrfToken = Cookies.get('csrftoken');
 
   const hasCheckedSuperuser = useRef(false);
@@ -43,19 +50,19 @@ const UserManagement = () => {
       hasCheckedSuperuser.current = true;
       if (checkSuperuser()) return;
     }
-    
+
 
     const fetchUserEmail = async () => {
       try {
         console.log("Fetching user with ID:", userId);
-        const response = await fetch(`${backendUrl}/api/admin/users/${userId}/`,{
+        const response = await fetch(`${backendUrl}/api/admin/users/${userId}/`, {
           method: 'GET',
           headers: {
-              'Content-Type': 'application/json',
-              'X-CSRFToken': csrfToken,
+            'Content-Type': 'application/json',
+            'X-CSRFToken': csrfToken,
           },
           credentials: 'include',
-      });
+        });
         if (!response.ok) {
           if (response.status === 404) {
             console.error("User not found");
@@ -70,7 +77,7 @@ const UserManagement = () => {
         console.error("Error fetching user email:", error);
       }
     };
-  
+
     fetchUserEmail();
   }, [userId, backendUrl]);
 
@@ -90,7 +97,7 @@ const UserManagement = () => {
     try {
       // const csrfTokenElement = document.querySelector('[name=csrfmiddlewaretoken]');
       // const csrfToken = csrfTokenElement ? csrfTokenElement.value : null;
-      console.log("csrf token:",csrfToken);
+      console.log("csrf token:", csrfToken);
       const response = await fetch(`${backendUrl}/api/admin/user/${userId}/change-email/`, {
         method: "PATCH",
         headers: {
@@ -114,7 +121,7 @@ const UserManagement = () => {
     }
   };
 
-  const handlePermission=async()=>{
+  const handlePermission = async () => {
     const confirmation = window.confirm("Are you sure you want to grant admin permissions to this user?");
     if (!confirmation) return;
 
@@ -165,7 +172,7 @@ const UserManagement = () => {
           'Content-Type': 'application/json',
           'X-CSRFToken': csrfToken // Include CSRF token if needed
         },
-        credentials:'include',
+        credentials: 'include',
       });
       console.log(response)
 
@@ -207,16 +214,16 @@ const UserManagement = () => {
   const handleDownloadUserData = async () => {
     try {
       const response = await fetch(`${backendUrl}/api/admin/user/${userId}/download-data/`, {
-          method: "GET",
-          headers: {
-            "Content-Type": "application/json",
-            'X-CSRFToken': csrfToken,
-          },
-          credentials: 'include',
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          'X-CSRFToken': csrfToken,
+        },
+        credentials: 'include',
       });
 
       if (!response.ok) {
-          throw new Error("Failed to download user data");
+        throw new Error("Failed to download user data");
       }
 
       const blob = await response.blob();
@@ -277,56 +284,93 @@ const UserManagement = () => {
   }
 
   return (
-    <div className="user-management">
-      <header>
-        <nav>
-          <div className="hamburger" onClick={toggleMenu}>
-            <FontAwesomeIcon icon={faBars} size="2x" color={iconColor} />
-          </div>
-          <ul className={`nav-menu ${menuOpen ? "show" : ""}`}>
-            <li onClick={() => navigate('/admin/module-list')}>Modules</li>
-            <li onClick={() => navigate('/admin/user-logs')}>User Logs</li>
-            <li onClick={() => navigate('/module')}>Switch to user</li>
-            <li onClick={toggleChangePasswordModal}>Change Password</li>
-            <li onClick={handleLogout}>Logout</li>
-          </ul>
-        </nav>
-      </header>
-      <div className="email-container">
-        <button onClick={() => navigate(-1)}>Back</button>
-        <h2>{user.email}</h2>
-      </div>
-      <button onClick={openModal}>Change Email</button>
-      {isModalOpen && (
-        <div className="modal">
-          <div className="modal-content">
-            <h3>Change Email</h3>
-            <input
-              type="email"
-              value={newEmail}
-              onChange={(e) => setNewEmail(e.target.value)}
-              placeholder="Enter new email"
-              required
-            />
-            <div className="modal-buttons">
-              <button onClick={handleChangeEmail}>Submit</button>
-              <button onClick={closeModal}>Cancel</button>
+
+    <Layout className="layoutEditUser">
+      <NavBar isAdmin={isAdmin} />
+      <Content className="layoutEditUserContent">
+        <Link onClick={() => navigate(-1)}>Back to User Logs</Link>
+        <Card bordered={false}>
+          <Title level={3} style={{ color: '#191e72', textAlign: 'left', marginBottom: '32px' }}>Edit User</Title>
+          <Space direction="vertical" size="large">
+
+            <Space direction="vertical" size="small" className="spaceStacked">
+              <Space direction="horizontal" className="spaceContentBetween">
+                <Text>Email</Text>
+                <Link onClick={openModal}>Change Email</Link>
+              </Space>
+              <Text strong="true">{user.email}</Text>
+            </Space>
+
+            <Space direction="vertical" size="small" className="spaceStacked">
+              <Space direction="horizontal" className="spaceContentBetween">
+                <Text>Password</Text>
+                <Link onClick={handleResetPassword}>Reset Password</Link>
+              </Space>
+              <Text strong="true">************</Text>
+            </Space>
+
+            <Space direction="vertical" size="small" className="spaceStacked spaceStackedAll" >
+              <Text>Admin Permissions</Text>
+              <Link onClick={handlePermission}>Change to Admin</Link>
+            </Space>
+
+            <Space direction="vertical" size="small" className="spaceStacked spaceStackedAll" >
+              <Text>User Records & Data</Text>
+              <Space direction="horizontal" size="middle" style={{ justifyContent: "flex-start" }}>
+                <Link onClick={handleDownloadUserData}>Download User Data</Link>
+                <Link onClick={handleDeleteRecords} className="linkDelete">Delete User Records</Link>
+              </Space>
+            </Space>
+
+          </Space>
+
+          <Button
+            type="primary"
+            icon={<DeleteOutlined />}
+            className="delete-button"
+            onClick={handleDeleteUser}
+            style={{marginTop:"32px"}}
+          >
+            Delete User Account
+          </Button>
+
+          {/* <button onClick={openModal}>Change Email</button> */}
+          {isModalOpen && (
+            <div className="modal">
+              <div className="modal-content">
+                <h3>Change Email</h3>
+                <input
+                  type="email"
+                  value={newEmail}
+                  onChange={(e) => setNewEmail(e.target.value)}
+                  placeholder="Enter new email"
+                  required
+                />
+                <div className="modal-buttons">
+                  <button onClick={handleChangeEmail}>Submit</button>
+                  <button onClick={closeModal}>Cancel</button>
+                </div>
+              </div>
             </div>
-          </div>
-        </div>
-      )}
-      <button onClick={handleResetPassword}>Reset Password</button>
-      <button onClick={handlePermission}>Change to Admin</button>
-      <button onClick={handleDeleteRecords}>Delete User Records</button>
-      <button onClick={handleDeleteUser}>Delete User Account</button>
-      <button onClick={handleDownloadUserData}>Download User Data</button>
-      <br />
+          )}
+          {/* <button onClick={handleResetPassword}>Reset Password</button>
+          <br />
+          <button onClick={handlePermission}>Change to Admin</button>
+          <br />
+          <button onClick={handleDeleteRecords}>Delete User Records</button>
+          <br />
+          <button onClick={handleDeleteUser}>Delete User Account</button>
+          <br />
+          <button onClick={handleDownloadUserData}>Download User Data</button>
+          <br /> */}
+        </Card>
+      </Content>
       <ChangePasswordModal
         isOpen={isChangePasswordOpen}
         onClose={toggleChangePasswordModal}
         onChangePassword={handleChangePassword}
       />
-    </div>
+    </Layout>
   );
 };
 
