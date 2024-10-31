@@ -226,6 +226,25 @@ const UserAdmin = () => {
       alert("Failed to delete interview. Please try again.");
     }
   };
+
+  const handleClearBlobStorage = async () => {
+    try {
+      const response = await fetch(`${backendUrl}/api/clear-temp-audio/`, {
+        method: 'DELETE',
+        headers: {
+          'X-CSRFToken': csrfToken,
+        },
+        credentials: 'include',
+      });
+      if (!response.ok) {
+        throw new Error("Failed to clear blob storage");
+      }
+      alert("All blobs in the container have been deleted successfully.");
+    } catch (error) {
+      console.error("Error clearing blob storage:", error);
+      alert("Failed to clear blob storage. Please try again.");
+    }
+  };
   
   return (
     <div className="user-admin">
@@ -246,6 +265,9 @@ const UserAdmin = () => {
         </nav> */}
       </header>
       <h2>User Admin Page</h2>
+      <button onClick={handleClearBlobStorage} className="clear-blob-button">
+        Clear Temporary Audio Files
+      </button>
       <div className="search-container">
       <input className="search-bar"
         type="text"
