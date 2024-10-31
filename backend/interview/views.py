@@ -358,107 +358,90 @@ def user_login(request):
 
 logger = logging.getLogger(__name__)
 
+
 @api_view(['POST'])
 @parser_classes([MultiPartParser, FormParser, JSONParser])
-# def add_module(request):
 def add_module(request):
     logger.debug(f'Session: {request.session.items()}')
     logger.debug(f'User after login: {request.user}, is_authenticated: {request.user.is_authenticated}')
     try:
         logger.info("Starting file upload process")
-        
-        # Get files from request
-        files = request.FILES.getlist('file')
-        logger.info(f"request.FILES: {request.FILES}")
 
-        logger.info(f"Received {len(files)} files")
-        
-
-        
-       
-        
-        file_info = {}  # Initialize once outside the loop to collect all files
-
-        for uploaded_file in files:
-            logger.info(f"Processing file: {uploaded_file.name}")
-            
-            # Upload to Azure and get URL
-            file_url = upload_file_to_blob(uploaded_file)
-            
-            if file_url:
-                # Append file metadata to the dictionary
-                file_info[uploaded_file.name] = file_url  # Adds new file without overwriting previous entries
-                logger.info(f"File processed successfully: {file_info}")
-        
-        # Prepare data for serializer
-        logger.info(f"File list for serializer: {file_info}")
-        data = {
+        initial_data = {
             'modulename': request.data.get('modulename', ''),
             'prompt': request.data.get('prompt', ''),
             'voice': request.data.get('voice', ''),
             'system_prompt': request.data.get('system_prompt', ''),
             'case_abstract': request.data.get('case_abstract', ''),
             'model': request.data.get('model', ''),
-            'file': file_info  # Use the processed file list
-            
         }
-        
-        logger.info("Creating serializer")
-        logger.info(f"Data sent to serializer: {data}")
-        serializer = ModuleSerializer(data=data)
+
+        module_instance = Module(**initial_data)
+        module_instance.save()
+        moduleid = module_instance.moduleid
+
+        files = request.FILES.getlist('file')
+        logger.info(f"Received {len(files)} files")
+
+        file_info = {}
+
+        for uploaded_file in files:
+            logger.info(f"Processing file: {uploaded_file.name}")
+            file_url = upload_file_to_blob(uploaded_file, moduleid)
+
+            if file_url:
+                file_info[uploaded_file.name] = file_url
+                logger.info(f"File uploaded successfully: {file_url}")
+
+        initial_data['file'] = file_info
+
+        serializer = ModuleSerializer(module_instance, data=initial_data)
 
         if serializer.is_valid():
-            logger.info("Serializer is valid, saving module")
             module = serializer.save()
-            # Return success response with the new module's URL
             response_data = {
                 'message': 'Module created successfully',
                 'module': serializer.data,
-                'redirect_url': '/api/modules/'  # URL to redirect to
+                'redirect_url': '/api/modules/'
             }
             return Response(response_data, status=status.HTTP_201_CREATED)
         else:
             logger.error(f"Validation errors: {serializer.errors}")
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-            
+
     except Exception as e:
         logger.error(f"Error in add_module: {str(e)}")
         return Response({'error': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
-    
-@api_view(['GET','PUT'])
+
+
+@api_view(['GET', 'PUT'])
 def edit_module(request, moduleid):
     try:
-        logger.debug(f'user: {request.user},{request.user.is_authenticated},{request.user.is_superuser}')
+        logger.debug(f'user: {request.user}, {request.user.is_authenticated}, {request.user.is_superuser}')
         logger.debug(f'Session: {request.session.items()}')
-        # Fetch the module instance by ID
+
         module = Module.objects.get(moduleid=moduleid)
-        
-        # Handle GET request to retrieve module data
+
         if request.method == 'GET':
             serializer = ModuleSerializer(module)
             return Response(serializer.data)
-        
-        # Handle PUT request to update module data
+
         elif request.method == 'PUT':
-            # Log starting of the file update process
             logger.info("Starting file update process")
-            
-            # Process files if present in request.FILES
+
             files = request.FILES.getlist('file')
-            existing_file_info = module.file if module.file else {}  # Retrieve existing files
-            updated_file_info = existing_file_info.copy()  # Copy existing file data to preserve
-            
+            existing_file_info = module.file if module.file else {}
+            updated_file_info = existing_file_info.copy()
+
             logger.info(f"Received {len(files)} files for update")
-            
-            # Loop through new files and upload them
+
             for uploaded_file in files:
                 logger.info(f"Processing file: {uploaded_file.name}")
-                file_url = upload_file_to_blob(uploaded_file)
+                file_url = upload_file_to_blob(uploaded_file, moduleid)
                 if file_url:
-                    updated_file_info[uploaded_file.name] = file_url  # Add or replace the file entry
+                    updated_file_info[uploaded_file.name] = file_url
                     logger.info(f"File processed successfully: {uploaded_file.name} -> {file_url}")
 
-            # Prepare data for serializer
             data = {
                 'modulename': request.data.get('modulename', module.modulename),
                 'prompt': request.data.get('prompt', module.prompt),
@@ -468,11 +451,10 @@ def edit_module(request, moduleid):
                 'model': request.data.get('model', module.model),
                 'file': updated_file_info  # Updated file data
             }
-            
+
             logger.info("Creating serializer for update")
             serializer = ModuleSerializer(module, data=data)
-            
-            # Validate and save the updated data
+
             if serializer.is_valid():
                 serializer.save()
                 logger.info("Module updated successfully")
@@ -480,33 +462,41 @@ def edit_module(request, moduleid):
             else:
                 logger.error(f"Validation errors: {serializer.errors}")
                 return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-    
-    # Handle case where module does not exist
+
     except Module.DoesNotExist:
         logger.error("Module not found")
         return Response({'error': 'Module not found.'}, status=status.HTTP_404_NOT_FOUND)
-    
-    # Handle other exceptions
+
     except Exception as e:
         logger.error(f"Error in edit_module: {str(e)}")
         return Response({'error': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
-logger = logging.getLogger(__name__)   
+
+
+logger = logging.getLogger(__name__)
+import re
+
+
 @api_view(['DELETE'])
 def delete_module_file(request, moduleid, filename):
     logger.info(f"Deleting file: {filename} from module: {moduleid}")
     try:
         module = Module.objects.get(moduleid=moduleid)
+
         if filename in module.file:
-            del module.file[filename]  # Remove from the model
-            module.save()  # Save changes to the model
-            
-            # Call the function to delete the file from Azure Blob Storage
-            if delete_file_from_blob(filename):  # Make sure to pass the correct file name
+            del module.file[filename]
+            module.save()
+
+            sanitized_filename = re.sub(r'[^\w\-.]', '_', filename)
+
+
+            if delete_file_from_blob(sanitized_filename, moduleid):
                 return Response(status=status.HTTP_204_NO_CONTENT)
             else:
-                return Response({"detail": "File deletion from blob failed."}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+                return Response({"detail": "File deletion from blob failed."},
+                                status=status.HTTP_500_INTERNAL_SERVER_ERROR)
         else:
             return Response({"detail": "File not found."}, status=status.HTTP_404_NOT_FOUND)
+
     except Module.DoesNotExist:
         return Response({"detail": "Module not found."}, status=status.HTTP_404_NOT_FOUND)
 
@@ -769,32 +759,36 @@ def change_password(request):
     return Response({'success': 'Password changed successfully.'}, status=status.HTTP_200_OK)
 
 from django.db import IntegrityError
+
+
 @api_view(['DELETE'])
 def delete_module(request, module_id):
     if request.method == 'DELETE':
         try:
+
             module = Module.objects.get(moduleid=module_id)
             file_data = module.file
 
-            logging.info(file_data)
+            logging.info(f"File data: {file_data}")
 
             blob_service_client = BlobServiceClient.from_connection_string(AZURE_STORAGE_CONNECTION_STRING)
-
             container_client = blob_service_client.get_container_client(MODULE_ATTACHMENTS_BLOB_CONTAINER)
 
             for filename, fileurl in file_data.items():
-                logging.info(f'file_name {filename}')
-                blob_name = fileurl.split('/')[-1]
+                logger.info(f'Processing file: {filename}')
+
+                sanitized_filename = re.sub(r'[^\w\-.]', '_', filename)
+                blob_name = f"{module_id}_{sanitized_filename}"
+
                 container_client.delete_blob(blob_name)
                 logger.info(f"Deleted blob: {blob_name}")
 
-
             module.delete()
-            return JsonResponse({'message': 'Module deleted successfully'}, status=204)
+            return JsonResponse({'message': 'Module deleted successfully'}, status=200)
+
         except Module.DoesNotExist:
             return JsonResponse({'error': 'Module not found'}, status=404)
         except IntegrityError:
-            # Return a 400 Bad Request response with a specific error message
             return JsonResponse(
                 {'error': 'Module cannot be deleted as it is associated with existing interviews.'},
                 status=400
@@ -802,6 +796,7 @@ def delete_module(request, module_id):
         except Exception as e:
             logger.error(f"Error: {str(e)}")
             return JsonResponse({'error': str(e)}, status=500)
+
     logger.info(f"Received request: {request.method} for module_id: {module_id}")
     return JsonResponse({'error': 'Invalid request method'}, status=405)
 

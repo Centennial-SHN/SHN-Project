@@ -420,8 +420,7 @@ padding: 48px 24px;
 /*Module Interview Layout*/
 .layoutInterview,
 .layoutInterviewHist,
-.layoutAddModule,
-.layoutUserLog
+.layoutAddModule
 {
   width:calc(100vw - 16px);
   background: var(--global-white);
@@ -434,6 +433,7 @@ padding: 48px 24px;
 .layoutInterviewContent,
 .layoutIntHistContent,
 .layoutAddModuleContent,
+.layoutEditModuleContent,
 .layoutUserLogContent
 {
   /* margin:auto; */
@@ -710,7 +710,8 @@ padding: 48px 24px;
 }
 
 /*Admin Pages*/
-.layoutAddModuleContent
+.layoutAddModuleContent,
+.layoutEditModuleContent
 {
   min-width: 600px;
   margin: auto;
@@ -723,7 +724,9 @@ padding: 48px 24px;
   gap: 24px;
 }
 
-.layoutAddModuleContent .ant-card {
+.layoutAddModuleContent .ant-card, 
+.layoutAddModuleContent .ant-card 
+{
   width:100%;
 }
 
