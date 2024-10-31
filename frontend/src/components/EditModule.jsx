@@ -146,8 +146,9 @@ const EditModule = () => {
       //message.success("Module updated successfully!");
       navigate("/admin/module-list"); // Redirect to the module list after saving
     } else {
-      const data = await response.json();
-      message.error(data.error || "Error updating module.");
+      //const data = await response.json();
+      message.error("Error updating module.");
+      return;
     }
   };
 
