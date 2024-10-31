@@ -266,6 +266,7 @@ const UserAdmin = () => {
               <th>Module</th>
               <th>Interview Logs</th>
               <th>Delete</th>
+              <th>Edit User</th>
             </tr>
           </thead>
 
@@ -282,12 +283,7 @@ const UserAdmin = () => {
                   {(
                     // First row with Email, Total Interviews, Total Interview Time, and blank for Date, Module, Logs
                     <tr>
-                      <td>
-                        <a href="" onClick={() => navigate(`/admin/manage-user/${user.userid}`)}>
-                          {user.email}
-                        </a>
-                      </td>
-                      
+                      <td>{user.email}</td>  
                       <td>{totalInterviews}</td>
                       <td>{formatTime(totalTime)}</td> {/* Total Interview Time */}
                       {/* Blank cells for Date, Module, and Logs */}
@@ -295,6 +291,9 @@ const UserAdmin = () => {
                       <td></td>
                       <td></td>
                       <td></td>
+                      <td><button onClick={() => navigate(`/admin/manage-user/${user.userid}`)}>
+                        Edit
+                      </button></td>
                     </tr>
                   )}
 
@@ -317,6 +316,7 @@ const UserAdmin = () => {
                         <td><button onClick={() => handleDeleteInterview(interview.interviewid, user.userid)}>
                           Delete
                         </button></td>
+                        <td></td>
                       </tr>
                     );
                   })}
