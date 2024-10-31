@@ -92,6 +92,10 @@ a {
   text-decoration: underline;
 }
 
+.ant-pagination a {
+  text-decoration:none;
+}
+
 .ant-btn {
   font-size: 12px;
   line-height: 16px;
@@ -159,6 +163,15 @@ a {
 .ant-upload-list-item .ant-btn {
   background-color: transparent !important;
   box-shadow: none;
+}
+
+/*Search*/
+.ant-input-search {
+  min-width:400px;
+}
+
+.ant-input-search-button {
+  border-radius:8px;
 }
 
 /*Modal*/
@@ -249,6 +262,36 @@ padding: 48px 24px;
 
 .ant-table-tbody > tr.ant-table-row:hover > td{
   background-color: rgba(73,198,185,.1) !important;
+}
+
+/* .ant-table-expanded-row-fixed {
+  padding: 0 !important;
+  margin: 0 !important;
+} */
+
+.ant-table-row-expand-icon:hover {
+  background-color: var(--global-white) !important;
+}
+
+.ant-table-expanded-row > .ant-table-cell{
+  padding:0 !important;
+}
+
+.ant-table-expanded-row .ant-table {
+  margin-block: 0 !important;
+  margin-inline: 0 !important;
+}
+
+.ant-table-expanded-row table {
+  margin-bottom: 0;  
+}
+
+.ant-table-expanded-row .ant-table-row {
+  background-color: #f7f7f7 !important;
+}
+
+.ant-table-expanded-row .ant-table-thead {
+  display:none;
 }
 
 /*Login & Reg Layout*/
@@ -378,7 +421,7 @@ padding: 48px 24px;
 .layoutInterview,
 .layoutInterviewHist,
 .layoutAddModule,
-.layoutEditModule
+.layoutUserLog
 {
   width:calc(100vw - 16px);
   background: var(--global-white);
@@ -391,7 +434,8 @@ padding: 48px 24px;
 .layoutInterviewContent,
 .layoutIntHistContent,
 .layoutAddModuleContent,
-.layoutEditModuleContent
+.layoutEditModuleContent,
+.layoutUserLogContent
 {
   /* margin:auto; */
   display: flex;
@@ -685,4 +729,24 @@ padding: 48px 24px;
 .layoutAddModuleContent .ant-card 
 {
   width:100%;
+}
+
+.spaceContentStart {
+  justify-content: flex-start;
+  margin-bottom: 12px;
+  align-items: baseline;
+}
+
+.spaceContentBetween {
+  justify-content: space-between;
+}
+
+.spaceContentStart > *,
+.spaceContentBetween > *
+{
+  width: auto;
+}
+
+.linkDelete {
+  color: var(--secondary-coral) !important;
 }
