@@ -309,17 +309,22 @@ def interview_history(request, user_id):
 @api_view(['DELETE'])
 def clear_temp_audio_blob_storage(request):
     try:
-
         blob_service_client = BlobServiceClient.from_connection_string(AZURE_STORAGE_CONNECTION_STRING)
-
         container_client = blob_service_client.get_container_client(AZURE_BLOB_CONTAINER_NAME)
 
-        blobs = container_client.list_blobs()
+        blobs = list(container_client.list_blobs())
+
+        if not blobs:
+            logging.info("No blobs found in the container to delete.")
+            return JsonResponse({'message': 'The container is already empty.', 'files_deleted': 0}, status=200)
+
+        deleted_count = 0
         for blob in blobs:
             container_client.delete_blob(blob.name)
             logging.info(f"Deleted blob: {blob.name}")
+            deleted_count += 1
 
-        return JsonResponse({'message': 'All blobs in the container have been deleted successfully.'}, status=204)
+        return JsonResponse({'message': f'{deleted_count} files have been deleted.', 'files_deleted': deleted_count}, status=200)
 
     except Exception as e:
         logging.error(f"Error clearing blob storage: {str(e)}")
