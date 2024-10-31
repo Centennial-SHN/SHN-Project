@@ -88,6 +88,10 @@ h5.ant-typography {
 }
 
 /*Button*/
+a {
+  text-decoration: underline;
+}
+
 .ant-btn {
   font-size: 12px;
   line-height: 16px;
@@ -130,6 +134,31 @@ h5.ant-typography {
 .ant-form-item-label label {
   width:auto;
   font-weight: 400;
+}
+
+.ant-select {
+  text-align: left;
+}
+
+.ant-upload-drag {
+  border-radius: 8px !important;
+}
+
+.ant-upload-list-item {
+  height:auto !important;
+  padding: 8px !important;
+  border-radius: 4px;
+  color: var(--primary-teal);
+  text-align: left;
+}
+
+.ant-upload-list-item:hover {
+ background-color: rgba(73,198,185,.1) !important;
+}
+
+.ant-upload-list-item .ant-btn {
+  background-color: transparent !important;
+  box-shadow: none;
 }
 
 /*Modal*/
@@ -347,7 +376,8 @@ padding: 48px 24px;
 
 /*Module Interview Layout*/
 .layoutInterview,
-.layoutInterviewHist
+.layoutInterviewHist,
+.layoutAddModule
 {
   width:calc(100vw - 16px);
   background: var(--global-white);
@@ -358,7 +388,8 @@ padding: 48px 24px;
 }
 
 .layoutInterviewContent,
-.layoutIntHistContent
+.layoutIntHistContent,
+.layoutAddModuleContent
 {
   /* margin:auto; */
   display: flex;
@@ -590,4 +621,22 @@ padding: 48px 24px;
 
 .attachment-link:hover .anticon{
   color: var(--primary-teal);
+}
+
+/*Admin Pages*/
+.layoutAddModuleContent
+{
+  min-width: 600px;
+  margin: auto;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: flex-start;
+  text-align: center;
+  padding: 48px 0;
+  gap: 24px;
+}
+
+.layoutAddModuleContent .ant-card {
+  width:100%;
 }

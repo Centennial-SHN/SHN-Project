@@ -83,8 +83,8 @@ const Login = () => {
                         <form onSubmit={handleLogin}>
                             <Space direction="vertical" size="large">
                                 <Space direction="vertical" size="middle">
-                                    <Title level={1} style={{ color: '#191e72' }}>Login to Your Account</Title>
-                                    <Text>Login to start using the virtual patient simulator.</Text>
+                                    <Title level={1} style={{ color: '#191e72' }}>Log in to Your Account</Title>
+                                    {/* <Text>Login to start using the virtual patient simulator.</Text> */}
                                 </Space>
                                 <Space direction="vertical" size="middle">
                                     <Input
@@ -103,7 +103,7 @@ const Login = () => {
                                         visibilityToggle={{ visible: passwordVisible, onVisibleChange: setPasswordVisible }}
                                     />
                                 </Space>
-                                <Button type="primary" htmlType="submit">Login</Button>
+                                <Button type="primary" htmlType="submit">Log in</Button>
                             </Space>
                         </form>
                     </Card>
