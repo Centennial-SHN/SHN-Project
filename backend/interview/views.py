@@ -784,7 +784,7 @@ def delete_module(request, module_id):
                 logger.info(f"Deleted blob: {blob_name}")
 
             module.delete()
-            return JsonResponse({'message': 'Module deleted successfully'}, status=204)
+            return JsonResponse({'message': 'Module deleted successfully'}, status=200)
 
         except Module.DoesNotExist:
             return JsonResponse({'error': 'Module not found'}, status=404)
