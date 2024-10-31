@@ -490,7 +490,8 @@ def edit_module(request, moduleid):
     except Exception as e:
         logger.error(f"Error in edit_module: {str(e)}")
         return Response({'error': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
-logger = logging.getLogger(__name__)   
+logger = logging.getLogger(__name__)
+import re
 @api_view(['DELETE'])
 def delete_module_file(request, moduleid, filename):
     logger.info(f"Deleting file: {filename} from module: {moduleid}")
@@ -499,7 +500,8 @@ def delete_module_file(request, moduleid, filename):
         if filename in module.file:
             del module.file[filename]  # Remove from the model
             module.save()  # Save changes to the model
-            
+
+            filename = re.sub(r'[^\w\-.]', '_', filename)
             # Call the function to delete the file from Azure Blob Storage
             if delete_file_from_blob(filename):  # Make sure to pass the correct file name
                 return Response(status=status.HTTP_204_NO_CONTENT)
