@@ -89,7 +89,6 @@ const EditModule = () => {
         }
       );
       const data = await response.json();
-      //console.log(moduleid);
       if (response.ok) {
         setModuleName(data.modulename);
         setPrompt(data.prompt);
@@ -385,7 +384,6 @@ const EditModule = () => {
                 <p
                   className="ant-upload-drag-icon"
                   onClick={() => {
-                    console.log("InboxOutlined icon clicked");
                     handleFileDelete();
                   }}
                 >

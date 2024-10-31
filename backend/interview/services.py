@@ -149,13 +149,14 @@ def _upload_tts_to_blob_storage(text, audio_file_name, voice):
         raise e
 
 
-def upload_file_to_blob(file):
+
+def upload_file_to_blob(file, moduleid):
     try:
         file_extension = os.path.splitext(file.name)[1]
         base_file_name = os.path.splitext(file.name)[0]
 
         sanitized_base_name = re.sub(r'[^\w\-.]', '_', base_file_name)
-        blob_name = f"{sanitized_base_name}{file_extension}"
+        blob_name = f"{moduleid}_{sanitized_base_name}{file_extension}"
 
         blob_service_client = BlobServiceClient.from_connection_string(AZURE_STORAGE_CONNECTION_STRING)
 
@@ -181,18 +182,17 @@ def upload_file_to_blob(file):
     except Exception as e:
         logger.error(f"Unexpected error uploading file: {str(e)}")
         return None
-def delete_file_from_blob(file_name):
+
+def delete_file_from_blob(file_name, moduleid):
     try:
-        # Initialize the blob service client
+        file_name = f"{moduleid}_{file_name}"
+
         blob_service_client = BlobServiceClient.from_connection_string(AZURE_STORAGE_CONNECTION_STRING)
-        
-        # Get the container client
+
         container_client = blob_service_client.get_container_client(MODULE_ATTACHMENTS_BLOB_CONTAINER)
-        
-        # Get blob client for the specific file
+
         blob_client = container_client.get_blob_client(file_name)
-        
-        # Delete the blob
+
         blob_client.delete_blob()
         
         logger.info(f"File deleted successfully: {file_name}")
