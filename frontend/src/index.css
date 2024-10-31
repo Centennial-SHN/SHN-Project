@@ -420,7 +420,8 @@ padding: 48px 24px;
 /*Module Interview Layout*/
 .layoutInterview,
 .layoutInterviewHist,
-.layoutAddModule
+.layoutAddModule,
+.layoutUserLog
 {
   width:calc(100vw - 16px);
   background: var(--global-white);
