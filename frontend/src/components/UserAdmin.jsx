@@ -347,7 +347,7 @@ const UserAdmin = () => {
         <Button
           type="primary"
           icon={<EditOutlined />}
-          onClick={() => handleEditUser(record.userid)}
+          onClick={() => navigate(`/admin/manage-user/${record.userid}`)}
         />
       ),
     },
@@ -465,8 +465,8 @@ const UserAdmin = () => {
                     <tr>
                       <td>{user.email}</td>
                       <td>{totalInterviews}</td>
-                      <td>{formatTime(totalTime)}</td> {/* Total Interview Time /}
-                      {/* Blank cells for Date, Module, and Logs /}
+                      <td>{formatTime(totalTime)}</td> {/* Total Interview Time * /}
+                      {/* Blank cells for Date, Module, and Logs * /}
                       <td></td>
                       <td></td>
                       <td></td>
@@ -477,14 +477,14 @@ const UserAdmin = () => {
                     </tr>
                   )}
 
-                  {/* Sub-rows for each interview /}
+                  {/* Sub-rows for each interview * /}
                   {user.interviews.map((interview, index) => {
                     const moduleName = interview.module_name || interview.modulename || "N/A";
                     return (
                       <tr key={index}>
-                        <td></td> {/* Blank Email column for sub-rows /}
-                        <td></td> {/* Blank Total Interviews column for sub-rows /}
-                        <td>{interview.interviewlength}</td> {/* Interview Length under Total Interview Time /}
+                        <td></td> {/* Blank Email column for sub-rows * /}
+                        <td></td> {/* Blank Total Interviews column for sub-rows * /}
+                        <td>{interview.interviewlength}</td> {/* Interview Length under Total Interview Time * /}
                         <td>{interview.dateactive || "No Date Available"}</td>
                         <td>{moduleName}</td>
                         <td>
