@@ -3,7 +3,7 @@ from .settings import *
 from .settings import BASE_DIR
 
 ALLOWED_HOSTS = [os.environ['WEBSITE_HOSTNAME']]
-CSRF_TRUSTED_ORIGINS = ['https://'+os.environ['WEBSITE_HOSTNAME']]
+# CSRF_TRUSTED_ORIGINS = ['https://'+os.environ['WEBSITE_HOSTNAME']]
 DEBUG = False
 SECRET_KEY=os.environ['MY_SECRET_KEY']
 
@@ -41,9 +41,9 @@ CORS_ALLOW_HEADERS = [
 
 CORS_ALLOW_CREDENTIALS = True
 
-# CSRF_TRUSTED_ORIGINS = [
-#     "https://ashy-stone-000b7c90f.5.azurestaticapps.net"
-# ]
+CSRF_TRUSTED_ORIGINS = [
+    "https://ashy-stone-000b7c90f.5.azurestaticapps.net"
+]
 
 SESSION_ENGINE = 'django.contrib.sessions.backends.db'
 
