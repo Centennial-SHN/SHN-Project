@@ -36,14 +36,14 @@ CORS_ALLOW_METHODS = [
 CORS_ALLOW_HEADERS = [
     'content-type',
     'authorization',
-    'X-CSRFToken',
+    'x-csrftoken',
 ]
 
 CORS_ALLOW_CREDENTIALS = True
 
-CSRF_TRUSTED_ORIGINS = [
-    "https://ashy-stone-000b7c90f.5.azurestaticapps.net"
-]
+# CSRF_TRUSTED_ORIGINS = [
+#     "https://ashy-stone-000b7c90f.5.azurestaticapps.net"
+# ]
 
 SESSION_ENGINE = 'django.contrib.sessions.backends.db'
 

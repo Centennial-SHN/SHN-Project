@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { MenuOutlined } from '@ant-design/icons';
 import { Typography, Layout, Space, Divider, Dropdown, Menu, Button } from 'antd';
+import { VITE_API_BASE_URL_LOCAL, VITE_API_BASE_URL_PROD } from "../constants";
 import Cookies from 'js-cookie';
 import logo from '../assets/logo-alt.svg';
 import ChangePasswordModal from './ChangePasswordModal';
@@ -16,6 +17,9 @@ const NavBar = ({ onNavigateAway }) => {
     const [isChangePasswordOpen, setChangePasswordOpen] = useState(false);
     const csrfToken = Cookies.get('csrftoken');
     const [viewAsAdmin, setViewAsAdmin] = useState(isAdmin);
+    const isDevelopment = import.meta.env.MODE === "development";
+    const baseUrl = isDevelopment ? VITE_API_BASE_URL_LOCAL : VITE_API_BASE_URL_PROD;
+    const backendUrl = baseUrl;
 
     useEffect(() => {
         const userViewPaths = [
