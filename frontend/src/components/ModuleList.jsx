@@ -180,34 +180,34 @@ const AdminModuleList = () => {
       width: "34%",
       sorter: (a, b) => a.modulename.localeCompare(b.modulename),
     },
-    {
-      title: "Action",
-      key: "action",
-      width: "33%",
-      render: (_, record) => (
-        <Row justify="center">
-          <Col>
-            <Button
-              type="primary"
-              icon={<EditOutlined />}
-              onClick={() => handleEdit(record.moduleid)}
-            >
-              Edit
-            </Button>
-          </Col>
-          <Col style={{ marginLeft: "8px" }}>
-            <Button
-              type="primary"
-              icon={<DeleteOutlined />}
-              className="delete-button"
-              onClick={() => showDeleteModal(record.moduleid)}
-            >
-              Delete
-            </Button>
-          </Col>
-        </Row>
-      ),
-    },
+    // {
+    //   title: "Action",
+    //   key: "action",
+    //   width: "33%",
+    //   render: (_, record) => (
+    //     <Row justify="center">
+    //       <Col>
+    //         <Button
+    //           type="primary"
+    //           icon={<EditOutlined />}
+    //           onClick={() => handleEdit(record.moduleid)}
+    //         >
+    //           Edit
+    //         </Button>
+    //       </Col>
+    //       <Col style={{ marginLeft: "8px" }}>
+    //         <Button
+    //           type="primary"
+    //           icon={<DeleteOutlined />}
+    //           className="delete-button"
+    //           onClick={() => showDeleteModal(record.moduleid)}
+    //         >
+    //           Delete
+    //         </Button>
+    //       </Col>
+    //     </Row>
+    //   ),
+    // },
   ];
 
   const dataSource = modules.map((module, index) => ({

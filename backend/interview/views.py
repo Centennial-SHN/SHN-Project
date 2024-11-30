@@ -2,7 +2,7 @@
 import openai
 from django.http import HttpResponse
 from dotenv import load_dotenv
-from .services import process_audio_file, generate_text_from_prompt, convert_text_to_speech, upload_file_to_blob,delete_file_from_blob
+from .services import process_audio_file, generate_text_from_prompt, convert_text_to_speech, upload_file_to_blob,delete_file_from_blob, process_and_store_file, generate_text_from_prompt_with_context, multi_agent_conversation
 from .serializers import ModuleSerializer
 from datetime import timedelta, datetime
 from azure.storage.blob import BlobServiceClient
@@ -23,7 +23,7 @@ from django.core.exceptions import ObjectDoesNotExist
 import json
 
 
-logging.basicConfig(level=logging.DEBUG)
+logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 
@@ -49,6 +49,7 @@ def process_audio(request):
     try:
         interview = Interview.objects.get(pk=interview_id)
         module = Module.objects.get(moduleid=module_id)
+        moduleid = module.moduleid
         module_model = module.model
         module_system_prompt = module.system_prompt
         module_prompt = module.prompt
@@ -68,7 +69,8 @@ def process_audio(request):
             return JsonResponse({"error": "Failed to transcribe audio"}, status=500)
 
         conversation_history.append({'role': 'user', 'content': transcribed_text})
-        generated_text = generate_text_from_prompt(conversation_history, module_system_prompt, module_prompt, module_model)
+
+        generated_text = generate_text_from_prompt_with_context(conversation_history, module_system_prompt, module_prompt, module_model, patient_id=f'patient_{moduleid}', query=transcribed_text)
         cleaned_text = generated_text.replace('\n', ' ').strip()
 
         conversation_history.append({'role': 'assistant', 'content': cleaned_text})
@@ -80,7 +82,7 @@ def process_audio(request):
 
         if USE_AZURE_BLOB_STORAGE:
             speech_file_url = convert_text_to_speech(generated_text, module_id)
-            return JsonResponse({"speech_file_url": speech_file_url}, status=200)
+            return JsonResponse({"speech_file_url": speech_file_url, "conversation_history": conversation_history}, status=200)
 
     except Exception as e:
         logging.error(f'Exception occurred: {str(e)}')
@@ -367,6 +369,7 @@ def add_module(request):
     try:
         logger.info("Starting file upload process")
 
+        # Extract initial data for the module
         initial_data = {
             'modulename': request.data.get('modulename', ''),
             'prompt': request.data.get('prompt', ''),
@@ -376,6 +379,7 @@ def add_module(request):
             'model': request.data.get('model', ''),
         }
 
+        # Create the module instance
         module_instance = Module(**initial_data)
         module_instance.save()
         moduleid = module_instance.moduleid
@@ -385,16 +389,20 @@ def add_module(request):
 
         file_info = {}
 
+        # Process files using the external service function
         for uploaded_file in files:
             logger.info(f"Processing file: {uploaded_file.name}")
-            file_url = upload_file_to_blob(uploaded_file, moduleid)
+            try:
+                process_and_store_file(uploaded_file, moduleid)  # Call to service function
+                file_info[uploaded_file.name] = f"Processed and stored for module {moduleid}"
+            except Exception as e:
+                logger.error(f"Error processing file {uploaded_file.name}: {str(e)}")
+                file_info[uploaded_file.name] = f"Error: {str(e)}"
 
-            if file_url:
-                file_info[uploaded_file.name] = file_url
-                logger.info(f"File uploaded successfully: {file_url}")
-
+        # Attach processed file information to the module
         initial_data['file'] = file_info
 
+        # Serialize and save the module
         serializer = ModuleSerializer(module_instance, data=initial_data)
 
         if serializer.is_valid():
@@ -811,3 +819,5 @@ def delete_interview(request, interview_id):
         return Response({"error": "Interview not found"}, status=status.HTTP_404_NOT_FOUND)
     except Exception as e:
         return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+

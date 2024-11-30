@@ -7,6 +7,7 @@ import { VITE_API_BASE_URL_LOCAL, VITE_API_BASE_URL_PROD } from '../constants.js
 import { Button, Typography, Layout, Space, Select, Form, Card, Input, Upload, message } from 'antd';
 import NavBar from "./NavBar";
 import { InboxOutlined } from '@ant-design/icons';
+import { Checkbox } from "antd";
 
 const { Title, Text, Link } = Typography;
 const { Content } = Layout;
@@ -20,6 +21,8 @@ const AddModule = () => {
     const [systemPrompt, setSystemPrompt] = useState('');
     const [caseAbstract, setCaseAbstract] = useState('');
     const [files, setFiles] = useState([]);
+    const [parentVoice, setParentVoice] = useState('nova'); // For parent voice
+    const [isMultipleInterviewees, setIsMultipleInterviewees] = useState(false);
     const fileInputRef = useRef(null);
     const [model, setModel] = useState('gpt-4o-mini');
     const navigate = useNavigate();
@@ -100,6 +103,9 @@ const AddModule = () => {
         formData.append('voice', voice);
         formData.append('system_prompt', systemPrompt);
         formData.append('case_abstract', caseAbstract);
+        if (isMultipleInterviewees && parentVoice) {
+            formData.append('parent_voice', parentVoice); // Include parent voice if applicable
+        }
 
         // Append multiple files
 
@@ -197,6 +203,20 @@ const AddModule = () => {
         }
     };
 
+    useEffect(() => {
+        const savedState = sessionStorage.getItem("isMultipleInterviewees");
+        if (savedState !== null) {
+          setIsMultipleInterviewees(JSON.parse(savedState));
+        }
+      }, []);
+    
+      // Handle checkbox change and update sessionStorage
+      const handleCheckboxChange = (e) => {
+        const checked = e.target.checked;
+        setIsMultipleInterviewees(checked);
+        sessionStorage.setItem("isMultipleInterviewees", JSON.stringify(checked));
+      };
+
     return (
         // <>
         //     {contextHolder}
@@ -240,6 +260,11 @@ const AddModule = () => {
                                             value: 'gpt-4o',
                                             label: 'gpt-4o',
                                         },
+                                        {
+                                            value: 'o1-mini-2024-09-12',
+                                            label: 'o1-mini-2024-09-12',
+                                        },
+
                                     ]}
                                 />
                             </Form.Item>
@@ -302,7 +327,16 @@ const AddModule = () => {
                                     ]}
                                 />
                             </Form.Item>
-
+           {/* Checkbox for multiple interviewees */}
+           {/* <Form.Item style={{ textAlign: "left" }}>
+      <div style={{ display: "flex", alignItems: "center" }}>
+        <Checkbox
+          checked={isMultipleInterviewees}
+          onChange={handleCheckboxChange}
+        />
+        <span style={{ marginLeft: "8px" }}>Is more than two interviewees?</span>
+      </div>
+    </Form.Item> */}
                             {/* <div className="form-group">
                             <label>Voice:</label>
                             <select value={voice} onChange={(e) => setVoice(e.target.value)}>

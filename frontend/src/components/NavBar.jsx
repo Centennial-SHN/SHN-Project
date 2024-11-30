@@ -89,14 +89,14 @@ const NavBar = ({ onNavigateAway }) => {
                     </a>
                 ),
             },
-            {
-                key: '2',
-                label: (
-                    <a onClick={() => handleNavigate(() => navigate("/admin/user-logs"))}>
-                        User Logs
-                    </a>
-                ),
-            },
+            // {
+            //     key: '2',
+            //     label: (
+            //         <a onClick={() => handleNavigate(() => navigate("/admin/user-logs"))}>
+            //             User Logs
+            //         </a>
+            //     ),
+            // },
             isAdmin && {
                 key: '3',
                 label: (
@@ -105,25 +105,25 @@ const NavBar = ({ onNavigateAway }) => {
                     </a>
                 ),
             },
-            {
-                key: '4',
-                label: (
-                    <a onClick={() => handleNavigate(toggleChangePasswordModal)}>
-                        Change Password
-                    </a>
-                ),
-            },
-            {
-                key: '5',
-                label: (
-                    <a onClick={() => handleNavigate(() => {
-                        sessionStorage.removeItem("userId");
-                        navigate("/");
-                    })}>
-                        Logout
-                    </a>
-                ),
-            },
+            // {
+            //     key: '4',
+            //     label: (
+            //         <a onClick={() => handleNavigate(toggleChangePasswordModal)}>
+            //             Change Password
+            //         </a>
+            //     ),
+            // },
+            // {
+            //     key: '5',
+            //     label: (
+            //         <a onClick={() => handleNavigate(() => {
+            //             sessionStorage.removeItem("userId");
+            //             navigate("/");
+            //         })}>
+            //             Logout
+            //         </a>
+            //     ),
+            // },
         ].filter(Boolean);
 
     const userItems = [
@@ -156,25 +156,25 @@ const NavBar = ({ onNavigateAway }) => {
                     </a>
                 ),
             },
-            {
-                key: '4',
-                label: (
-                    <a onClick={() => handleNavigate(toggleChangePasswordModal)}>
-                        Change Password
-                    </a>
-                ),
-            },
-            {
-                key: '5',
-                label: (
-                    <a onClick={() => handleNavigate(() => {
-                        sessionStorage.removeItem("userId");
-                        navigate("/");
-                    })}>
-                        Logout
-                    </a>
-                ),
-            },
+            // {
+            //     key: '4',
+            //     label: (
+            //         <a onClick={() => handleNavigate(toggleChangePasswordModal)}>
+            //             Change Password
+            //         </a>
+            //     ),
+            // },
+            // {
+            //     key: '5',
+            //     label: (
+            //         <a onClick={() => handleNavigate(() => {
+            //             sessionStorage.removeItem("userId");
+            //             navigate("/");
+            //         })}>
+            //             Logout
+            //         </a>
+            //     ),
+            // },
         ].filter(Boolean);
 
         const items = viewAsAdmin ? adminItems : userItems;

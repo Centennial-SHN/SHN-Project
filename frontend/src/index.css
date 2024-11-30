@@ -769,3 +769,56 @@ padding: 48px 24px;
 {
   width:auto;
 }
+
+
+.chatbox {
+  padding: 16px;
+  border-radius: 8px;
+  background-color: #f9f9f9; /* Softer background color */
+  max-height: 300px;
+  overflow-y: auto; /* Enables vertical scrolling */
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1); /* Subtle shadow for better appearance */
+  border: 1px solid #d9d9d9; /* Matches Ant Design's default border color */
+}
+
+/* Styling individual messages */
+.chat-message {
+  margin-bottom: 12px; /* Adds spacing between messages */
+  padding: 10px 14px;
+  border-radius: 8px;
+  font-size: 14px;
+}
+
+/* User messages */
+.user-message {
+  background-color: #d1f7d6; /* Soft green for user messages */
+  color: #000; /* Black text for contrast */
+  align-self: flex-start;
+  text-align: left;
+}
+
+/* Assistant messages */
+.assistant-message {
+  background-color: #e6f7ff; /* Soft blue for assistant messages */
+  color: #000;
+  align-self: flex-start;
+  text-align: left;
+}
+
+/* Scroll bar customization */
+.chatbox::-webkit-scrollbar {
+  width: 8px;
+}
+
+.chatbox::-webkit-scrollbar-track {
+  background: #f1f1f1; /* Light gray track */
+}
+
+.chatbox::-webkit-scrollbar-thumb {
+  background: #c1c1c1; /* Gray thumb */
+  border-radius: 8px;
+}
+
+.chatbox::-webkit-scrollbar-thumb:hover {
+  background: #a1a1a1; /* Darker gray on hover */
+}

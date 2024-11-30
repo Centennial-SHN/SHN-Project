@@ -15,6 +15,7 @@ const Interview = () => {
   const location = useLocation();
   const [moduleName, setModuleName] = useState("");
   const [caseAbstract, setCaseAbstract] = useState("");
+  const [conversationHistory, setConversationHistory] = useState([]);
   const [files, setFiles] = useState([]);
   const [isRecording, setIsRecording] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
@@ -39,6 +40,10 @@ const Interview = () => {
   const backendUrl = baseUrl;
 
   const DEBOUNCE_DELAY = 500;
+
+  const updateConversationHistory = (newMessage) => {
+    setConversationHistory((prevHistory) => [...prevHistory, newMessage]);
+  };
 
   useEffect(() => {
     if (!userId) {
@@ -174,12 +179,14 @@ const Interview = () => {
 
   const handleUpload = async (audioBlob) => {
     const date_active = getLocalTimeInIsoFormat();
+    const multiAgentMode = sessionStorage.getItem("isMultipleInterviewees") === "true";
 
     const formData = new FormData();
     formData.append("audio", audioBlob, "user_audio.mp3");
     formData.append("module_id", moduleId);
     formData.append("interview_id", interviewId);
     formData.append("date_active", date_active);
+    formData.append("multi_agent_mode", multiAgentMode);
 
     const uploadStartTime = getLocalTimeInIsoFormat();
     console.log(uploadStartTime);
@@ -209,6 +216,12 @@ const Interview = () => {
       }
 
       const data = await response.json();
+      const updatedConversationHistory = data.conversation_history;
+
+      if (updatedConversationHistory) {
+        // Update the conversation history in your component's state
+        setConversationHistory(updatedConversationHistory);
+      }
 
       if (data.speech_file_url) {
         playAudio(data.speech_file_url);
@@ -376,8 +389,23 @@ const Interview = () => {
             <Col span={10} className="interviewCol2">
               <Text className="customH6">{moduleName}</Text>
               <Text style={{ marginBottom: "24px" }}>{caseAbstract}</Text>
+              {conversationHistory.length > 0 && (
+  <Card className="chatbox">
+    {conversationHistory.map((message, index) => (
+      <div
+        key={index}
+        className={`chat-message ${message.role === "user" ? "user-message" : "assistant-message"}`}
+      >
+        <Text>
+          <strong>{message.role === "user" ? "You: " : `${moduleName}: `}</strong>
+          {message.content}
+        </Text>
+      </div>
+    ))}
+  </Card>
+)}
 
-              {Object.keys(files).length > 0 ? (
+              {/* {Object.keys(files).length > 0 ? (
                 <Space direction="vertical" size="small">
                   <Text className="customH6">Attachments:</Text>
                   {Object.entries(files).map(([fileName, fileUrl], index) => (
@@ -395,7 +423,7 @@ const Interview = () => {
                   <Text className="customH6">Attachments:</Text>
                   <Text>N/A</Text>
                 </Space>
-              )}
+              )} */}
             </Col>
           </Row>
         </Card>
