@@ -1,5 +1,5 @@
 // AddModule.jsx
-import React, { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Cookies from 'js-cookie';
 import ChangePasswordModal from './ChangePasswordModal';
@@ -8,7 +8,7 @@ import { Button, Typography, Layout, Space, Select, Form, Card, Input, Upload, m
 import NavBar from "./NavBar";
 import { InboxOutlined } from '@ant-design/icons';
 
-const { Title, Text, Link } = Typography;
+const { Title, Link } = Typography;
 const { Content } = Layout;
 const { TextArea } = Input;
 const { Dragger } = Upload;

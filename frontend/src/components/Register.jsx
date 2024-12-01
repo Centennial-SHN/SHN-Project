@@ -1,7 +1,5 @@
-// Register.jsx
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-// import './UserForm.css';
 import { VITE_API_BASE_URL_LOCAL, VITE_API_BASE_URL_PROD } from '../constants';
 import { Input, Button, Typography, Card, Layout, Space, Divider, message } from 'antd';
 import logo from '../assets/logo-alt.svg';
@@ -44,15 +42,13 @@ const Register = () => {
         });
 
         if (response.ok) {
-            // alert('Registration successful!');
             messageApi.open({
                 type: 'success',
                 content: 'Signed up successfully!',
             });
             navigate('/');
         } else {
-            const data = await response.json();
-            // alert(data.error || 'Registration failed!');
+            // const data = await response.json();
             messageApi.open({
                 type: 'error',
                 content: 'Failed to sign up. Please check your that all your inputs are valid.',

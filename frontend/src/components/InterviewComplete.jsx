@@ -1,4 +1,3 @@
-import React from "react";
 import { useNavigate } from "react-router-dom";
 import NavBar from "./NavBar";
 import { Button, Typography, Layout, Space } from 'antd';

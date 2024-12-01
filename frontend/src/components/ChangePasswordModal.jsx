@@ -1,6 +1,4 @@
-// ChangePasswordModal.jsx
-import React, { useState } from "react";
-// import './ChangePasswordModal.css';
+import { useState } from "react";
 import { Form, Input, Button, Typography, Modal } from 'antd';
 
 const { Title, Text } = Typography;
@@ -25,6 +23,7 @@ const ChangePasswordModal = ({ isOpen, onClose, onChangePassword }) => {
 
   return (
     <Modal
+      className="change-password-modal"
       open={isOpen}
       onOk={handleSubmit}
       onCancel={onClose}

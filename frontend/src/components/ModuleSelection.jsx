@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { VITE_API_BASE_URL_LOCAL, VITE_API_BASE_URL_PROD } from "../constants";
 import NavBar from "./NavBar";
-import { Button, Typography, Layout, Space, Select } from 'antd';
+import { Button, Typography, Layout, Space, Select, Modal } from 'antd';
 
 const { Title, Text } = Typography;
 const { Content } = Layout;
@@ -10,9 +10,8 @@ const { Content } = Layout;
 const ModuleSelection = () => {
   const [modules, setModules] = useState([]);
   const [selectedModule, setSelectedModule] = useState(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
   const navigate = useNavigate();
-  const [menuOpen, setMenuOpen] = useState(false);
-  const [iconColor, setIconColor] = useState("black");
   const userId = sessionStorage.getItem('userId');
   const isAdmin = sessionStorage.getItem('isSuperUser') === 'true';
   const isDevelopment = import.meta.env.MODE === "development";
@@ -48,7 +47,6 @@ const ModuleSelection = () => {
       try {
 
         if (!userId) {
-          alert("User is not logged in. Please log in first.");
           return;
         }
         const response = await fetch(`${backendUrl}/api/create_interview/`, {
@@ -69,7 +67,6 @@ const ModuleSelection = () => {
         const data = await response.json();
         const interviewId = data.interviewid;
 
-        // Navigate to interview page with interviewId and selectedModule
         navigate(`/interview/${selectedModule}`, { state: { interviewId, userId: userId } });
 
 
@@ -77,33 +74,17 @@ const ModuleSelection = () => {
         console.error("Error creating interview:", error);
       }
     } else {
-      alert("Please select a module to proceed.");
+      setIsModalOpen(true);
     }
   };
 
-  // const handleViewHistory = () => {
-  //   navigate(`/interview-history/${userId}`);
-  // };
 
-  // const handleLogout = () => {
-  //   sessionStorage.removeItem("userId"); // Clear userId from sessionStorage
-  //   navigate("/"); // Redirect to login page
-  // };
-
-  // const toggleMenu = () => {
-  //   setMenuOpen((prev) => {
-  //     setIconColor(prev ? "black" : "#4DBDB1");
-  //     return !prev;
-  //   });
-  // };
-
-  // const handleSwitchToAdmin = () => {
-  //   navigate("/admin/module-list"); // Replace with the actual admin route
-  // };
+  const handleOk = () => {
+    setIsModalOpen(false);  
+  };
 
 
   return (
-
     <Layout className="layoutModuleSelect">
       <NavBar isAdmin={isAdmin} />
       <Content className="layoutModSelContent">
@@ -111,7 +92,6 @@ const ModuleSelection = () => {
         <Title level={3} style={{color: '#191e72',}}>Welcome to SHN Virtual Interviews</Title>
         <Text>Please select a model to start training with a virtual patient.</Text>
         </Space>
-          {/* <label htmlFor="module-select"></label> */}
           <Select
             id="module-select"
             value={selectedModule}
@@ -123,16 +103,18 @@ const ModuleSelection = () => {
             }))}
             placeholder="Please choose a module"
           >
-            {/* <option value="">Please choose a module</option>
-            {modules.map((module) => (
-              <option key={module.moduleid} value={module.moduleid}>
-                {module.modulename}
-              </option>
-            ))} */}
           </Select>
         <Button type="primary" onClick={handleProceed}>Start Interview</Button>
-        {/* <button onClick={handleViewHistory}>View Interview History</button> */}
       </Content>
+
+      <Modal
+        title="Module Not Selected"
+        open={isModalOpen}
+        onOk={handleOk} 
+        footer={[<Button key="ok" type="primary" onClick={handleOk}>OK</Button>]}  // Only show OK button
+      >
+        <p>Please select a module to proceed with the interview.</p>
+      </Modal>
     </Layout>
   );
 };
