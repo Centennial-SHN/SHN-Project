@@ -1,7 +1,5 @@
-// Login.jsx
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-// import './UserForm.css';
 import Cookies from 'js-cookie';
 import { VITE_API_BASE_URL_LOCAL, VITE_API_BASE_URL_PROD } from '../constants';
 import { Input, Button, Typography, Card, Layout, Space, Divider, message } from 'antd';
@@ -37,7 +35,6 @@ const Login = () => {
         if (response.ok) {
             const data = await response.json();
             console.log(data)
-            // alert('Login successful! User: ' + data.email);
             messageApi.open({
                 type: 'success',
                 content: 'Successfully logged in!',
@@ -51,8 +48,7 @@ const Login = () => {
                 navigate('/module');
             }
         } else {
-            const data = await response.json();
-            // alert(data.error || 'Login failed!');
+            // const data = await response.json();
             messageApi.open({
                 type: 'error',
                 content: 'Failed to log in. Please check your login credentials.',
@@ -69,7 +65,7 @@ const Login = () => {
                     <Space direction="vertical" size="middle" style={{ marginBottom: '32px', position: 'relative', }}>
                         <div className="highlight"></div>
                         <Title level={1}>First Time Here?</Title>
-                        <Text className="ant-typography-xl">Don't have an account yet? Sign up to start training with SHN  Virtual Interviews.</Text>
+                        <Text className="ant-typography-xl">Don&#39;t have an account yet? Sign up to start training with SHN  Virtual Interviews.</Text>
                     </Space>
                     <Button type="default" onClick={() => navigate('/register')}>Sign Up</Button>
                 </Layout>

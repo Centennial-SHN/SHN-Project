@@ -1,9 +1,6 @@
-import React, { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faBars } from "@fortawesome/free-solid-svg-icons";
 import NavBar from "./NavBar";
-import Sidebar from "./Sidebar";
 import "./ModuleAdmin.css";
 import Cookies from "js-cookie";
 import ChangePasswordModal from "./ChangePasswordModal";
@@ -13,10 +10,8 @@ import {
   Typography,
   Layout,
   Table,
-  Pagination,
   Col,
   Row,
-  Space,
   Modal,
 } from "antd";
 import { EditOutlined, DeleteOutlined } from "@ant-design/icons";
@@ -26,8 +21,6 @@ const { Title } = Typography;
 
 const AdminModuleList = () => {
   const [modules, setModules] = useState([]);
-  const [menuOpen, setMenuOpen] = useState(false); // State for toggling the menu
-  const [iconColor, setIconColor] = useState("black");
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedModuleId, setSelectedModuleId] = useState(null);
   const navigate = useNavigate();
@@ -76,27 +69,15 @@ const AdminModuleList = () => {
     fetchModules();
   }, [navigate, backendUrl]);
 
-  const handleLogout = () => {
-    sessionStorage.removeItem("userId"); // Clear userId from sessionStorage
-    navigate("/"); // Redirect to login page
-  };
-
   const handleEdit = (moduleId) => {
     navigate(`/admin/modules/edit/${moduleId}`);
   };
 
-  const toggleMenu = () => {
-    setMenuOpen((prev) => {
-      setIconColor(prev ? "black" : "#4DBDB1");
-      return !prev;
-    });
-  };
 
   const toggleChangePasswordModal = () => {
     setChangePasswordOpen(!isChangePasswordOpen);
   };
 
-  // Function to handle password change
   const handleChangePassword = async (currentPassword, newPassword) => {
     try {
       const response = await fetch(`${backendUrl}/api/change-password/`, {

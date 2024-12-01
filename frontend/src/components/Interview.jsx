@@ -1,11 +1,26 @@
 import { useState, useEffect, useRef } from "react";
 import { useParams, useNavigate, useLocation } from "react-router-dom";
-// import "./Interview.css";
-import castroImage from '../assets/castro.png';
 import { VITE_API_BASE_URL_LOCAL, VITE_API_BASE_URL_PROD } from "../constants";
 import NavBar from "./NavBar";
-import { Button, Typography, Layout, Space, Card, Row, Col, Divider, Drawer, Modal } from 'antd';
-import { UserOutlined, PlayCircleOutlined, CloseCircleOutlined, PaperClipOutlined, DownloadOutlined } from '@ant-design/icons';
+import {
+  Button,
+  Typography,
+  Layout,
+  Space,
+  Card,
+  Row,
+  Col,
+  Divider,
+  Drawer,
+  Modal,
+} from "antd";
+import {
+  UserOutlined,
+  PlayCircleOutlined,
+  CloseCircleOutlined,
+  PaperClipOutlined,
+  DownloadOutlined,
+} from "@ant-design/icons";
 
 const { Title, Text } = Typography;
 const { Content } = Layout;
@@ -33,8 +48,10 @@ const Interview = () => {
   const recordingTimeoutRef = useRef(null);
   const debounceTimeoutRef = useRef(null);
   const isDevelopment = import.meta.env.MODE === "development";
-  const isAdmin = sessionStorage.getItem('isSuperUser') === 'true';
-  const baseUrl = isDevelopment ? VITE_API_BASE_URL_LOCAL : VITE_API_BASE_URL_PROD;
+  const isAdmin = sessionStorage.getItem("isSuperUser") === "true";
+  const baseUrl = isDevelopment
+    ? VITE_API_BASE_URL_LOCAL
+    : VITE_API_BASE_URL_PROD;
 
   const backendUrl = baseUrl;
 
@@ -67,7 +84,12 @@ const Interview = () => {
     let isRecordingTriggered = false;
 
     const handleKeyDown = (event) => {
-      if (event.key === " " && !isRecording && !isRecordingTriggered && !(isLoading || isPlaying)) {
+      if (
+        event.key === " " &&
+        !isRecording &&
+        !isRecordingTriggered &&
+        !(isLoading || isPlaying)
+      ) {
         event.preventDefault();
 
         isRecordingTriggered = true;
@@ -106,7 +128,6 @@ const Interview = () => {
       }
     };
   }, [isRecording, isLoading, isPlaying]);
-
 
   const debounceToggleRecording = () => {
     clearTimeout(debounceTimeoutRef.current);
@@ -269,10 +290,6 @@ const Interview = () => {
   };
 
   const handleExitOk = async () => {
-    // const userConfirmed = window.confirm(
-    //   "Are you sure you want to exit the interview?"
-    // );
-    // if (!userConfirmed) return;
     setIsExitModalOpen(false);
 
     console.log("Interview ID:", interviewId);
@@ -288,7 +305,7 @@ const Interview = () => {
         }),
       });
 
-      navigate('/interview-complete', { state: { userId: userId } });
+      navigate("/interview-complete", { state: { userId: userId } });
     } catch (error) {
       console.error("Error during exit:", error);
     }
@@ -296,11 +313,11 @@ const Interview = () => {
 
   const handleExitCancel = () => {
     setIsExitModalOpen(false);
-  }
+  };
 
   const handleExit = () => {
     showExitModal();
-  }
+  };
 
   const handleDownload = async (fileUrl, fileName) => {
     try {
@@ -318,7 +335,6 @@ const Interview = () => {
       link.click();
       document.body.removeChild(link);
 
-      // Clean up the URL object
       window.URL.revokeObjectURL(url);
     } catch (error) {
       console.error("Error downloading file:", error);
@@ -348,44 +364,48 @@ const Interview = () => {
 
   return (
     <Layout className="layoutInterview">
-      <NavBar isAdmin={isAdmin} onNavigateAway={(navigateCallback) => showModal(navigateCallback)} />
+      <NavBar
+        isAdmin={isAdmin}
+        onNavigateAway={(navigateCallback) => showModal(navigateCallback)}
+      />
       <Content className="layoutInterviewContent">
         <Card bordered={false}>
           <Row>
             <Col span={24}>
-              <Title level={5} style={{ color: "#A6A8B9", marginBottom: "48px" }}>Please ensure your microphone is enabled</Title>
+              <Title
+                level={5}
+                style={{ color: "#A6A8B9", marginBottom: "48px" }}
+              >
+                Please ensure your microphone is enabled
+              </Title>
             </Col>
           </Row>
           <Row>
-            <Col span={14} className="interviewCol1">
-              {/* <img
-            src={castroImage} // Replace with actual patient image URL if available
-            alt={moduleName}
-            className="patient-image"
-            style={{ width: '200px' }}
-          /> */}
+            <Col xs={24} md={14} className="interviewCol1">
               <div className={`status-border ${status.toLowerCase()}-status`}>
                 <UserOutlined className="userIcon" />
               </div>
-              <Space direction="horizontal" size="middle" className={`interviewStatus ${status.toLowerCase()}-status`}>
+              <Space
+                direction="horizontal"
+                size="middle"
+                className={`interviewStatus ${status.toLowerCase()}-status`}
+              >
                 <span className="dot"></span>
                 <Text>{status}</Text>
               </Space>
             </Col>
-            <Divider type='vertical' className="interviewDiv"></Divider>
-            <Col span={10} className="interviewCol2">
+
+            <Divider type="vertical" className="interviewDiv" />
+
+            <Col xs={24} md={10} className="interviewCol2">
               <Text className="customH6">{moduleName}</Text>
               <Text style={{ marginBottom: "24px" }}>{caseAbstract}</Text>
 
               {Object.keys(files).length > 0 ? (
                 <Space direction="vertical" size="small">
                   <Text className="customH6">Attachments:</Text>
-                  {Object.entries(files).map(([fileName, fileUrl], index) => (
-                    <a
-                      key={index}
-                      onClick={toggleSidebar}
-                    // className="attachment-link"
-                    >
+                  {Object.entries(files).map(([fileName], index) => (
+                    <a key={index} onClick={toggleSidebar}>
                       {fileName}
                     </a>
                   ))}
@@ -399,17 +419,27 @@ const Interview = () => {
             </Col>
           </Row>
         </Card>
+
         <Space direction="vertical" className="interviewControl" size="middle">
-          <Space direction="horizontal" size="large" style={{ width: "min-content" }}>
+          <Space
+            direction="horizontal"
+            size="large"
+            style={{ width: "min-content" }}
+          >
             <Button
               type="primary"
               icon={<PlayCircleOutlined />}
-              className={`record-button ${isLoading || isPlaying ? "processing" : ""
-                }`}
+              className={`record-button ${
+                isLoading || isPlaying ? "processing" : ""
+              }`}
               onClick={debounceToggleRecording}
               disabled={isLoading || isPlaying}
             >
-              {isRecording ? "Stop Speaking" : isLoading || isPlaying ? "Processing" : "Speak"}
+              {isRecording
+                ? "Stop Speaking"
+                : isLoading || isPlaying
+                ? "Processing"
+                : "Speak"}
             </Button>
             <Button
               type="primary"
@@ -420,51 +450,34 @@ const Interview = () => {
             >
               End Interview
             </Button>
-            {/* attachment button */}
             {Object.keys(files).length > 0 ? (
               <Button
                 type="primary"
                 icon={<PaperClipOutlined />}
                 onClick={toggleSidebar}
                 className="attachment-button"
-                shape="circle">
-              </Button>
+                shape="circle"
+              ></Button>
             ) : (
               <Button
                 disabled
                 icon={<PaperClipOutlined />}
                 onClick={toggleSidebar}
                 className="attachment-button"
-                shape="circle">
-              </Button>
+                shape="circle"
+              ></Button>
             )}
-
           </Space>
-          <Title level={5} style={{ color: "#A6A8B9", marginBottom: '0px' }}>
-            Tips:<br />
-            You can press or hold the spacebar to start the interview or start speaking.<br />
-            To end the interview and save your transcript, click on the "End Interview" button.
+          <Title level={5} style={{ color: "#A6A8B9", marginBottom: "0px" }}>
+            Tips:
+            <br />
+            You can press or hold the spacebar to start the interview or start
+            speaking.
+            <br />
+            To end the interview and save your transcript, click on the &quot;End
+            Interview&quot; button.
           </Title>
         </Space>
-
-
-        {/*-- Code for drawer --*/}
-        {/* <div className={`sidebar ${isSidebarOpen ? "open" : ""}`}>
-            <button className="close-sidebar" onClick={toggleSidebar}>
-              X
-            </button>
-            <h4>Attachments:</h4>
-            {Object.entries(files).map(([fileName, fileUrl], index) => (
-              <a
-                key={index}
-                onClick={() => handleDownload(fileUrl, fileName)}
-                className="attachment-link"
-              >
-                {fileName}
-              </a>
-            ))}
-          </div> */}
-
         <Drawer
           title="Attachments"
           placement="right"
@@ -472,17 +485,12 @@ const Interview = () => {
           open={isSidebarOpen}
         >
           {Object.entries(files).map(([fileName, fileUrl], index) => (
-
-            <a
-              key={index}
-              onClick={() => handleDownload(fileUrl, fileName)}
-            >
+            <a key={index} onClick={() => handleDownload(fileUrl, fileName)}>
               <Space direction="horizontal" className="attachment-link">
                 {fileName}
                 <DownloadOutlined />
               </Space>
             </a>
-
           ))}
         </Drawer>
 
@@ -494,8 +502,12 @@ const Interview = () => {
           okText="Yes, Leave Page"
           cancelText="Cancel"
         >
-          <p>Are you sure you want to navigate away from this page?<br />
-            Without clicking the Exit Interview button, the interview transcript won't be saved.</p>
+          <p>
+            Are you sure you want to navigate away from this page?
+            <br />
+            Without clicking the Exit Interview button, the interview transcript
+            won&#39;t be saved.
+          </p>
         </Modal>
 
         <Modal
@@ -506,10 +518,12 @@ const Interview = () => {
           okText="End"
           cancelText="Cancel"
         >
-          <p>Are you sure you want to end the interview? <br/>
-            Your transcript will be saved and will be accessible on the Interview History page.</p>
+          <p>
+            Are you sure you want to end the interview? <br />
+            Your transcript will be saved and will be accessible on the
+            Interview History page.
+          </p>
         </Modal>
-
       </Content>
     </Layout>
   );

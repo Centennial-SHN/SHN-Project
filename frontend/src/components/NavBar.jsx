@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { MenuOutlined } from '@ant-design/icons';
 import { Typography, Layout, Space, Divider, Dropdown, Menu, Button } from 'antd';
@@ -16,6 +16,7 @@ const NavBar = ({ onNavigateAway }) => {
     const [isChangePasswordOpen, setChangePasswordOpen] = useState(false);
     const csrfToken = Cookies.get('csrftoken');
     const [viewAsAdmin, setViewAsAdmin] = useState(isAdmin);
+    
 
     useEffect(() => {
         const userViewPaths = [
