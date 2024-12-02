@@ -1,11 +1,10 @@
 import React, { useEffect, useState, useRef } from "react";
 import { useNavigate } from 'react-router-dom';
-// import './UserAdmin.css';
 import Cookies from 'js-cookie';
 import ChangePasswordModal from './ChangePasswordModal';
 import { VITE_API_BASE_URL_LOCAL, VITE_API_BASE_URL_PROD } from "../constants";
 import NavBar from "./NavBar";
-import { Typography, Layout, Table, Pagination, Space, Tooltip, Input, Button } from 'antd';
+import { Typography, Layout, Table,Space, Tooltip, Input, Button } from 'antd';
 import { EditOutlined } from "@ant-design/icons";
 
 const { Title, Link } = Typography;
@@ -14,7 +13,7 @@ const { Search } = Input;
 
 const UserAdmin = () => {
   const [users, setUsers] = useState([]);
-  const [menuOpen, setMenuOpen] = useState(false); // State for toggling the menu
+  const [menuOpen, setMenuOpen] = useState(false);
   const [iconColor, setIconColor] = useState("black");
   const [searchTerm, setSearchTerm] = useState("");
   const navigate = useNavigate();
@@ -61,31 +60,23 @@ const UserAdmin = () => {
           throw new Error("Failed to fetch users");
         }
         const data = await response.json();
-        // Log the users data to verify structure
-
 
         const usersWithInterviews = await Promise.all(
           data.map(async (user) => {
-            // Log user data to verify user.id
-
-
             if (!user.userid) {
-
               return user;
             }
 
-            // Fetch interviews for each user based on userId
             const interviewsResponse = await fetch(`${backendUrl}/api/interview_history/${user.userid}/`);
             if (!interviewsResponse.ok) {
               throw new Error(`Failed to fetch interviews for user ${user.userid}`);
             }
             const interviews = await interviewsResponse.json();
-            // Log interviews for each user
 
             const filteredInterviews = interviews.filter(
-              (interview) => interview.interviewlength !== "0:00:00" // Assuming interview_length is in seconds
+              (interview) => interview.interviewlength !== "0:00:00"
             );
-            return { ...user, interviews: filteredInterviews }; // Attach interviews to each user object
+            return { ...user, interviews: filteredInterviews };
           })
         );
 
@@ -147,12 +138,10 @@ const UserAdmin = () => {
     let seconds = 0;
 
     if (parts.length === 3) {
-      // HH:MM:SS
       seconds += parts[0] * 3600;
       seconds += parts[1] * 60;
       seconds += parts[2];
     } else if (parts.length === 2) {
-      // MM:SS
       seconds += parts[0] * 60;
       seconds += parts[1];
     }
@@ -160,7 +149,6 @@ const UserAdmin = () => {
     return seconds;
   };
 
-  // Format total seconds to "HH:MM:SS"
   const formatTime = (totalSeconds) => {
     const hours = Math.floor(totalSeconds / 3600);
     const minutes = Math.floor((totalSeconds % 3600) / 60);
@@ -177,7 +165,6 @@ const UserAdmin = () => {
     setChangePasswordOpen(!isChangePasswordOpen);
   };
 
-  // Function to handle password change
   const handleChangePassword = async (currentPassword, newPassword) => {
     try {
       const response = await fetch(`${backendUrl}/api/change-password/`, {
@@ -210,7 +197,7 @@ const UserAdmin = () => {
       const response = await fetch(`${backendUrl}/api/admin/interview/${interviewId}/delete/`, {
         method: "DELETE",
         headers: {
-          'X-CSRFToken': csrfToken,  // Add CSRF token if required
+          'X-CSRFToken': csrfToken,
         },
         credentials: 'include',
       });
@@ -274,9 +261,9 @@ const UserAdmin = () => {
       title: 'Email',
       dataIndex: 'email',
       key: 'email',
-      // fixed: 'left',
       width:300,
       sorter: (a, b) => a.email.localeCompare(b.email),
+      responsive: ["xs", "sm", "md", "lg"],
     },
     {
       title: 'Total Interviews',
@@ -290,6 +277,7 @@ const UserAdmin = () => {
       dataIndex: 'totalInterviewTime',
       key: 'totalInterviewTime',
       width:200,
+      responsive: ["md"],
       render: (_, record) => {
         const totalSeconds = record.interviews.reduce((acc, interview) => {
           const [hours, minutes, seconds] = interview.interviewlength.split(":").map(Number);
@@ -308,6 +296,7 @@ const UserAdmin = () => {
       dataIndex: 'date',
       key: 'date',
       width:120,
+      responsive: ["md"],
       render: (_, record) => record.interviews.length === 1 ? record.interviews[0].dateactive : "",
     },
     {
@@ -315,6 +304,7 @@ const UserAdmin = () => {
       dataIndex: 'module',
       key: 'module',
       width:300,
+      responsive: ["md"],
       render: (_, record) => record.interviews.length === 1 ? record.interviews[0].modulename : "",
     },
     {
@@ -322,6 +312,7 @@ const UserAdmin = () => {
       dataIndex: 'interviewLogs',
       key: 'interviewLogs',
       width:200,
+      responsive: ["xs", "sm", "md", "lg"],
       render: (_, record) => (
         record.interviews.length === 1
           ? <Link onClick={() => handleDownloadTranscript(record.interviews[0].interviewid)}>Download Transcript</Link>
@@ -333,6 +324,7 @@ const UserAdmin = () => {
       dataIndex: 'delete',
       key: 'delete',
       width:120,
+      responsive: ["xs", "sm", "md", "lg"],
       render: (_, record) => (
         record.interviews.length === 1
           ? <Link onClick={() => handleDeleteInterview(record.interviews[0].interviewid, record.userid)} className="linkDelete">Delete</Link>
@@ -344,6 +336,7 @@ const UserAdmin = () => {
       dataIndex: 'editUser',
       key: 'editUser',
       width:120,
+      responsive: ["xs", "sm", "md", "lg"],
       render: (_, record) => (
         <Button
           type="primary"
@@ -360,9 +353,9 @@ const UserAdmin = () => {
         { title: '', dataIndex: '', key: 'spacer', width:53 },
         { title: '', dataIndex: '', key: 'spacer2', width:300 },
         { title: '', dataIndex: '', key: 'spacer3', width:200 },
-        { title: 'Total Interview Time', dataIndex: 'interviewlength', key: 'interviewlength', width:200 },
-        { title: 'Date', dataIndex: 'dateactive', key: 'dateactive', width:120 },
-        { title: 'Module', dataIndex: 'modulename', key: 'modulename', width:300 },
+        { title: 'Total Interview Time', dataIndex: 'interviewlength', key: 'interviewlength', width:200, responsive: ["md"] },
+        { title: 'Date', dataIndex: 'dateactive', key: 'dateactive', width:120, responsive: ["md"]  },
+        { title: 'Module', dataIndex: 'modulename', key: 'modulename', width:300, responsive: ["md"]  },
         {
           title: 'Interview Logs',
           key: 'logs',
@@ -393,7 +386,7 @@ const UserAdmin = () => {
       <NavBar isAdmin={isAdmin} />
       <Content className="layoutUserLogContent">
         <Space direction="horizontal" size="large" className="spaceContentStart">
-          <Title level={3} style={{ color: "#191E72", marginBottom: 0 }}>User Logs</Title>
+          <Title level={3} style={{ color: "#191E72", marginBottom: 0, whiteSpace: 'nowrap' }}>User Logs</Title>
           <Tooltip
             title="This will clear audio files from incomplete interviews in your storage."
             color="#fff"
@@ -413,18 +406,18 @@ const UserAdmin = () => {
 
         <Table
           columns={columns}
-          // dataSource={paginatedUsers}
-          // pagination={{
-          //   current: currentPage,
-          //   pageSize: pageSize,
-          //   total: users.length,
-          //   onChange: handlePageChange,
-          //   showSizeChanger: true,
-          //   pageSizeOptions: ['10', '20', '30', '50'],
-          // }}
-          pagination={true}
+          pagination={{
+            current: currentPage,
+            pageSize,
+            onChange: handlePageChange,
+          }}
           scroll={{
-            x: 'max-content',
+            x: 450,
+          }}
+          style={{
+            width: "100%",
+            margin: "0 auto",
+            overflowX: "auto",
           }}
           showSorterTooltip={{
             target: 'sorter-icon',
@@ -436,77 +429,6 @@ const UserAdmin = () => {
           dataSource={filteredUsers}
           rowKey="userid"
         />
-
-        {/* <table>
-
-          <thead>
-            <tr>
-              <th>Email</th>
-              <th>Total Interviews</th>
-              <th>Total Interview Time</th>
-              <th>Date</th>
-              <th>Module</th>
-              <th>Interview Logs</th>
-              <th>Delete</th>
-              <th>Edit User</th>
-            </tr>
-          </thead>
-
-          <tbody>
-            {filteredUsers.map(user => {
-              const totalInterviews = user.interviews.length;
-              const totalTime = user.interviews.reduce(
-                (acc, interview) => acc + convertTimeToSeconds(interview.interviewlength),
-                0
-              );
-
-              return (
-                <React.Fragment key={user.id}>
-                  {(
-                    // First row with Email, Total Interviews, Total Interview Time, and blank for Date, Module, Logs
-                    <tr>
-                      <td>{user.email}</td>
-                      <td>{totalInterviews}</td>
-                      <td>{formatTime(totalTime)}</td> {/* Total Interview Time * /}
-                      {/* Blank cells for Date, Module, and Logs * /}
-                      <td></td>
-                      <td></td>
-                      <td></td>
-                      <td></td>
-                      <td><button onClick={() => navigate(`/admin/manage-user/${user.userid}`)}>
-                        Edit
-                      </button></td>
-                    </tr>
-                  )}
-
-                  {/* Sub-rows for each interview * /}
-                  {user.interviews.map((interview, index) => {
-                    const moduleName = interview.module_name || interview.modulename || "N/A";
-                    return (
-                      <tr key={index}>
-                        <td></td> {/* Blank Email column for sub-rows * /}
-                        <td></td> {/* Blank Total Interviews column for sub-rows * /}
-                        <td>{interview.interviewlength}</td> {/* Interview Length under Total Interview Time * /}
-                        <td>{interview.dateactive || "No Date Available"}</td>
-                        <td>{moduleName}</td>
-                        <td>
-                          <button onClick={() => handleDownloadTranscript(interview.interviewid)}>
-                            Download Transcript
-                          </button>
-
-                        </td>
-                        <td><button onClick={() => handleDeleteInterview(interview.interviewid, user.userid)}>
-                          Delete
-                        </button></td>
-                        <td></td>
-                      </tr>
-                    );
-                  })}
-                </React.Fragment>
-              );
-            })}
-          </tbody>
-        </table> */}
       </Content>
 
       <ChangePasswordModal
