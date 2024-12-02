@@ -23,7 +23,7 @@ const Login = () => {
         return cookieValue || '';
     }
     
-    const csrfToken = getCSRFToken();
+    const csrfToken = Cookies.get('csrftoken');
     
     const backendUrl = baseUrl;
 
