@@ -1,6 +1,5 @@
 import React, { useState, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
-import Cookies from 'js-cookie';
 import { VITE_API_BASE_URL_LOCAL, VITE_API_BASE_URL_PROD } from '../constants';
 import { Input, Button, Typography, Card, Layout, Space, Divider, Alert } from 'antd';
 import logo from '../assets/logo-alt.svg';
@@ -16,8 +15,6 @@ const Login = () => {
     const [successMessage, setSuccessMessage] = useState(null); 
     const navigate = useNavigate();
     const isDevelopment = import.meta.env.MODE === "development";
-
-    const baseUrl = isDevelopment ? VITE_API_BASE_URL_LOCAL : VITE_API_BASE_URL_PROD;
     function getCSRFToken() {
         const cookieValue = document.cookie
             .split('; ')
@@ -28,9 +25,6 @@ const Login = () => {
     
     const csrfToken = getCSRFToken();
     console.log('CSRF Token First:', csrfToken);
-    
-    const backendUrl = baseUrl;
-
     const [passwordVisible, setPasswordVisible] = React.useState(false);
     const formContainerRef = useRef(null);
     const baseUrl = isDevelopment ? VITE_API_BASE_URL_LOCAL : VITE_API_BASE_URL_PROD;
@@ -66,12 +60,6 @@ const Login = () => {
             // Update CSRF token after login
             const newCsrfToken = data.csrf_token; // Extract the new token
             document.cookie = `csrftoken=${newCsrfToken}; SameSite=None; Secure`;
-
-            messageApi.open({
-                type: 'success',
-                content: 'Successfully logged in!',
-            });
-
             sessionStorage.setItem('userId', data.userid);
             sessionStorage.setItem('isSuperUser', data.is_superuser);
 
@@ -134,7 +122,9 @@ const Login = () => {
                                 {successMessage && <Alert message={successMessage} type="success" showIcon />}
                             </Space>
                         </form>
+
                     </Card>
+
                 </Layout>
             </Layout>
         </>
