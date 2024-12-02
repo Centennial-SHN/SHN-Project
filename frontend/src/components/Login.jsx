@@ -5,6 +5,8 @@ import { VITE_API_BASE_URL_LOCAL, VITE_API_BASE_URL_PROD } from '../constants';
 import { Input, Button, Typography, Card, Layout, Space, Divider, Alert } from 'antd';
 import logo from '../assets/logo-alt.svg';
 
+
+
 const { Title, Text } = Typography;
 
 const Login = () => {
@@ -14,7 +16,21 @@ const Login = () => {
     const [successMessage, setSuccessMessage] = useState(null); 
     const navigate = useNavigate();
     const isDevelopment = import.meta.env.MODE === "development";
-    const csrfToken = Cookies.get('csrftoken');
+
+    const baseUrl = isDevelopment ? VITE_API_BASE_URL_LOCAL : VITE_API_BASE_URL_PROD;
+    function getCSRFToken() {
+        const cookieValue = document.cookie
+            .split('; ')
+            .find((row) => row.startsWith('csrftoken='))
+            ?.split('=')[1];
+        return cookieValue || '';
+    }
+    
+    const csrfToken = getCSRFToken();
+    console.log('CSRF Token First:', csrfToken);
+    
+    const backendUrl = baseUrl;
+
     const [passwordVisible, setPasswordVisible] = React.useState(false);
     const formContainerRef = useRef(null);
     const baseUrl = isDevelopment ? VITE_API_BASE_URL_LOCAL : VITE_API_BASE_URL_PROD;
@@ -23,8 +39,13 @@ const Login = () => {
 
     const handleLogin = async (e) => {
         e.preventDefault();
+
         setErrorMessage(null); 
         setSuccessMessage(null);
+
+        console.log('CSRF Token:', csrfToken);
+        console.log('Request URL:', `${backendUrl}/api/login/`);
+
         const response = await fetch(`${backendUrl}/api/login/`, {
             method: 'POST',
             headers: {
@@ -38,7 +59,19 @@ const Login = () => {
         if (response.ok) {
             const data = await response.json();
             console.log(data)
+
             setSuccessMessage('Successfully logged in!');
+
+            
+            // Update CSRF token after login
+            const newCsrfToken = data.csrf_token; // Extract the new token
+            document.cookie = `csrftoken=${newCsrfToken}; SameSite=None; Secure`;
+
+            messageApi.open({
+                type: 'success',
+                content: 'Successfully logged in!',
+            });
+
             sessionStorage.setItem('userId', data.userid);
             sessionStorage.setItem('isSuperUser', data.is_superuser);
 

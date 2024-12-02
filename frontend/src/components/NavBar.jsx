@@ -119,6 +119,7 @@ const NavBar = ({ onNavigateAway }) => {
                 label: (
                     <a onClick={() => handleNavigate(() => {
                         sessionStorage.removeItem("userId");
+                        //Cookies.remove('csrftoken'); // Clear CSRF token
                         navigate("/");
                     })}>
                         Logout
@@ -170,6 +171,7 @@ const NavBar = ({ onNavigateAway }) => {
                 label: (
                     <a onClick={() => handleNavigate(() => {
                         sessionStorage.removeItem("userId");
+                        Cookies.remove('csrftoken'); // Clear CSRF token
                         navigate("/");
                     })}>
                         Logout

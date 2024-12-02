@@ -28,7 +28,6 @@ const AddModule = () => {
     const [isChangePasswordOpen, setChangePasswordOpen] = useState(false);
     const backendUrl = baseUrl;
     const isAdmin = sessionStorage.getItem('isSuperUser') === 'true';
-    // const [messageApi, contextHolder] = message.useMessage();
 
     const [menuOpen, setMenuOpen] = useState(false); // State for toggling the menu
     const [iconColor, setIconColor] = useState("black");
@@ -92,8 +91,6 @@ const AddModule = () => {
     };
 
     const handleSave = async (e) => {
-        // e.preventDefault();
-
         const formData = new FormData();
         formData.append('modulename', moduleName);
         formData.append('prompt', prompt);
@@ -110,7 +107,6 @@ const AddModule = () => {
         }
 
         formData.append('model', model);
-        // Debugging: Log form data
         for (let [key, value] of formData.entries()) {
             console.log(`${key}: ${value}`);
         }
@@ -127,34 +123,20 @@ const AddModule = () => {
 
             if (response.ok) {
                 const data = await response.json(); // Get response data
-                //message.success('Module added successfully!');
-                // messageApi.open({
-                //     type: 'success',
-                //     content: 'Module added successfully!',
-                // });
-                // Navigate to the modules list after successful addition
                 navigate('/admin/module-list'); // Adjust this URL based on your routing setup
             } else {
-                //const data = await response.json();
                 message.error('Error adding module.');
                 return;
-                // messageApi.open({
-                //     type: 'error',
-                //     content: data.error || 'Error adding module.',
-                // });
             }
         } catch (error) {
             console.error('Network error:', error);
             alert('Network error. Please try again later.');
-            // messageApi.open({
-            //     type: 'error',
-            //     content: 'Network error. Please try again later.',
-            // });
         }
     };
 
     const handleLogout = () => {
         sessionStorage.removeItem("userId"); // Clear userId from sessionStorage
+        Cookies.remove('csrftoken'); // Clear CSRF token
         navigate("/"); // Redirect to login page
     };
 
@@ -198,9 +180,6 @@ const AddModule = () => {
     };
 
     return (
-        // <>
-        //     {contextHolder}
-
             <Layout className="layoutAddModule">
                 <NavBar isAdmin={isAdmin} />
                 <Content className="layoutAddModuleContent">
@@ -216,16 +195,6 @@ const AddModule = () => {
                                     placeholder="Enter Module Name"
                                 />
                             </Form.Item>
-                            {/* <div className="form-group">
-                            <label>Module name:</label>
-                            <input
-                                type="text"
-                                value={moduleName}
-                                onChange={(e) => setModuleName(e.target.value)}
-                                required
-                            />
-                        </div> */}
-
                             <Form.Item label="Model">
                                 <Select
                                     value={model}
@@ -243,15 +212,6 @@ const AddModule = () => {
                                     ]}
                                 />
                             </Form.Item>
-
-                            {/* <div className="form-group">
-                            <label>Model:</label>
-                            <select value={model} onChange={(e) => setModel(e.target.value)}>
-                                <option value="gpt-4o-mini">gpt-4o-mini</option>
-                                <option value="gpt-4o">gpt-4o</option>
-                            </select>
-                        </div> */}
-
                             <Form.Item label="Prompt" required>
                                 <TextArea
                                     rows={4}
@@ -260,15 +220,6 @@ const AddModule = () => {
                                     placeholder="Enter Prompt"
                                 />
                             </Form.Item>
-                            {/* <div className="form-group">
-                            <label>Prompt:</label>
-                            <textarea
-                                value={prompt}
-                                onChange={(e) => setPrompt(e.target.value)}
-                                required
-                            />
-                        </div> */}
-
                             <Form.Item label="Voice">
                                 <Select
                                     value={voice}
@@ -302,19 +253,6 @@ const AddModule = () => {
                                     ]}
                                 />
                             </Form.Item>
-
-                            {/* <div className="form-group">
-                            <label>Voice:</label>
-                            <select value={voice} onChange={(e) => setVoice(e.target.value)}>
-                                <option value="alloy">alloy</option>
-                                <option value="nova">nova</option>
-                                <option value="shimmer">shimmer</option>
-                                <option value="onyx">onyx</option>
-                                <option value="fable">fable</option>
-                                <option value="echo">echo</option>
-                            </select>
-                        </div> */}
-
                             <Form.Item label="System Prompt" required>
                                 <TextArea
                                     rows={4}
@@ -323,15 +261,6 @@ const AddModule = () => {
                                     placeholder="Enter System Prompt"
                                 />
                             </Form.Item>
-                            {/* <div className="form-group">
-                            <label>System prompt:</label>
-                            <textarea
-                                value={systemPrompt}
-                                onChange={(e) => setSystemPrompt(e.target.value)}
-                                required
-                            />
-                        </div> */}
-
                             <Form.Item label="Case Abstract" required>
                                 <TextArea
                                     rows={4}
@@ -340,15 +269,6 @@ const AddModule = () => {
                                     placeholder="Enter Case Abstract"
                                 />
                             </Form.Item>
-                            {/* <div className="form-group">
-                            <label>Case abstract:</label>
-                            <textarea
-                                value={caseAbstract}
-                                onChange={(e) => setCaseAbstract(e.target.value)}
-                                required
-                            />
-                        </div> */}
-
                             <Form.Item label="File Attachment">
                                 <Dragger {...uploadProps}>
                                     <p className="ant-upload-drag-icon">
@@ -360,37 +280,10 @@ const AddModule = () => {
                                     </p>
                                 </Dragger>
                             </Form.Item>
-                            {/* <div className="form-group">
-                            <label>File attachment:</label>
-                            <input type="file" onChange={handleFileChange} multiple className="file-input" ref={fileInputRef} />
-
-                            {files.length > 0 && (
-                                <ul className="file-list">
-                                    {files.map((file, index) => (
-                                        <li key={index} className="file-item">
-                                            <span className="file-name">{file.name}</span>
-                                            <span
-                                                className="remove-file-cross"
-                                                onClick={() => removeFile(index)}
-                                            >
-                                                ✕
-                                            </span>
-                                        </li>
-                                    ))}
-                                </ul>
-                            )}
-                        </div> */}
-
                             <Space direction='horizontal' size="small" style={{ width: 'min-content' }}>
                                 <Button type="primary" htmlType='submit'>Add Module</Button>
                                 <Button onClick={() => navigate('/admin/module-list')}>Cancel</Button>
                             </Space>
-
-                            {/* <div className="form-buttons">
-                            <button type="button" onClick={() => navigate('/admin/module-list')}>CANCEL</button>
-                            &nbsp;&nbsp;
-                            <button type="submit">SAVE</button>
-                        </div> */}
                         </Form>
                     </Card>
                 </Content>

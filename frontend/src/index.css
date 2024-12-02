@@ -1152,15 +1152,6 @@ padding: 48px 24px;
   }
 }
 
-
-
-
-
-
-
-
-
-
 /*Module List Layout*/
 .layoutModuleList
 {
@@ -1258,4 +1249,295 @@ padding: 48px 24px;
 .spaceStackedAll .ant-space-item
 {
   width:auto;
+}
+
+/* Module List mobile */
+@media (max-width: 480px) {
+  .layoutModuleListContent{
+    margin-left: -25px;
+    margin-right: -25px;
+  }
+
+  .ant-table {
+    font-size: 12px; 
+  }
+
+  .ant-table-thead > tr > th,
+  .ant-table-tbody > tr > td {
+    padding: 6px;
+    text-align: left;
+  }
+
+  .layoutModuleListContent > .ant-row:first-child {
+    margin-top: 40px;
+  }
+
+  .layoutModuleListContent .ant-typography {
+    margin-bottom: 8px;
+  }
+
+  .ant-table-wrapper {
+    overflow-x: auto;
+    width: 100%;
+  }
+
+  .ant-table {
+    min-width: 500px;
+  }
+
+  .ant-table-cell .ant-btn {
+    width: 140px;
+    height: 36px; 
+    font-size: 12px;
+    padding: 0 12px;
+  }
+
+  .ant-table-cell > .ant-row {
+    gap: 8px;
+  }
+
+  .ant-table-thead > tr > th,
+  .ant-table-tbody > tr > td {
+    padding: 6px;
+    text-align: center;
+  }
+}
+
+
+/*Add Module Mobile*/
+@media (max-width: 480px) {
+  .layoutAddModuleContent .ant-form-item {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .layoutAddModuleContent .ant-form-item-label {
+    text-align: left;
+    margin-bottom: 4px;
+  }
+
+  .layoutAddModuleContent .ant-input,
+  .layoutAddModuleContent .ant-select,
+  .layoutAddModuleContent .ant-textarea,
+  .layoutAddModuleContent .ant-upload-drag {
+    width: 300px;
+    max-width: 100%;
+    margin: 0 auto;
+  }
+
+  .layoutAddModuleContent .ant-form-item {
+    margin-bottom: 16px;
+  }
+
+  .layoutAddModuleContent .ant-btn {
+    width: 100%;
+    max-width: 280px;
+    margin: 0 auto;
+  }
+
+  .layoutAddModuleContent .ant-card-body {
+    box-shadow: none !important;
+    border: none !important;
+  }
+
+  .layoutAddModuleContent .ant-card {
+    box-shadow: none !important;
+    border: none !important;
+  }
+}
+
+/*Edit Module Mobile*/
+@media (max-width: 480px) {
+  .layoutEditModuleContent .ant-form-item {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .layoutEditModuleContent .ant-form-item-label {
+    text-align: left;
+    margin-bottom: 4px;
+  }
+
+  .layoutEditModuleContent .ant-input,
+  .layoutEditModuleContent .ant-select,
+  .layoutEditModuleContent .ant-textarea,
+  .layoutEditModuleContent .ant-upload-drag {
+    width: 300px;
+    max-width: 100%;
+    margin: 0 auto;
+  }
+
+  .layoutEditModuleContent .ant-form-item {
+    margin-bottom: 16px;
+  }
+
+  .layoutEditModuleContent .ant-btn {
+    width: 100%;
+    max-width: 280px;
+    margin: 0 auto;
+  }
+
+  .layoutEditModuleContent .ant-card-body {
+    box-shadow: none !important;
+    border: none !important;
+  }
+
+  .layoutEditModuleContent .ant-card {
+    box-shadow: none !important;
+    border: none !important;
+  }
+}
+
+/*Edit User Mobile*/
+@media (max-width: 480px) {
+  .layoutEditUserContent .ant-card {
+    max-width: 380px;
+    width: 90%;
+    margin-left: 10px;
+    padding: 16px;
+  }
+
+  .back-to-logs {
+    margin-top: 100px;
+    margin-left:20px;
+  }
+  
+  .layoutEditUserContent .ant-card-body .ant-space-item a {
+    white-space: nowrap;
+  }
+}
+
+/*User Logs Mobile*/
+@media (max-width: 480px) {
+  .layoutUserLogContent {
+    margin-left: -40px;
+    margin-right: -40px;
+    margin-top: 60px;
+  }
+
+  .layoutUserLogContent .ant-table {
+    font-size: 12px;
+    width: 100% !important;
+    margin: 0 auto;
+    overflow-x: hidden !important;
+  }
+
+  .layoutUserLogContent .ant-table-scroll-horizontal{
+    width: 100% !important;
+    overflow-x: hidden !important;
+  }
+
+  .layoutUserLogContent .ant-table-wrapper {
+    width: 100% !important;
+    overflow-x: hidden !important;
+  }
+
+  .layoutUserLogContent .ant-space {
+    display: flex !important;
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .layoutUserLogContent .ant-space-item:nth-child(2) {
+    display: flex;
+    justify-content: flex-end;
+    width: 100%;
+  }
+
+  .layoutUserLogContent .title-row h3 {
+    margin: 0;
+    margin-bottom: 8px;
+  }
+
+  .layoutUserLogContent .ant-space-item a {
+    display: block;
+    white-space: nowrap;
+    text-align: right; 
+  }
+
+  .layoutUserLogContent .ant-space-item button {
+    display: block;
+    margin-left: auto;
+    width: fit-content;
+  }
+
+  .layoutUserLogContent .ant-table-cell:nth-child(1),
+  .layoutUserLogContent .ant-table-cell:nth-child(3),
+  .layoutUserLogContent .ant-table-cell:nth-child(4),
+  .layoutUserLogContent .ant-table-cell:nth-child(5)
+  {
+    display: none;
+  }
+
+  .layoutUserLogContent .ant-table-thead th,
+  .layoutUserLogContent .ant-table-tbody td {
+    text-align: left;
+    white-space: nowrap;
+    padding: 5px;
+  }
+
+  .layoutUserLogContent .ant-table-tbody td a {
+    font-size: 12px;
+  }
+
+  .layoutUserLogContent .ant-table-cell .ant-btn {
+    width: 36px;
+    height: 36px;
+    padding: 0;
+    border-radius: 50%;
+    margin-left: 5px;
+  }
+
+  .ant-pagination {
+    margin-top: 10px;
+    display: flex;
+    justify-content: center;
+  }
+
+  .layoutUserLogContent .ant-input-wrapper {
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    width: 100%;
+  }
+
+  .layoutUserLogContent .ant-input-group {
+    display: flex;
+    max-width: 80%;
+    align-items: center;
+    border: 1px solid #d9d9d9;
+    border-radius: 10px;
+    overflow: hidden;
+  }
+
+  .ant-input {
+    flex: 1;
+    border: none;
+    height: 40px;
+  }
+  .layoutUserLogContent .ant-input-group-addon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height:40px;
+    margin-top:8px;
+    color: white;
+    border: none;
+  }
+  
+  .layoutUserLogContent .ant-input-group-addon button {
+    width: 100%;
+    height: 47px;
+    background-color: transparent;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .layoutUserLogContent .ant-input-group-addon .anticon {
+    font-size: 24px;
+  }
 }
