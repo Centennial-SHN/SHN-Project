@@ -23,7 +23,8 @@ const Login = () => {
         return cookieValue || '';
     }
     
-    const csrfToken = Cookies.get('csrftoken');
+    const csrfToken = getCSRFToken();
+    console.log('CSRF Token First:', csrfToken);
     
     const backendUrl = baseUrl;
 
@@ -49,6 +50,11 @@ const Login = () => {
         if (response.ok) {
             const data = await response.json();
             console.log(data)
+            
+            // Update CSRF token after login
+            const newCsrfToken = data.csrf_token; // Extract the new token
+            document.cookie = `csrftoken=${newCsrfToken}; SameSite=None; Secure`;
+
             messageApi.open({
                 type: 'success',
                 content: 'Successfully logged in!',

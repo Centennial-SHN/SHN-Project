@@ -346,6 +346,7 @@ from django.middleware.csrf import get_token
 @api_view(['POST'])
 def user_login(request):
     logger.debug(f"Cookies: {request.COOKIES}")
+    logger.debug(f"CSRF Cookie: {request.COOKIES.get('csrftoken')}")
     logger.debug(f"Headers: {request.headers}")
     email = request.data.get('email')
     password = request.data.get('password')
