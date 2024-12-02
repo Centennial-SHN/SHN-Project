@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { VITE_API_BASE_URL_LOCAL, VITE_API_BASE_URL_PROD } from '../constants';
-import { Input, Button, Typography, Card, Layout, Space, Divider, message } from 'antd';
+import { Input, Button, Typography, Card, Layout, Space, Divider, Alert } from 'antd';
 import logo from '../assets/logo-alt.svg';
 
 const { Title, Text } = Typography;
@@ -10,6 +10,7 @@ const Register = () => {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [passwordConfirm, setPasswordConfirm] = useState('');
+    const [successMessage, setSuccessMessage] = useState(null);
     const [errorMessage, setErrorMessage] = useState('');
     const navigate = useNavigate();
     const isDevelopment = import.meta.env.MODE === "development";
@@ -18,8 +19,6 @@ const Register = () => {
     const backendUrl = baseUrl;
 
     const [passwordVisible, setPasswordVisible] = React.useState(false);
-
-    const [messageApi, contextHolder] = message.useMessage();
 
     const handleRegister = async (e) => {
         e.preventDefault();
@@ -30,7 +29,8 @@ const Register = () => {
             setPasswordConfirm('');
             return;
         }
-        setErrorMessage('');
+        setErrorMessage(null);
+        setSuccessMessage(null);
 
 
         const response = await fetch(`${backendUrl}/api/register/`, {
@@ -40,26 +40,25 @@ const Register = () => {
             },
             body: JSON.stringify({ email, password }),
         });
-
         if (response.ok) {
-            messageApi.open({
-                type: 'success',
-                content: 'Signed up successfully!',
-            });
-            navigate('/');
+            setSuccessMessage('Signed up successfully!');
+            setTimeout(() => {
+                navigate('/');
+            }, 1000); 
         } else {
-            // const data = await response.json();
-            messageApi.open({
-                type: 'error',
-                content: 'Failed to sign up. Please check your that all your inputs are valid.',
-            });
+            const data = await response.json();
+            if (data.email) {
+                setErrorMessage("This email is already in use. Try another.");
+            } else if (data.password) {
+                setErrorMessage("Password must be at least 8 characters.");
+            } else {
+                setErrorMessage('Sign-up failed. Please contact support.');
+            }
         }
     };
 
     return (
         <>
-            {contextHolder}
-
             <Layout className="layoutLogInReg">
                 <Layout className="layoutRedirectReg">
                     <Space direction="vertical" size="middle" style={{ marginBottom: '32px', position: 'relative', }}>
@@ -106,9 +105,10 @@ const Register = () => {
                                         required
                                         visibilityToggle={{ visible: passwordVisible, onVisibleChange: setPasswordVisible }}
                                     />
-                                    {errorMessage && <p style={{ color: 'red', fontSize: '12px' }}>{errorMessage}</p>}
                                 </Space>
                                 <Button type="primary" htmlType="submit">Register</Button>
+                                {errorMessage && <Alert message={errorMessage} type="error" showIcon style={{ marginTop: '12px' }} />}
+                                {successMessage && <Alert message={successMessage} type="success" showIcon style={{ marginTop: '12px' }} />}
                             </Space>
                         </form>
                     </Card>
