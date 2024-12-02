@@ -79,6 +79,7 @@ const UserManagement = () => {
 
   const handleLogout = () => {
     sessionStorage.removeItem("userId"); // Clear userId from sessionStorage
+    Cookies.remove('csrftoken'); // Clear CSRF token
     navigate("/"); // Redirect to login page
   };
 

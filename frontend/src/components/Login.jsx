@@ -5,6 +5,8 @@ import { VITE_API_BASE_URL_LOCAL, VITE_API_BASE_URL_PROD } from '../constants';
 import { Input, Button, Typography, Card, Layout, Space, Divider, message } from 'antd';
 import logo from '../assets/logo-alt.svg';
 
+
+
 const { Title, Text } = Typography;
 
 const Login = () => {
@@ -13,7 +15,7 @@ const Login = () => {
     const navigate = useNavigate();
     const isDevelopment = import.meta.env.MODE === "development";
     const baseUrl = isDevelopment ? VITE_API_BASE_URL_LOCAL : VITE_API_BASE_URL_PROD;
-    const csrfToken = Cookies.get('csrftoken');
+    const csrfToken = document.cookie.split('; ').find((row) => row.startsWith('csrftoken='))?.split('=')[1];
     const backendUrl = baseUrl;
 
     const [passwordVisible, setPasswordVisible] = React.useState(false);
