@@ -107,8 +107,8 @@ const Register = () => {
                                     />
                                 </Space>
                                 <Button type="primary" htmlType="submit">Register</Button>
-                                {errorMessage && <Alert message={errorMessage} type="error" showIcon style={{ marginTop: '12px' }} />}
-                                {successMessage && <Alert message={successMessage} type="success" showIcon style={{ marginTop: '12px' }} />}
+                                {errorMessage && <Alert message={errorMessage} type="error" showIcon />}
+                                {successMessage && <Alert message={successMessage} type="success" showIcon />}
                             </Space>
                         </form>
                     </Card>
