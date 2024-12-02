@@ -13,7 +13,7 @@ const Login = () => {
     const navigate = useNavigate();
     const isDevelopment = import.meta.env.MODE === "development";
     const baseUrl = isDevelopment ? VITE_API_BASE_URL_LOCAL : VITE_API_BASE_URL_PROD;
-    const csrfToken = Cookies.get('csrftoken');
+    const csrfToken = Cookies.get('csrftoken');//TEST CSRF TOKEN
     const backendUrl = baseUrl;
 
     const [passwordVisible, setPasswordVisible] = React.useState(false);
