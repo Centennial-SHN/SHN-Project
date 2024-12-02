@@ -18,7 +18,7 @@ DEBUG = True
 
 ALLOWED_HOSTS = ["*"]
 
-
+CSRF_HEADER_NAME = 'HTTP_X_CSRFTOKEN'
 # Application definition
 
 INSTALLED_APPS = [

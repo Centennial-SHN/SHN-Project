@@ -15,7 +15,16 @@ const Login = () => {
     const navigate = useNavigate();
     const isDevelopment = import.meta.env.MODE === "development";
     const baseUrl = isDevelopment ? VITE_API_BASE_URL_LOCAL : VITE_API_BASE_URL_PROD;
-    const csrfToken = document.cookie.split('; ').find((row) => row.startsWith('csrftoken='))?.split('=')[1];
+    function getCSRFToken() {
+        const cookieValue = document.cookie
+            .split('; ')
+            .find((row) => row.startsWith('csrftoken='))
+            ?.split('=')[1];
+        return cookieValue || '';
+    }
+    
+    const csrfToken = getCSRFToken();
+    
     const backendUrl = baseUrl;
 
     const [passwordVisible, setPasswordVisible] = React.useState(false);
@@ -24,6 +33,9 @@ const Login = () => {
 
     const handleLogin = async (e) => {
         e.preventDefault();
+        console.log('CSRF Token:', csrfToken);
+        console.log('Request URL:', `${backendUrl}/api/login/`);
+
         const response = await fetch(`${backendUrl}/api/login/`, {
             method: 'POST',
             headers: {
