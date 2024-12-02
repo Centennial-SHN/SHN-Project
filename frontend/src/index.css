@@ -1009,7 +1009,7 @@ padding: 48px 24px;
 
   .layoutIntHistContent .ant-pagination {
     display: flex;
-    justify-content: flex-start;
+    justify-content: flex-end;
     margin-top: 16px; 
   }
 }
