@@ -29,9 +29,6 @@ urlpatterns = [
     path('interview_history/<str:user_id>/', views.interview_history, name='interview_history'),
     path('clear-temp-audio/', views.clear_temp_audio_blob_storage, name='clear_temp_audio_blob_storage'),
     path('modules/<str:moduleid>/files/<str:filename>/', views.delete_module_file, name='delete_module_file')
-    
-
-
 ]
 
 
