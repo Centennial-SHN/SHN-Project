@@ -21,6 +21,7 @@ import logging
 import csv
 from django.core.exceptions import ObjectDoesNotExist
 import json
+from django.views.decorators.csrf import ensure_csrf_cookie
 
 
 logging.basicConfig(level=logging.DEBUG)
@@ -330,7 +331,7 @@ def clear_temp_audio_blob_storage(request):
         logging.error(f"Error clearing blob storage: {str(e)}")
         return JsonResponse({'error': str(e)}, status=500)
 
-
+@ensure_csrf_cookie
 @api_view(['POST'])
 def register(request):
     if request.method == 'POST':
@@ -339,20 +340,24 @@ def register(request):
             serializer.save()
             return Response({'message': 'User registered successfully'}, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-        
 
+from django.middleware.csrf import get_token        
+@ensure_csrf_cookie
 @api_view(['POST'])
 def user_login(request):
+    logger.debug(f"Cookies: {request.COOKIES}")
+    logger.debug(f"Headers: {request.headers}")
     email = request.data.get('email')
     password = request.data.get('password')
     user = authenticate(request, email=email, password=password)
     
     if user is not None:
         login(request, user)
+        csrf_token = get_token(request)
         logger.debug(f'Session: {request.session.items()}')
         logger.debug(f'User after login: {request.user}, is_authenticated: {request.user.is_authenticated}')
         return Response({'message': 'Login successful', 'userid': user.userid,'email': user.email,
-            'is_superuser': user.is_superuser}, status=status.HTTP_200_OK)
+            'is_superuser': user.is_superuser,'csrf_token': csrf_token}, status=status.HTTP_200_OK)
     return Response({'error': 'Invalid email or password'}, status=status.HTTP_401_UNAUTHORIZED)
 
 
