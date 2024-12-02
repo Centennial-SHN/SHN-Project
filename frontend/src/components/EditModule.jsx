@@ -1,10 +1,10 @@
 import React, { useState, useEffect, useRef } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faBars } from "@fortawesome/free-solid-svg-icons";
-import "./ModuleAdmin.css";
-import { faTrash, faFileAlt } from "@fortawesome/free-solid-svg-icons";
-import Sidebar from "./Sidebar.jsx";
+// import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+// import { faBars } from "@fortawesome/free-solid-svg-icons";
+// import "./ModuleAdmin.css";
+// import { faTrash, faFileAlt } from "@fortawesome/free-solid-svg-icons";
+// import Sidebar from "./Sidebar.jsx";
 import Cookies from "js-cookie";
 import ChangePasswordModal from "./ChangePasswordModal";
 import {

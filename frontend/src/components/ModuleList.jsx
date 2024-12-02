@@ -1,7 +1,6 @@
 import { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import NavBar from "./NavBar";
-import "./ModuleAdmin.css";
 import Cookies from "js-cookie";
 import ChangePasswordModal from "./ChangePasswordModal";
 import { VITE_API_BASE_URL_LOCAL, VITE_API_BASE_URL_PROD } from "../constants";
@@ -166,22 +165,42 @@ const AdminModuleList = () => {
       key: "action",
       width: "33%",
       render: (_, record) => (
-        <Row justify="center">
+        <Row 
+            justify="center"
+            style={{
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center",
+              gap: "12px",
+              flexWrap: "wrap",
+              width: "100%",
+            }}
+        >
           <Col>
             <Button
               type="primary"
               icon={<EditOutlined />}
               onClick={() => handleEdit(record.moduleid)}
+              style={{
+                width: "140px",
+                height: "40px",
+                padding: "0 16px",
+              }}
             >
               Edit
             </Button>
           </Col>
-          <Col style={{ marginLeft: "8px" }}>
+          <Col>
             <Button
               type="primary"
               icon={<DeleteOutlined />}
               className="delete-button"
               onClick={() => showDeleteModal(record.moduleid)}
+              style={{
+                width: "160px",
+                height: "40px",
+                padding: "0 16px",
+              }}
             >
               Delete
             </Button>
@@ -201,14 +220,27 @@ const AdminModuleList = () => {
     <Layout className="layoutModuleList">
       <NavBar isAdmin={isAdmin} />
       <Content className="layoutModuleListContent">
-        <Row align="middle" justify="space-between" style={{ width: "100%" }}>
-          <Col>
-            <Title level={3} style={{ color: "#191E72" }}>
+        <Row align="middle" justify="space-between" style={{
+           width: "100%",
+           flexWrap: "wrap"
+          }}>
+          <Col style={{ flexBasis: "100%" }}>
+            <Title level={3}
+              className="module-list-title"
+              style={{ 
+              color: "#191E72",
+              whiteSpace: "normal",
+              textAlign: "left",
+             }}>
               Module List
             </Title>
           </Col>
           <Col>
-            <Button type="primary" onClick={handleRedirectModule}>
+            <Button type="primary" 
+              onClick={handleRedirectModule} 
+              className="module-list-button"
+              style={{ width: "100%" }}
+              >
               Add New Module
             </Button>
           </Col>

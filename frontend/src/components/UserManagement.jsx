@@ -1,12 +1,8 @@
 import React, { useEffect, useState, useRef } from "react";
 import { useParams, useNavigate } from 'react-router-dom';
-import './UserManagement.css';
-// import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-// import { faBars } from '@fortawesome/free-solid-svg-icons';
 import { VITE_API_BASE_URL_LOCAL, VITE_API_BASE_URL_PROD } from "../constants";
 import Cookies from 'js-cookie';
 import ChangePasswordModal from './ChangePasswordModal';
-// import './navbar.css';
 import NavBar from "./NavBar";
 import { Button, Typography, Layout, Space, Card, Modal, Form, Input } from 'antd';
 import { DeleteOutlined } from "@ant-design/icons";
@@ -18,7 +14,7 @@ const UserManagement = () => {
   const { userId } = useParams();
   const [user, setUser] = useState(null);
   const [newEmail, setNewEmail] = useState("");
-  const [menuOpen, setMenuOpen] = useState(false); // State for toggling the menu
+  const [menuOpen, setMenuOpen] = useState(false);
   const [iconColor, setIconColor] = useState("black");
   const [isModalOpen, setIsModalOpen] = useState(false);
   const navigate = useNavigate();
@@ -95,8 +91,6 @@ const UserManagement = () => {
 
   const handleChangeEmail = async () => {
     try {
-      // const csrfTokenElement = document.querySelector('[name=csrfmiddlewaretoken]');
-      // const csrfToken = csrfTokenElement ? csrfTokenElement.value : null;
       console.log("csrf token:", csrfToken);
       const response = await fetch(`${backendUrl}/api/admin/user/${userId}/change-email/`, {
         method: "PATCH",
@@ -143,7 +137,6 @@ const UserManagement = () => {
       }
 
       alert("Admin permissions granted successfully.");
-      // Optionally, update the UI to reflect the new superuser status
     } catch (error) {
       console.error("Error granting admin permissions:", error);
     }
@@ -173,7 +166,7 @@ const UserManagement = () => {
         method: "DELETE",
         headers: {
           'Content-Type': 'application/json',
-          'X-CSRFToken': csrfToken // Include CSRF token if needed
+          'X-CSRFToken': csrfToken
         },
         credentials: 'include',
       });
@@ -208,7 +201,7 @@ const UserManagement = () => {
       }
 
       alert("User account deleted successfully.");
-      navigate("/admin/user-logs"); // Redirect to user list page after deletion
+      navigate("/admin/user-logs");
     } catch (error) {
       console.error("Error deleting user account:", error);
     }
@@ -248,7 +241,7 @@ const UserManagement = () => {
 
   const closeModal = () => {
     setIsModalOpen(false);
-    setNewEmail(""); // Clear the email input when modal closes
+    setNewEmail("");
   };
 
   const toggleChangePasswordModal = () => {
@@ -291,7 +284,7 @@ const UserManagement = () => {
     <Layout className="layoutEditUser">
       <NavBar isAdmin={isAdmin} />
       <Content className="layoutEditUserContent">
-        <Link onClick={() => navigate(-1)}>Back to User Logs</Link>
+        <Link className="back-to-logs" onClick={() => navigate(-1)}>Back to User Logs</Link>
         <Card bordered={false}>
           <Title level={3} style={{ color: '#191e72', textAlign: 'left', marginBottom: '32px' }}>Edit User</Title>
           <Space direction="vertical" size="large">
@@ -336,41 +329,8 @@ const UserManagement = () => {
           >
             Delete User Account
           </Button>
-
-          {/* <button onClick={openModal}>Change Email</button> */}
-
-          {/* <button onClick={handleResetPassword}>Reset Password</button>
-          <br />
-          <button onClick={handlePermission}>Change to Admin</button>
-          <br />
-          <button onClick={handleDeleteRecords}>Delete User Records</button>
-          <br />
-          <button onClick={handleDeleteUser}>Delete User Account</button>
-          <br />
-          <button onClick={handleDownloadUserData}>Download User Data</button>
-          <br /> */}
         </Card>
       </Content>
-
-      {/* {isModalOpen && (
-        <div className="modal">
-          <div className="modal-content">
-            <h3>Change Email</h3>
-            <input
-              type="email"
-              value={newEmail}
-              onChange={(e) => setNewEmail(e.target.value)}
-              placeholder="Enter new email"
-              required
-            />
-            <div className="modal-buttons">
-              <button onClick={handleChangeEmail}>Submit</button>
-              <button onClick={closeModal}>Cancel</button>
-            </div>
-          </div>
-        </div>
-      )} */}
-
       <Modal
         open={isModalOpen}
         onOk={handleChangeEmail}
@@ -394,7 +354,6 @@ const UserManagement = () => {
               placeholder="Enter new email"
             />
           </Form.Item>
-          {/* {error && <Text type="danger">{error}</Text>} */}
         </Form>
 
       </Modal>
@@ -409,6 +368,3 @@ const UserManagement = () => {
 };
 
 export default UserManagement;
-
-//task
-//reset password
