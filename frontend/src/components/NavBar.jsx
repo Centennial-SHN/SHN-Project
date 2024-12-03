@@ -22,7 +22,8 @@ const NavBar = ({ onNavigateAway }) => {
         const userViewPaths = [
             '/module',
             /^\/interview\/[a-zA-Z0-9-]+$/,
-            /^\/interview-history\/[a-zA-Z0-9-]+$/
+            /^\/interview-history\/[a-zA-Z0-9-]+$/,
+            '/interview-complete'
         ];
 
         const isUserViewPath = userViewPaths.some(path =>
