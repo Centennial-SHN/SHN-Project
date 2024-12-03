@@ -79,7 +79,7 @@ const Register = () => {
                             <Space direction="vertical" size="large">
                                 <Space direction="vertical" size="middle">
                                     <Title level={1} style={{ color: '#191e72' }}>Create a New Account</Title>
-                                    <Text>Sign up now to start using the virtual patient simulator</Text>
+                                    <Text>Sign up now and begin your virtual interview</Text>
                                 </Space>
                                 <Space direction="vertical" size="middle">
                                     <Input
