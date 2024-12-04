@@ -215,7 +215,7 @@ const EditModule = () => {
 
   const handleLogout = () => {
     sessionStorage.removeItem("userId"); // Clear userId from sessionStorage
-    Cookies.remove('csrftoken'); // Clear CSRF token
+    //Cookies.remove('csrftoken'); // Clear CSRF token
     navigate("/"); // Redirect to login page
   };
 

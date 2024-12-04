@@ -171,7 +171,7 @@ const NavBar = ({ onNavigateAway }) => {
                 label: (
                     <a onClick={() => handleNavigate(() => {
                         sessionStorage.removeItem("userId");
-                        Cookies.remove('csrftoken'); // Clear CSRF token
+                        //Cookies.remove('csrftoken'); // Clear CSRF token
                         navigate("/");
                     })}>
                         Logout
