@@ -866,6 +866,10 @@ padding: 48px 24px;
   background-color: var(--status-success);
 }
 
+.processing-status .dot {
+  background-color: var(--secondary-coral);
+}
+
 .status-border {
   padding: 8px;
   border-width: 5px;
@@ -891,6 +895,12 @@ padding: 48px 24px;
   border-color: var(--status-success);
   color: var(--status-success);
   box-shadow: 0 4px 8px 0 rgba(93,229,181,.25);
+}
+
+.processing-status {
+  border-color: var(--secondary-coral);
+  color: var(--secondary-coral);
+  box-shadow: 0 4px 8px 0 rgba(249, 96, 101, 0.25);;
 }
 
 .record-button.processing {
