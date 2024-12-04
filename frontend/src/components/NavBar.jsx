@@ -42,7 +42,7 @@ const NavBar = ({ onNavigateAway }) => {
     };
 
     const handleRedirectModule = () => {
-        navigate(`/module`);
+        handleNavigate(() => navigate(`/module`));
     };
 
     const toggleChangePasswordModal = () => {
