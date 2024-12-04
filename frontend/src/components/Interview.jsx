@@ -181,7 +181,7 @@ const Interview = () => {
     }
     clearTimeout(recordingTimeoutRef.current);
     setIsRecording(false);
-    setStatus("Idle");
+    setStatus("Processing");
   };
 
   const getLocalTimeInIsoFormat = () => {
@@ -435,11 +435,7 @@ const Interview = () => {
               onClick={debounceToggleRecording}
               disabled={isLoading || isPlaying}
             >
-              {isRecording
-                ? "Stop Speaking"
-                : isLoading || isPlaying
-                ? "Processing"
-                : "Speak"}
+              {isRecording ? "Stop Speaking" : "Speak"}
             </Button>
             <Button
               type="primary"
@@ -474,8 +470,8 @@ const Interview = () => {
             You can press or hold the spacebar to start the interview or start
             speaking.
             <br />
-            To end the interview and save your transcript, click on the &quot;End
-            Interview&quot; button.
+            To end the interview and save your transcript, click on the
+            &quot;End Interview&quot; button.
           </Title>
         </Space>
         <Drawer
