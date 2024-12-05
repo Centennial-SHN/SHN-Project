@@ -133,7 +133,7 @@ const NavBar = ({ onNavigateAway }) => {
             {
                 key: '1',
                 label: (
-                    <a onClick={() => handleNavigate(handleRedirectModule)}>
+                    <a onClick={() => handleNavigate(() => navigate("/module"))}>
                         Select Module
                     </a>
                 ),
