@@ -402,7 +402,7 @@ const Interview = () => {
               <Text style={{ marginBottom: "24px" }}>{caseAbstract}</Text>
 
               {Object.keys(files).length > 0 ? (
-                <Space direction="vertical" size="small">
+                <Space direction="vertical" size="small" className="attachmentsContainer">
                   <Text className="customH6">Attachments:</Text>
                   {Object.entries(files).map(([fileName], index) => (
                     <a key={index} onClick={toggleSidebar}>
@@ -425,11 +425,12 @@ const Interview = () => {
             direction="horizontal"
             size="large"
             style={{ width: "min-content" }}
+            className="interviewControlButtons"
           >
             <Button
               type="primary"
               icon={<PlayCircleOutlined />}
-              className={`record-button ${
+              className={`record-button .mobile-record-button ${
                 isLoading || isPlaying ? "processing" : ""
               }`}
               onClick={debounceToggleRecording}
@@ -440,7 +441,7 @@ const Interview = () => {
             <Button
               type="primary"
               icon={<CloseCircleOutlined />}
-              className="exit-button"
+              className="exit-button .mobile-exit-button"
               onClick={handleExit}
               disabled={isLoading || isPlaying}
             >

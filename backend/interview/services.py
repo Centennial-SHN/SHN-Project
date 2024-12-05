@@ -23,21 +23,15 @@ MODULE_ATTACHMENTS_BLOB_CONTAINER= os.getenv('MODULE_ATTACHMENTS_BLOB_CONTAINER'
 
 
 def process_audio_file(audio_file):
-    start_time = time.time()
-
     extension = os.path.splitext(audio_file.name)[1] or '.mp3'
     audio_file_name = 'stt' + str(uuid.uuid4()) + extension
 
     if USE_AZURE_BLOB_STORAGE:
         audio_file_path = _upload_stt_to_blob_storage(audio_file, audio_file_name)
 
-    stt_duration = time.time() - start_time
-    logging.info(f"STT processing took {stt_duration:.2f} seconds.")
-
     return _process_stt_audio(audio_file_path)
 
 def generate_text_from_prompt(conversation_history, system_prompt, prompt, model):
-    start_time = time.time()
 
     system_prompt = f"{system_prompt} {prompt}"
     conversation = [
@@ -47,6 +41,8 @@ def generate_text_from_prompt(conversation_history, system_prompt, prompt, model
     conversation.extend(conversation_history)
 
     logging.info(f"Conversation: {conversation}")
+
+    start_time = time.time()
 
     try:
         response = openai.chat.completions.create(
@@ -67,7 +63,7 @@ def generate_text_from_prompt(conversation_history, system_prompt, prompt, model
 
 
 def convert_text_to_speech(text, module_id):
-    start_time = time.time()
+
     module = Module.objects.get(moduleid=module_id)
     voice = module.voice
 
@@ -76,8 +72,6 @@ def convert_text_to_speech(text, module_id):
     if USE_AZURE_BLOB_STORAGE:
         audio_file_url = _upload_tts_to_blob_storage(text, audio_file_name, voice)
 
-    tts_duration = time.time() - start_time
-    logging.info(f"TTS generation and upload took {tts_duration:.2f} seconds.")
 
     return audio_file_url
 
@@ -110,6 +104,7 @@ def _process_stt_audio(file_path_or_url):
             logging.info(f"Blob name: {blob_name}")
 
             buffer.name = blob_name
+            start_time = time.time()
 
             response = openai.audio.transcriptions.create(
                 model='whisper-1',
@@ -117,7 +112,8 @@ def _process_stt_audio(file_path_or_url):
                 response_format='text',
                 prompt='ZyntriQix, Digique Plus, CynapseFive, VortiQore V8, EchoNix Array, OrbitalLink Seven, DigiFractal Matrix, PULSE, RAPT, B.R.I.C.K., Q.U.A.R.T.Z., F.L.I.N.T.'
             )
-
+            stt_duration = time.time() - start_time
+            logging.info(f"STT processing took {stt_duration:.2f} seconds.")
             blob_client.delete_blob()
 
         return response.get('text', '') if isinstance(response, dict) else response
@@ -128,11 +124,15 @@ def _process_stt_audio(file_path_or_url):
 
 def _upload_tts_to_blob_storage(text, audio_file_name, voice):
     try:
+        start_time = time.time()
         response = openai.audio.speech.create(
             model='tts-1',
             voice=voice,
             input=text
         )
+
+        tts_duration = time.time() - start_time
+        logging.info(f"TTS generation and upload took {tts_duration:.2f} seconds.")
 
         audio_content = response.content
 
