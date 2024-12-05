@@ -1059,10 +1059,6 @@ padding: 48px 24px;
     display: none; 
   }
 
-  .ant-drawer-content {
-    padding: 12px; 
-  }
-
   .interviewControl .ant-space-horizontal {
     width: 100%;
     display: flex;
