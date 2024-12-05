@@ -184,11 +184,6 @@ a {
 
 /* Modal - Mobile */
 @media (max-width: 480px) {
-  .change-password-modal .ant-modal {
-    top: 20%; 
-    padding: 0 !important; 
-  }
-
   .change-password-modal .ant-modal-content {
     padding: 16px 24px !important; 
     margin: 0 auto; 
@@ -196,23 +191,19 @@ a {
     width: 90%; 
   }
 
-  .change-password-modal .ant-form-item-label {
-    font-size: 0.9rem;
-  }
-
-  .change-password-modal .ant-input, .ant-input-password {
-    font-size: 0.9rem; 
-  }
-
-  .change-password-modal .ant-btn {
-    font-size: 0.9rem; 
-    width: auto; 
-    padding: 6px 12px; 
-  }
-
-  .change-password-modal .ant-modal-footer {
+  .ant-modal-footer {
+    padding: 8px; 
     display: flex;
-    justify-content: flex-end; 
+    flex-wrap: wrap; 
+    justify-content: center; 
+    gap: 8px; 
+  }
+
+  .ant-modal-footer .ant-btn {
+    flex: 1 1 auto;     
+    max-width: 100%;
+    text-align: center;
+    margin-left: 0 !important;
   }
 }
 
@@ -452,8 +443,6 @@ padding: 48px 24px;
   align-items: start;
   width: fit-content;
 }
-
-/*Login Mobile*/
 @media (max-width: 480px) {
   .layoutLogInReg {
     display: flex;
@@ -1122,7 +1111,7 @@ padding: 48px 24px;
     flex-direction: column; 
     align-items: center; 
     gap: 16px; 
-    width: 95% !important; 
+    width: 100% !important; 
   }
 }
 
