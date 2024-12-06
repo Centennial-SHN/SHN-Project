@@ -856,10 +856,6 @@ padding: 48px 24px;
   background-color: var(--status-success);
 }
 
-.processing-status .dot {
-  background-color: var(--secondary-coral);
-}
-
 .status-border {
   padding: 8px;
   border-width: 5px;
@@ -885,12 +881,6 @@ padding: 48px 24px;
   border-color: var(--status-success);
   color: var(--status-success);
   box-shadow: 0 4px 8px 0 rgba(93,229,181,.25);
-}
-
-.processing-status {
-  border-color: var(--secondary-coral);
-  color: var(--secondary-coral);
-  box-shadow: 0 4px 8px 0 rgba(249, 96, 101, 0.25);;
 }
 
 .record-button.processing {
@@ -1210,290 +1200,366 @@ padding: 48px 24px;
 /* Module List mobile */
 @media (max-width: 480px) {
   .layoutModuleListContent{
-    margin-left: -25px;
-    margin-right: -25px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    margin: 80px auto;
+    padding: 0 16px;
+    width: 100%;
+    box-sizing: border-box;
   }
 
-  .ant-table {
-    font-size: 12px; 
+  .layoutModuleListContent .ant-table {
+    font-size: 12px;
+    min-width: 500px;
+    margin: 0 auto;
   }
 
-  .ant-table-thead > tr > th,
-  .ant-table-tbody > tr > td {
-    padding: 6px;
-    text-align: left;
+  .layoutModuleListContent .ant-table-thead > tr > th,
+  .layoutModuleListContent .ant-table-tbody > tr > td {
+    padding: 12px;
+    text-align: center;
+    white-space: nowrap;
   }
 
   .layoutModuleListContent > .ant-row:first-child {
-    margin-top: 40px;
+    margin-top: 30px;
+    text-align: center;
   }
 
   .layoutModuleListContent .ant-typography {
-    margin-bottom: 8px;
+    margin-bottom: 16px;
+    text-align: center;
   }
 
-  .ant-table-wrapper {
-    overflow-x: auto;
+  .layoutModuleListContent .ant-table-wrapper {
+    overflow-x: scroll;
     width: 100%;
   }
 
-  .ant-table {
-    min-width: 500px;
-  }
-
-  .ant-table-cell .ant-btn {
-    width: 140px;
-    height: 36px; 
+  .layoutModuleListContent .ant-table-cell .ant-btn {
+    width: auto;
+    height: 36px;
     font-size: 12px;
-    padding: 0 12px;
-  }
-
-  .ant-table-cell > .ant-row {
-    gap: 8px;
-  }
-
-  .ant-table-thead > tr > th,
-  .ant-table-tbody > tr > td {
-    padding: 6px;
+    padding: 0 16px;
     text-align: center;
+  }
+
+  .layoutModuleListContent .ant-table-cell > .ant-row {
+    gap: 8px !important;
+    justify-content: center;
+  }
+
+  .layoutModuleListContent .ant-pagination {
+    display: flex;
+    justify-content: flex-end;
+    margin-top: 16px; 
   }
 }
 
 
-/*Add Module Mobile*/
+/*Add Module, Edit Module Mobile*/
 @media (max-width: 480px) {
-  .layoutAddModuleContent .ant-form-item {
+  .layoutAddModuleContent,
+  .layoutEditModuleContent {
     display: flex;
     flex-direction: column;
-    align-items: flex-start;
+    align-items: center;
+    justify-content: flex-start;
+    width: 100%;
+    min-height: 100vh;
+    max-width: 100%;
+    min-width: 0;
+    padding: 80px 20px 16px;
+    box-sizing: border-box;
+    overflow-y: auto;
+    margin: 0;
   }
 
-  .layoutAddModuleContent .ant-form-item-label {
+  .layoutAddModuleContent a,
+  .layoutEditModuleContent a {
+    display: block;
+    margin-top: 32px;
+    margin-bottom: 0px;
     text-align: left;
-    margin-bottom: 4px;
+    width: 100%;
+  }
+
+  .layoutAddModuleContent .ant-card,
+  .layoutEditModuleContent .ant-card  {
+    width: 100%;
+    max-width: 400px;
+    margin: 0px auto;
+    padding: 4px 20px;
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+    border-radius: 8px;
+  }
+
+  .layoutAddModuleContent .ant-card-body,
+  .layoutEditModuleContent .ant-card-body {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding:  32px 0px !important;
+  }
+
+  .layoutAddModuleContent .ant-space,
+  .layoutEditModuleContent .ant-space {
+    display: flex !important;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    width: auto;
+    margin: 0px auto;
+    gap: 16px;
+  }
+
+  .layoutAddModuleContent .ant-form-item,
+  .layoutEditModuleContent .ant-form-item {
+    width: 90%;
+    max-width: 100%;
+    margin:0 auto 16px;
+  }
+
+  .layoutAddModuleContent .ant-form-item-label,
+  .layoutEditModuleContent .ant-form-item-label {
+    margin-bottom: 8px;
+    font-size: 14px;
+  }
+
+  .layoutAddModuleContent .ant-input,
+  .layoutAddModuleContent .ant-textarea,
+  .layoutEditModuleContent .ant-input,
+  .layoutEditModuleContent .ant-textarea {
+    border: 1px solid #d9d9d9 !important;
+    border-radius: 8px;
+    padding: 8px;
+    box-sizing: border-box;
+  }
+
+  .layoutAddModuleContent .ant-input:focus,
+  .layoutAddModuleContent .ant-textarea:focus,
+  .layoutEditModuleContent .ant-input:focus,
+  .layoutEditModuleContent .ant-textarea:focus {
+    border-color: #4dbdb1 !important;
+    outline: none;
   }
 
   .layoutAddModuleContent .ant-input,
   .layoutAddModuleContent .ant-select,
   .layoutAddModuleContent .ant-textarea,
-  .layoutAddModuleContent .ant-upload-drag {
-    width: 300px;
-    max-width: 100%;
-    margin: 0 auto;
-  }
-
-  .layoutAddModuleContent .ant-form-item {
-    margin-bottom: 16px;
-  }
-
-  .layoutAddModuleContent .ant-btn {
-    width: 100%;
-    max-width: 280px;
-    margin: 0 auto;
-  }
-
-  .layoutAddModuleContent .ant-card-body {
-    box-shadow: none !important;
-    border: none !important;
-  }
-
-  .layoutAddModuleContent .ant-card {
-    box-shadow: none !important;
-    border: none !important;
-  }
-}
-
-/*Edit Module Mobile*/
-@media (max-width: 480px) {
-  .layoutEditModuleContent .ant-form-item {
-    display: flex;
-    flex-direction: column;
-    align-items: flex-start;
-  }
-
-  .layoutEditModuleContent .ant-form-item-label {
-    text-align: left;
-    margin-bottom: 4px;
-  }
-
   .layoutEditModuleContent .ant-input,
   .layoutEditModuleContent .ant-select,
-  .layoutEditModuleContent .ant-textarea,
-  .layoutEditModuleContent .ant-upload-drag {
-    width: 300px;
-    max-width: 100%;
-    margin: 0 auto;
-  }
-
-  .layoutEditModuleContent .ant-form-item {
-    margin-bottom: 16px;
-  }
-
-  .layoutEditModuleContent .ant-btn {
+  .layoutEditModuleContent .ant-textarea {
     width: 100%;
-    max-width: 280px;
-    margin: 0 auto;
+    max-width: 100%;
+    margin: 0;
   }
 
-  .layoutEditModuleContent .ant-card-body {
-    box-shadow: none !important;
-    border: none !important;
+  .layoutAddModuleContent .ant-btn,
+  .layoutEditModuleContent .ant-btn {
+    width: auto;
+    padding: 12px 16px;
+    max-width: 160px;
   }
 
-  .layoutEditModuleContent .ant-card {
-    box-shadow: none !important;
-    border: none !important;
+  .layoutAddModuleContent .ant-space .ant-btn,
+  .layoutEditModuleContent .ant-space .ant-btn {
+    margin: 0;
   }
 }
+
 
 /*Edit User Mobile*/
 @media (max-width: 480px) {
-  .layoutEditUserContent .ant-card {
-    max-width: 380px;
-    width: 90%;
-    margin-left: 10px;
-    padding: 16px;
+  .layoutEditUserContent {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    width: 100%;
+    min-height: 100vh;
+    max-width: 100%;
+    min-width: 0;
+    padding: 40px 20px 16px;
+    box-sizing: border-box;
+    margin: 0;
+    gap:24px;
+    overflow-x: hidden;
   }
 
-  .back-to-logs {
-    margin-top: 100px;
-    margin-left:20px;
+  .layoutEditUserContent .ant-card {
+    width: 100%;
+    max-width: 400px;
+    margin: 5px auto;
+    padding: 8px 16px;
+    box-sizing: border-box;
+  }
+
+  .layoutEditUserContent .ant-card-body {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    width: 100%;
+    padding:32px 12px;
+    overflow-x: hidden;
+    word-wrap: break-word;
+    white-space: nowrap;
+  }
+
+  .layoutEditUserContent .back-to-logs {
+    margin-top: 70px;
+    align-self: flex-start;
+  }
+
+  .layoutEditUserContent .ant-card-body .ant-space .ant-space-item:nth-child(4) .ant-space-item:nth-child(2){
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 16px;
+    width: 100%;
+  }
+
+  .layoutEditUserContent .ant-card-body .ant-space-item:nth-child(4) .ant-space {
+    display:flex;
+    flex-direction: column;
+    gap:8px;
   }
   
-  .layoutEditUserContent .ant-card-body .ant-space-item a {
-    white-space: nowrap;
+  .layoutEditUserContent .ant-card-body .ant-space-item .download-link,
+  .layoutEditUserContent .ant-card-body .ant-space-item .linkDelete {
+    text-align: center;
+    line-height: 1.2;
+    margin-top: 8px;
+  }
+
+  .layoutEditUserContent .ant-btn{
+    margin-top:24px !important;
+    padding:10px;
+    font-size:10px;
   }
 }
 
 /*User Logs Mobile*/
 @media (max-width: 480px) {
   .layoutUserLogContent {
-    margin-left: -40px;
-    margin-right: -40px;
-    margin-top: 60px;
-  }
-
-  .layoutUserLogContent .ant-table {
-    font-size: 12px;
-    width: 100% !important;
+    width: 100%;
+    max-width: 500px;
     margin: 0 auto;
-    overflow-x: hidden !important;
+    padding: 0 0 16px;
+    box-sizing: border-box;
   }
 
-  .layoutUserLogContent .ant-table-scroll-horizontal{
-    width: 100% !important;
-    overflow-x: hidden !important;
-  }
-
-  .layoutUserLogContent .ant-table-wrapper {
-    width: 100% !important;
-    overflow-x: hidden !important;
-  }
-
-  .layoutUserLogContent .ant-space {
-    display: flex !important;
+  .layoutUserLogContent .ant-space:first-child{
+    display: flex;
     flex-direction: column;
     align-items: flex-start;
+    margin-bottom: -60px;
+    flex:1;
   }
 
-  .layoutUserLogContent .ant-space-item:nth-child(2) {
+  .layoutUserLogContent .search-row {
     display: flex;
-    justify-content: flex-end;
-    width: 100%;
+    flex-direction: column;
+    justify-content: space-between !important;
+    align-items: flex-end !important;
+    padding:0 20px;
+    margin:0;
+    gap: 8px;
+    margin: 0px;
+    flex:0;
   }
 
-  .layoutUserLogContent .title-row h3 {
-    margin: 0;
-    margin-bottom: 8px;
+  .layoutUserLogContent .search-row .ant-space-item:first-child{
+    width:100%;
   }
 
-  .layoutUserLogContent .ant-space-item a {
-    display: block;
-    white-space: nowrap;
-    text-align: right; 
-  }
-
-  .layoutUserLogContent .ant-space-item button {
-    display: block;
-    margin-left: auto;
-    width: fit-content;
-  }
-
-  .layoutUserLogContent .ant-table-cell:nth-child(1),
-  .layoutUserLogContent .ant-table-cell:nth-child(3),
-  .layoutUserLogContent .ant-table-cell:nth-child(4),
-  .layoutUserLogContent .ant-table-cell:nth-child(5)
-  {
-    display: none;
-  }
-
-  .layoutUserLogContent .ant-table-thead th,
-  .layoutUserLogContent .ant-table-tbody td {
-    text-align: left;
-    white-space: nowrap;
-    padding: 5px;
-  }
-
-  .layoutUserLogContent .ant-table-tbody td a {
-    font-size: 12px;
-  }
-
-  .layoutUserLogContent .ant-table-cell .ant-btn {
-    width: 36px;
-    height: 36px;
-    padding: 0;
-    border-radius: 50%;
-    margin-left: 5px;
-  }
-
-  .ant-pagination {
-    margin-top: 10px;
-    display: flex;
-    justify-content: center;
-  }
-
-  .layoutUserLogContent .ant-input-wrapper {
-    display: flex;
-    justify-content: flex-start;
-    align-items: center;
-    width: 100%;
+  .layoutUserLogContent .ant-input-group-wrapper {
+    min-width: 90%;
   }
 
   .layoutUserLogContent .ant-input-group {
-    display: flex;
-    max-width: 80%;
-    align-items: center;
-    border: 1px solid #d9d9d9;
-    border-radius: 10px;
-    overflow: hidden;
+    max-width: 100%;
   }
 
-  .ant-input {
-    flex: 1;
-    border: none;
-    height: 40px;
-  }
-  .layoutUserLogContent .ant-input-group-addon {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 40px;
-    height:40px;
-    margin-top:8px;
-    color: white;
-    border: none;
-  }
-  
-  .layoutUserLogContent .ant-input-group-addon button {
-    width: 100%;
-    height: 47px;
-    background-color: transparent;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+  .layoutUserLogContent .ant-space:nth-child(2) .ant-space-item:nth-child(2){
+    order:-1;
+    margin-bottom: 12px;
+    margin-right:-8px;
   }
 
-  .layoutUserLogContent .ant-input-group-addon .anticon {
-    font-size: 24px;
+  .layoutUserLogContent .ant-space:nth-child(2) .ant-space-item:nth-child(2) .ant-btn:first-child{
+    width:80%;
+    padding:8px 20px;
+    font-size:11px;
+    align-self: flex-end;
+    margin-left: auto;
+  }
+
+  .layoutUserLogContent .spaceContentStart {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    width: 100% !important;
+    padding: 4px 20px !important;
+    margin-top: 110px;
+    margin-right:10px;
+    gap:12px !important;
+    box-sizing: border-box;
+  }
+
+  .layoutUserLogContent .ant-space {
+    width: 100% !important;
+    justify-content: space-between;
+    align-items: center;
+    gap: 8px;
+    box-sizing: border-box;
+  }
+
+  .layoutUserLogContent .spaceContentStart h3 {
+    margin: 0 auto;
+    flex-shrink: 0;
+    font-size: 22px;
+    text-align: center;
+    letter-spacing: 0.5px;
+  }
+
+  .layoutUserLogContent .spaceContentStart a {
+    text-align: center;
+    font-size: 14px;
+    white-space: nowrap;
+    flex-shrink: 0;
+    margin-top: 4px;
+  }
+
+  .layoutUserLogContent .ant-table-wrapper{
+    width:90%;
+    align-self: center;
+  }
+
+  .layoutUserLogContent .ant-table-thead > tr > th {
+    text-align: center !important;
+    vertical-align: middle;
+  }
+
+  .layoutUserLogContent .ant-table-tbody > tr > td {
+    text-align: center;
+    vertical-align: middle;
+  }
+
+  .layoutUserLogContent .ant-table-expanded-row > .ant-table-cell {
+    text-align: center;
+  }
+
+  .layoutUserLogContent .ant-pagination {
+    display: flex;
+    justify-content: flex-end;
+    padding:0;
+    margin: 0 auto;
+    width:auto;
   }
 }

@@ -314,7 +314,7 @@ const UserManagement = () => {
             <Space direction="vertical" size="small" className="spaceStacked spaceStackedAll" >
               <Text>User Records & Data</Text>
               <Space direction="horizontal" size="middle" style={{ justifyContent: "flex-start" }}>
-                <Link onClick={handleDownloadUserData}>Download User Data</Link>
+                <Link onClick={handleDownloadUserData} className="download-link">Download User Data</Link>
                 <Link onClick={handleDeleteRecords} className="linkDelete">Delete User Records</Link>
               </Space>
             </Space>
