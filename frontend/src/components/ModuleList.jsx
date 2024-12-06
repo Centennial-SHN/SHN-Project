@@ -197,7 +197,7 @@ const AdminModuleList = () => {
               className="delete-button"
               onClick={() => showDeleteModal(record.moduleid)}
               style={{
-                width: "140px",
+                width: "160px",
                 height: "40px",
                 padding: "0 16px",
               }}

@@ -263,7 +263,7 @@ const UserAdmin = () => {
       key: 'email',
       width:300,
       sorter: (a, b) => a.email.localeCompare(b.email),
-      // responsive: ["xs", "sm", "md", "lg"],
+      responsive: ["xs", "sm", "md", "lg"],
     },
     {
       title: 'Total Interviews',
@@ -277,7 +277,7 @@ const UserAdmin = () => {
       dataIndex: 'totalInterviewTime',
       key: 'totalInterviewTime',
       width:200,
-      // responsive: ["md"],
+      responsive: ["md"],
       render: (_, record) => {
         const totalSeconds = record.interviews.reduce((acc, interview) => {
           const [hours, minutes, seconds] = interview.interviewlength.split(":").map(Number);
@@ -296,7 +296,7 @@ const UserAdmin = () => {
       dataIndex: 'date',
       key: 'date',
       width:120,
-      // responsive: ["md"],
+      responsive: ["md"],
       render: (_, record) => record.interviews.length === 1 ? record.interviews[0].dateactive : "",
     },
     {
@@ -304,7 +304,7 @@ const UserAdmin = () => {
       dataIndex: 'module',
       key: 'module',
       width:300,
-      // responsive: ["md"],
+      responsive: ["md"],
       render: (_, record) => record.interviews.length === 1 ? record.interviews[0].modulename : "",
     },
     {
@@ -312,7 +312,7 @@ const UserAdmin = () => {
       dataIndex: 'interviewLogs',
       key: 'interviewLogs',
       width:200,
-      // responsive: ["xs", "sm", "md", "lg"],
+      responsive: ["xs", "sm", "md", "lg"],
       render: (_, record) => (
         record.interviews.length === 1
           ? <Link onClick={() => handleDownloadTranscript(record.interviews[0].interviewid)}>Download Transcript</Link>
@@ -324,7 +324,7 @@ const UserAdmin = () => {
       dataIndex: 'delete',
       key: 'delete',
       width:120,
-      // responsive: ["xs", "sm", "md", "lg"],
+      responsive: ["xs", "sm", "md", "lg"],
       render: (_, record) => (
         record.interviews.length === 1
           ? <Link onClick={() => handleDeleteInterview(record.interviews[0].interviewid, record.userid)} className="linkDelete">Delete</Link>
@@ -336,7 +336,7 @@ const UserAdmin = () => {
       dataIndex: 'editUser',
       key: 'editUser',
       width:120,
-      // responsive: ["xs", "sm", "md", "lg"],
+      responsive: ["xs", "sm", "md", "lg"],
       render: (_, record) => (
         <Button
           type="primary"
@@ -353,9 +353,9 @@ const UserAdmin = () => {
         { title: '', dataIndex: '', key: 'spacer', width:53 },
         { title: '', dataIndex: '', key: 'spacer2', width:300 },
         { title: '', dataIndex: '', key: 'spacer3', width:200 },
-        { title: 'Total Interview Time', dataIndex: 'interviewlength', key: 'interviewlength', width:200 },
-        { title: 'Date', dataIndex: 'dateactive', key: 'dateactive', width:120 },
-        { title: 'Module', dataIndex: 'modulename', key: 'modulename', width:300},
+        { title: 'Total Interview Time', dataIndex: 'interviewlength', key: 'interviewlength', width:200, responsive: ["md"] },
+        { title: 'Date', dataIndex: 'dateactive', key: 'dateactive', width:120, responsive: ["md"]  },
+        { title: 'Module', dataIndex: 'modulename', key: 'modulename', width:300, responsive: ["md"]  },
         {
           title: 'Interview Logs',
           key: 'logs',
@@ -386,7 +386,7 @@ const UserAdmin = () => {
       <NavBar isAdmin={isAdmin} />
       <Content className="layoutUserLogContent">
         <Space direction="horizontal" size="large" className="spaceContentStart">
-          <Title level={3} style={{ color: "#191E72", marginBottom: 0}}>User Logs</Title>
+          <Title level={3} style={{ color: "#191E72", marginBottom: 0, whiteSpace: 'nowrap' }}>User Logs</Title>
           <Tooltip
             title="This will clear audio files from incomplete interviews in your storage."
             color="#fff"
@@ -395,7 +395,7 @@ const UserAdmin = () => {
             <Link onClick={handleClearBlobStorage}>Clear Temporary Audio Files</Link>
           </Tooltip>
         </Space>
-        <Space direction="horizontal" size="large" className="spaceContentBetween search-row">
+        <Space direction="horizontal" size="large" className="spaceContentBetween">
           <Search
             placeholder="Search by email (i.e. johndoe@example.com)"
             value={searchTerm}
@@ -406,21 +406,19 @@ const UserAdmin = () => {
 
         <Table
           columns={columns}
-          pagination={true}
-          // pagination={{
-          //   current: currentPage,
-          //   pageSize,
-          //   onChange: handlePageChange,
-          // }}
-          scroll={{
-            // x: 450,
-            x:'max-content',
+          pagination={{
+            current: currentPage,
+            pageSize,
+            onChange: handlePageChange,
           }}
-          // style={{
-          //   width: "100%",
-          //   margin: "0 auto",
-          //   overflowX: "auto",
-          // }}
+          scroll={{
+            x: 450,
+          }}
+          style={{
+            width: "100%",
+            margin: "0 auto",
+            overflowX: "auto",
+          }}
           showSorterTooltip={{
             target: 'sorter-icon',
           }}
