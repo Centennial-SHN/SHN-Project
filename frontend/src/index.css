@@ -1550,9 +1550,16 @@ padding: 48px 24px;
     text-align: center;
     vertical-align: middle;
   }
+  .layoutUserLogContent .ant-table-tbody > tr > td a {
+    white-space: nowrap;
+}
 
   .layoutUserLogContent .ant-table-expanded-row > .ant-table-cell {
     text-align: center;
+  }
+
+  .layoutUserLogContent .ant-table-expanded-row .ant-table-wrapper{
+    width:100%;
   }
 
   .layoutUserLogContent .ant-pagination {
