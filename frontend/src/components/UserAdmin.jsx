@@ -263,7 +263,6 @@ const UserAdmin = () => {
       key: 'email',
       width:300,
       sorter: (a, b) => a.email.localeCompare(b.email),
-      // responsive: ["xs", "sm", "md", "lg"],
     },
     {
       title: 'Total Interviews',
@@ -277,7 +276,6 @@ const UserAdmin = () => {
       dataIndex: 'totalInterviewTime',
       key: 'totalInterviewTime',
       width:200,
-      // responsive: ["md"],
       render: (_, record) => {
         const totalSeconds = record.interviews.reduce((acc, interview) => {
           const [hours, minutes, seconds] = interview.interviewlength.split(":").map(Number);
@@ -296,7 +294,6 @@ const UserAdmin = () => {
       dataIndex: 'date',
       key: 'date',
       width:120,
-      // responsive: ["md"],
       render: (_, record) => record.interviews.length === 1 ? record.interviews[0].dateactive : "",
     },
     {
@@ -304,7 +301,6 @@ const UserAdmin = () => {
       dataIndex: 'module',
       key: 'module',
       width:300,
-      // responsive: ["md"],
       render: (_, record) => record.interviews.length === 1 ? record.interviews[0].modulename : "",
     },
     {
@@ -312,7 +308,6 @@ const UserAdmin = () => {
       dataIndex: 'interviewLogs',
       key: 'interviewLogs',
       width:200,
-      // responsive: ["xs", "sm", "md", "lg"],
       render: (_, record) => (
         record.interviews.length === 1
           ? <Link onClick={() => handleDownloadTranscript(record.interviews[0].interviewid)}>Download Transcript</Link>
@@ -324,7 +319,6 @@ const UserAdmin = () => {
       dataIndex: 'delete',
       key: 'delete',
       width:120,
-      // responsive: ["xs", "sm", "md", "lg"],
       render: (_, record) => (
         record.interviews.length === 1
           ? <Link onClick={() => handleDeleteInterview(record.interviews[0].interviewid, record.userid)} className="linkDelete">Delete</Link>
@@ -336,7 +330,6 @@ const UserAdmin = () => {
       dataIndex: 'editUser',
       key: 'editUser',
       width:120,
-      // responsive: ["xs", "sm", "md", "lg"],
       render: (_, record) => (
         <Button
           type="primary"
@@ -407,20 +400,9 @@ const UserAdmin = () => {
         <Table
           columns={columns}
           pagination={true}
-          // pagination={{
-          //   current: currentPage,
-          //   pageSize,
-          //   onChange: handlePageChange,
-          // }}
           scroll={{
-            // x: 450,
             x:'max-content',
           }}
-          // style={{
-          //   width: "100%",
-          //   margin: "0 auto",
-          //   overflowX: "auto",
-          // }}
           showSorterTooltip={{
             target: 'sorter-icon',
           }}
