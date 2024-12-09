@@ -42,6 +42,7 @@ const Interview = () => {
   const mediaRecorderRef = useRef(null);
   const audioChunksRef = useRef([]);
   const streamRef = useRef(null);
+  const audioRef = useRef(null);
   const navigate = useNavigate();
   const interviewId = location.state?.interviewId;
   const userId = location.state?.userId;
@@ -243,6 +244,7 @@ const Interview = () => {
 
   const playAudio = async (audioUrl) => {
     const audio = new Audio(audioUrl);
+    audioRef.current=audio;
     setIsPlaying(true);
     setStatus("Live");
 
@@ -267,6 +269,7 @@ const Interview = () => {
         setIsPlaying(false);
         setIsLoading(false);
         setStatus("Idle");
+        audioRef.current = null;
         await fetch(`${backendUrl}/api/delete_tts_file/`, {
           method: "POST",
           headers: {
@@ -282,6 +285,7 @@ const Interview = () => {
       setIsPlaying(false);
       setIsLoading(false);
       setStatus("Idle");
+      audioRef.current = null;
     }
   };
 
@@ -348,6 +352,14 @@ const Interview = () => {
 
   const handleOk = () => {
     setIsModalOpen(false);
+    if (audioRef.current) {
+      audioRef.current.pause();
+      audioRef.current.currentTime=0;
+      audioRef.current = null;
+      setIsPlaying(false);
+      setStatus("Idle");
+    }
+
     if (pendingNavigation) {
       pendingNavigation();
       setPendingNavigation(null);
