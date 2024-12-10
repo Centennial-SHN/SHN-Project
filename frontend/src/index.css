@@ -1150,6 +1150,18 @@ padding: 48px 24px;
   white-space: nowrap;
 }
 
+.layoutUserLogContent .ant-table-thead > tr > th{
+  text-align: center !important;
+  vertical-align: middle !important;
+  white-space: nowrap;
+}
+ 
+.layoutUserLogContent .ant-table-tbody > tr > td {
+  text-align: center !important;
+  vertical-align: middle !important;
+  white-space: nowrap;
+}
+
 .delete-button {
   background-color: var(--secondary-coral) !important; 
   border-color: var(--secondary-coral) !important;
