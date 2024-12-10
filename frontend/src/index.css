@@ -986,6 +986,7 @@ padding: 48px 24px;
     font-size: 14px;  
     width: 100%;  
     table-layout: auto;  
+    text-align: center;
   }
 
   .layoutIntHistContent .ant-table th, 
