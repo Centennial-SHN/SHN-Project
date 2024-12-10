@@ -1559,6 +1559,9 @@ padding: 48px 24px;
   }
 
   .layoutUserLogContent .spaceContentStart a {
+    pointer-events: auto !important;
+    z-index: 999 !important;
+    position: relative;
     text-align: center;
     font-size: 14px;
     white-space: nowrap;

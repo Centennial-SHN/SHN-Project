@@ -25,6 +25,7 @@ const UserAdmin = () => {
   const isAdmin = sessionStorage.getItem('isSuperUser') === 'true';
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize, setPageSize] = useState(10);
+  const [tooltipOpen, setTooltipOpen] = useState(false);
 
   const hasCheckedSuperuser = useRef(false);
 
@@ -241,7 +242,7 @@ const UserAdmin = () => {
       } else {
         alert("The container is already empty.");
       }
-
+      setTooltipOpen(false);
     } catch (error) {
       console.error("Error clearing blob storage:", error);
       alert("Failed to clear blob storage. Please try again.");
@@ -384,8 +385,15 @@ const UserAdmin = () => {
             title="This will clear audio files from incomplete interviews in your storage."
             color="#fff"
             overlayInnerStyle={{ color: "#5C5E84", padding: "8px 12px" }}
+            open={tooltipOpen}
+            onOpenChange={(open) => setTooltipOpen(open)}
           >
-            <Link onClick={handleClearBlobStorage}>Clear Temporary Audio Files</Link>
+            <Link
+              onMouseEnter={() => setTooltipOpen(true)} 
+              onClick={handleClearBlobStorage}
+            >
+              Clear Temporary Audio Files
+            </Link>
           </Tooltip>
         </Space>
         <Space direction="horizontal" size="large" className="spaceContentBetween search-row">
