@@ -986,6 +986,9 @@ padding: 48px 24px;
     font-size: 14px;  
     width: 100%;  
     table-layout: auto;  
+  }
+
+  .layoutIntHistContent .ant-table-thead > tr > th  {
     text-align: center;
   }
 
@@ -993,6 +996,7 @@ padding: 48px 24px;
   .layoutIntHistContent .ant-table td {
     word-wrap: break-word;
     white-space: nowrap;  
+    text-align: center;
   }
 
   .layoutIntHistContent h3 {
