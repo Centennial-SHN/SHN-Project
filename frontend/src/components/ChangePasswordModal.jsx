@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Form, Input, Button, Typography, Modal } from 'antd';
+import { Form, Input, Button, Typography, Modal, Alert } from 'antd';
 
 const { Title, Text } = Typography;
 
@@ -9,16 +9,45 @@ const ChangePasswordModal = ({ isOpen, onClose, onChangePassword }) => {
   const [confirmPassword, setConfirmPassword] = useState("");
   const [error, setError] = useState("");
 
+  const resetFields = () => {
+    setCurrentPassword("");
+    setNewPassword("");
+    setConfirmPassword("");
+    setError("");
+  };
+
   const handleSubmit = (e) => {
     e.preventDefault();
     setError("");
+
+    if (!currentPassword || !newPassword || !confirmPassword) {
+      setError("All fields are required.");
+      return;
+    }
+
+    if (currentPassword === newPassword) {
+      setError("New password cannot be the same as the current password.");
+      return;
+    }
+
+    if (currentPassword.length < 8 || newPassword.length < 8) {
+      setError("Password must be at least 8 characters.");
+      return;
+    }
 
     if (newPassword !== confirmPassword) {
       setError("New passwords do not match.");
       return;
     }
 
-    onChangePassword(currentPassword, newPassword);
+    onChangePassword(currentPassword, newPassword).then(() => {
+      resetFields();
+      onClose();
+    })
+    .catch((err) => {
+      setError(err.message || "An error occurred. Please try again.");
+    })
+  
   };
 
   return (
@@ -26,9 +55,15 @@ const ChangePasswordModal = ({ isOpen, onClose, onChangePassword }) => {
       className="change-password-modal"
       open={isOpen}
       onOk={handleSubmit}
-      onCancel={onClose}
+      onCancel={() => {
+        resetFields();
+        onClose();
+      }}
       footer={[
-        <Button key="cancel" onClick={onClose}>
+        <Button key="cancel" onClick={() => {
+          resetFields();
+          onClose();
+        }}>
           Cancel
         </Button>,
         <Button key="submit" type="primary" onClick={handleSubmit}>
@@ -59,7 +94,7 @@ const ChangePasswordModal = ({ isOpen, onClose, onChangePassword }) => {
             placeholder="Confirm new password"
           />
         </Form.Item>
-        {error && <Text type="danger">{error}</Text>}
+        {error && <Alert message={error} type="error" showIcon style={{ marginBottom: "24px" }}/>}
       </Form>
     </Modal>
   );

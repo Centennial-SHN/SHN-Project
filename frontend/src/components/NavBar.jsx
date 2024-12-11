@@ -1,10 +1,11 @@
 import { useState, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { MenuOutlined } from '@ant-design/icons';
-import { Typography, Layout, Space, Divider, Dropdown, Menu, Button } from 'antd';
+import { Typography, Layout, Space, Divider, Dropdown, Menu, Button, Modal } from 'antd';
 import Cookies from 'js-cookie';
 import logo from '../assets/logo-alt.svg';
 import ChangePasswordModal from './ChangePasswordModal';
+import { VITE_API_BASE_URL_LOCAL, VITE_API_BASE_URL_PROD } from "../constants";
 
 const { Text } = Typography;
 const { Header } = Layout;
@@ -14,8 +15,12 @@ const NavBar = ({ onNavigateAway }) => {
     const location = useLocation();
     const isAdmin = sessionStorage.getItem('isSuperUser') === 'true';
     const [isChangePasswordOpen, setChangePasswordOpen] = useState(false);
+    const [isModalOpen, setIsModalOpen] = useState(false);
+    const [modalMessage, setModalMessage] = useState('');
     const csrfToken = Cookies.get('csrftoken');
     const [viewAsAdmin, setViewAsAdmin] = useState(isAdmin);
+    const isDevelopment = import.meta.env.MODE === "development";
+    const backendUrl = isDevelopment ? VITE_API_BASE_URL_LOCAL : VITE_API_BASE_URL_PROD;
     
 
     useEffect(() => {
@@ -68,18 +73,24 @@ const NavBar = ({ onNavigateAway }) => {
             if (!response.ok) {
                 throw new Error("Failed to change password");
             }
-
-            alert("Password changed successfully!");
+            setModalMessage("Password changed successfully!");
+            setIsModalOpen(true);
             setChangePasswordOpen(false);
         } catch (error) {
             console.error("Error changing password:", error);
-            alert("Failed to change password. Please try again.");
+            setModalMessage("Failed to change password. Please try again.");
+            setIsModalOpen(true);
         }
     };
 
     const toggleViewMode = () => {
         setViewAsAdmin(false);
         navigate('/module', { replace: true });
+    };
+
+    const handleModalClose = () => {
+        setIsModalOpen(false); 
+        setModalMessage(''); 
     };
 
     const adminItems = [
@@ -200,9 +211,24 @@ const NavBar = ({ onNavigateAway }) => {
                 />
             </Dropdown>
 
+                        {/* Feedback Modal */}
+                        <Modal
+                title="Change Password"
+                visible={isModalOpen}
+                onOk={handleModalClose}
+                onCancel={handleModalClose}
+                footer={[
+                    <Button key="ok" type="primary" onClick={handleModalClose}>
+                        CLOSE
+                    </Button>,
+                ]}
+            >
+                <p>{modalMessage}</p>
+            </Modal>
+
             <ChangePasswordModal
                 isOpen={isChangePasswordOpen}
-                onClose={toggleChangePasswordModal}
+                onClose={() => setChangePasswordOpen(false)}
                 onChangePassword={handleChangePassword}
             />
         </Header>

@@ -111,6 +111,7 @@ const ModuleSelection = () => {
         title="Module Not Selected"
         open={isModalOpen}
         onOk={handleOk} 
+        onCancel={handleOk}
         footer={[<Button key="ok" type="primary" onClick={handleOk}>Close</Button>]}  
       >
         <p>Please select a module to proceed with the interview.</p>
