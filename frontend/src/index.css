@@ -188,6 +188,11 @@ a {
     width: 90%;
   }
 
+  .ant-modal-content {
+    margin: 0 auto;
+    width: 90%;
+  }
+
   .ant-modal-footer {
     padding: 8px;
     display: flex;
